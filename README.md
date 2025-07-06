@@ -121,6 +121,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- 📧 Email: support@studioinventory.com
+- 📧 Email: cannon [at] quadbit.dev
 - 🐛 Issues: [GitHub Issues](https://github.com/yourusername/studio-inventory/issues)
 - 💬 Discussions: [GitHub Discussions](https://github.com/yourusername/studio-inventory/discussions)
