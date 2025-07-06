@@ -1,0 +1,4 @@
+cableTypeName,totalLength,remainingLength,location,supplier,purchaseDate,purchasePrice,notes
+SDI,1000,750,Storage Room A,CableCo,2024-01-15,299.99,High quality SDI cable
+HDMI,500,500,Storage Room B,Electronics Inc,2024-02-20,149.99,New stock
+XLR,750,600,Storage Room A,Audio Supply,2024-01-10,199.99,Professional grade 

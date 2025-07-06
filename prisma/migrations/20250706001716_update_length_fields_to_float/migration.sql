@@ -1,0 +1,12 @@
+-- AlterTable
+ALTER TABLE "assets" ALTER COLUMN "cableLength" SET DATA TYPE DOUBLE PRECISION;
+
+-- AlterTable
+ALTER TABLE "bulk_cables" ALTER COLUMN "totalLength" SET DATA TYPE DOUBLE PRECISION,
+ALTER COLUMN "remainingLength" SET DATA TYPE DOUBLE PRECISION;
+
+-- AlterTable
+ALTER TABLE "cable_assemblies" ALTER COLUMN "length" SET DATA TYPE DOUBLE PRECISION;
+
+-- AlterTable
+ALTER TABLE "cable_types" ALTER COLUMN "maxLength" SET DATA TYPE DOUBLE PRECISION;

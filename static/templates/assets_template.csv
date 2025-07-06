@@ -1,0 +1,6 @@
+Item Name,Quantity,Category,Model/Brand,Serial Number,Location,Status,Purchase Date,Purchase Price,Last Maintenance,Warranty Expiration,Notes,Assigned,Asset Number,Supplier,Cable Length,Cable Type
+"Camera - Sony FX6",1,"Cameras","Sony FX6","SN123456789","Studio A","Available","2024-01-15","5999.99","2024-06-15","2027-01-15","Main studio camera","","CAM001","B&H Photo","",""
+"Microphone - Shure SM7B",2,"Audio","Shure SM7B","SM7B001","Studio B","In Use","2024-02-20","399.99","2024-05-20","2027-02-20","Vocal recording mics","John Doe","AUD001","Sweetwater","",""
+"Lighting Kit - Aputure 600D",1,"Lighting","Aputure 600D Pro","AP600D001","Storage Room","Available","2024-03-10","1299.99","2024-04-10","2027-03-10","LED lighting kit","","LIT001","Adorama","",""
+"SDI Cable - 50ft",3,"Cables","Canare L-4CFB","","Cable Storage","Available","2024-01-05","89.99","","","Professional SDI cables","","CAB001","Markertek","50","SDI"
+"HDMI Cable - 25ft",5,"Cables","Monoprice Premium","","Cable Storage","Available","2024-02-15","24.99","","","4K HDMI cables","","CAB002","Monoprice","25","HDMI" 

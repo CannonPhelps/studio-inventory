@@ -1,0 +1,29 @@
+services:
+  app:
+    build: .
+    ports:
+      - "5173:5173"
+    environment:
+      - DATABASE_URL=postgresql://admin:uZwy.stvGuQXszksh9iA@db:5432/studio_inventory
+      - SESSION_SECRET=8f377c6109732e9389a9f7995369506d135609211a3d9debd2bb3d5e783b71b432c9560299c5037a4133cf94ccbfc00668e454c3dfdf2f23a4bb951c9d2eff84
+      - NODE_ENV=production
+    depends_on:
+      - db
+    volumes:
+      - ./uploads:/app/uploads
+    restart: unless-stopped
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: uZwy.stvGuQXszksh9iA
+      POSTGRES_DB: studio_inventory
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  db_data: 

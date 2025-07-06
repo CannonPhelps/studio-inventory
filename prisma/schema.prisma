@@ -1,0 +1,175 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id     Int     @id @default(autoincrement())
+  name   String  @unique
+  assets Asset[]
+}
+
+model CableType {
+  id              Int             @id @default(autoincrement())
+  name            String          @unique
+  description     String?
+  color           String?
+  gauge           String?
+  impedance       String?
+  maxLength       Float?
+  assets          Asset[]
+  bulkCables      BulkCable[]
+  cableAssemblies CableAssembly[]
+
+  @@map("cable_types")
+}
+
+model CableEnd {
+  id               Int             @id @default(autoincrement())
+  name             String          @unique
+  type             String
+  gender           String
+  description      String?
+  color            String?
+  quantity         Int             @default(0)
+  purchasePrice    Decimal?        @db.Decimal(10, 2)
+  supplier         String?
+  purchaseDate     DateTime?
+  location         String?
+  notes            String?
+  cableAssemblies  CableAssembly[] @relation("CableEndA")
+  cableAssemblies2 CableAssembly[] @relation("CableEndB")
+
+  @@map("cable_ends")
+}
+
+model BulkCable {
+  id              Int       @id @default(autoincrement())
+  cableTypeId     Int
+  totalLength     Float
+  remainingLength Float
+  location        String?
+  supplier        String?
+  purchaseDate    DateTime?
+  purchasePrice   Decimal?  @db.Decimal(10, 2)
+  notes           String?
+  cableType       CableType @relation(fields: [cableTypeId], references: [id])
+
+  @@map("bulk_cables")
+}
+
+model CableAssembly {
+  id          Int       @id @default(autoincrement())
+  cableTypeId Int
+  endAId      Int
+  endBId      Int
+  length      Float
+  customName  String?
+  assetId     Int?      @unique
+  asset       Asset?    @relation(fields: [assetId], references: [id])
+  cableType   CableType @relation(fields: [cableTypeId], references: [id])
+  endA        CableEnd  @relation("CableEndA", fields: [endAId], references: [id])
+  endB        CableEnd  @relation("CableEndB", fields: [endBId], references: [id])
+
+  @@map("cable_assemblies")
+}
+
+model Asset {
+  id                 Int                 @id @default(autoincrement())
+  itemName           String
+  quantity           Int                 @default(1)
+  categoryId         Int
+  modelBrand         String?
+  serialNumber       String?
+  location           String?
+  status             String              @default("Available")
+  purchaseDate       DateTime?
+  purchasePrice      Decimal?            @db.Decimal(10, 2)
+  lastMaintenance    DateTime?
+  warrantyExpiration DateTime?
+  notes              String?
+  assigned           String?
+  assetNumber        String?
+  supplier           String?
+  cableLength        Float?
+  cableTypeId        Int?
+  isCable            Boolean             @default(false)
+  cableType          CableType?          @relation(fields: [cableTypeId], references: [id])
+  category           Category            @relation(fields: [categoryId], references: [id])
+  cableAssembly      CableAssembly?
+  checkouts          Checkout[]
+  maintenanceRecords MaintenanceRecord[]
+  movements          Movement[]
+
+  @@map("assets")
+}
+
+model Checkout {
+  id         Int       @id @default(autoincrement())
+  assetId    Int
+  user       String
+  checkoutAt DateTime  @default(now())
+  dueAt      DateTime
+  returnedAt DateTime?
+  notes      String?
+  asset      Asset     @relation(fields: [assetId], references: [id])
+
+  @@map("checkouts")
+}
+
+model MaintenanceRecord {
+  id          Int      @id @default(autoincrement())
+  assetId     Int
+  performedAt DateTime @default(now())
+  notes       String?
+  performedBy String?
+  cost        Decimal? @db.Decimal(10, 2)
+  asset       Asset    @relation(fields: [assetId], references: [id])
+
+  @@map("maintenance_records")
+}
+
+model Movement {
+  id           Int      @id @default(autoincrement())
+  assetId      Int
+  fromLocation String
+  toLocation   String
+  movedAt      DateTime @default(now())
+  reason       String?
+  notes        String?
+  asset        Asset    @relation(fields: [assetId], references: [id])
+
+  @@map("movements")
+}
+
+model User {
+  id           String        @id @default(uuid())
+  email        String        @unique
+  name         String
+  passwordHash String
+  role         String        @default("user")
+  department   String?
+  phone        String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  keys         UserKey[]
+  sessions     UserSession[]
+}
+
+model UserKey {
+  id             String  @id
+  userId         String
+  hashedPassword String?
+  user           User    @relation(fields: [userId], references: [id])
+}
+
+model UserSession {
+  id        String   @id
+  userId    String
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

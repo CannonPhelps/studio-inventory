@@ -1,0 +1,6 @@
+Cable Type Name,Total Length (ft),Remaining Length (ft),Location,Supplier,Purchase Date,Purchase Price,Notes
+"SDI - Belden 1694A",1000,750,"Storage Room A","Markertek","2024-01-15","299.99","Professional grade SDI cable for broadcast"
+"HDMI - Monoprice Premium",500,500,"Storage Room B","Monoprice","2024-02-20","149.99","4K compatible HDMI cable"
+"XLR - Canare L-4E6S",750,600,"Storage Room A","Sweetwater","2024-01-10","199.99","Balanced audio cable for professional audio"
+"Ethernet - Cat6 Shielded",2000,1800,"Storage Room C","CableWholesale","2024-03-05","399.99","Shielded Cat6 for network installations"
+"Power - 12AWG",1500,1200,"Storage Room B","WireAndCable","2024-02-28","599.99","Heavy duty power cable for lighting" 

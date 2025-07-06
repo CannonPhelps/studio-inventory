@@ -1,0 +1,6 @@
+name,description,color,gauge,impedance,maxLength
+SDI,Serial Digital Interface cable,Black,22AWG,75Ω,300
+HDMI,High Definition Multimedia Interface cable,Black,28AWG,,50
+XLR,Professional audio cable,Black,22AWG,,100
+Power,AC power cable,Black,18AWG,,25
+Ethernet,Network cable,Blue,24AWG,100Ω,328 
