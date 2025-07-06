@@ -1,19 +1,19 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	let checkouts: any[] = [];
-	let assets: any[] = [];
-	let loading = true;
-	let showCheckoutModal = false;
-	let statusFilter = '';
+	let checkouts = $state<any[]>([]);
+	let assets = $state<any[]>([]);
+	let loading = $state(true);
+	let showCheckoutModal = $state(false);
+	let statusFilter = $state('');
 
 	// Form data
-	let newCheckout = {
+	let newCheckout = $state({
 		assetId: '',
 		userId: '',
 		expectedReturnDate: '',
 		notes: ''
-	};
+	});
 
 	onMount(async () => {
 		await loadData();
@@ -62,9 +62,9 @@
 		};
 	}
 
-	$: filteredCheckouts = checkouts.filter(checkout => {
+	const filteredCheckouts = $derived(checkouts.filter(checkout => {
 		return !statusFilter || checkout.status === statusFilter;
-	});
+	}));
 
 	function getStatusColor(status: string) {
 		switch (status) {

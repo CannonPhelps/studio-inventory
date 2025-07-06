@@ -1,12 +1,29 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	let cableEnds: any[] = [];
+	interface CableEnd {
+		id: number;
+		name: string;
+		type: string;
+		gender: string;
+		description?: string;
+		color: string;
+	}
+
+	interface NewCableEnd {
+		name: string;
+		type: string;
+		gender: string;
+		description: string;
+		color: string;
+	}
+
+	let cableEnds: CableEnd[] = [];
 	let loading = true;
 	let showAddModal = false;
-	let editingCableEnd: any = null;
+	let editingCableEnd: CableEnd | null = null;
 
-	let newCableEnd = {
+	let newCableEnd: NewCableEnd = {
 		name: '',
 		type: '',
 		gender: '',
@@ -124,7 +141,7 @@
 		}
 	}
 
-	function startEdit(cableEnd: any) {
+	function startEdit(cableEnd: CableEnd) {
 		editingCableEnd = { ...cableEnd };
 	}
 
@@ -158,12 +175,12 @@
 	<!-- Header -->
 	<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
 		<div>
-			<h1 class="text-3xl font-bold text-gray-900">Cable Ends</h1>
-			<p class="mt-2 text-gray-600">Manage cable connectors and terminations</p>
+			<h1 class="text-3xl font-bold text-primary">Cable Ends</h1>
+			<p class="mt-2 text-muted-foreground">Manage cable connectors and terminations</p>
 		</div>
 		<button
 			on:click={() => (showAddModal = true)}
-			class="mt-4 sm:mt-0 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+			class="mt-4 sm:mt-0 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
 		>
 			<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -174,20 +191,20 @@
 
 	{#if loading}
 		<div class="flex justify-center items-center py-12">
-			<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+			<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
 		</div>
 	{:else if cableEnds.length === 0}
 		<div class="text-center py-12">
-			<div class="text-gray-400 mb-4">
+			<div class="text-muted-foreground mb-4">
 				<svg class="mx-auto h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
 				</svg>
 			</div>
-			<h3 class="text-lg font-medium text-gray-900 mb-2">No cable ends yet</h3>
-			<p class="text-gray-500 mb-4">Add your first cable end to start building cable assemblies.</p>
+			<h3 class="text-lg font-medium text-primary mb-2">No cable ends yet</h3>
+			<p class="text-muted-foreground mb-4">Add your first cable end to start building cable assemblies.</p>
 			<button
 				on:click={() => (showAddModal = true)}
-				class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+				class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
 			>
 				Add Cable End
 			</button>
@@ -196,7 +213,7 @@
 		<!-- Cable Ends Grid -->
 		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 			{#each cableEnds as cableEnd}
-				<div class="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+				<div class="bg-card rounded-xl shadow-sm border border-border hover:shadow-md transition-shadow">
 					<div class="p-6">
 						<div class="flex items-start justify-between mb-4">
 							<div class="flex-1">
@@ -205,14 +222,14 @@
 										class="w-3 h-3 rounded-full mr-2"
 										style="background-color: {getTypeColor(cableEnd.type)}"
 									></div>
-									<h3 class="text-lg font-semibold text-gray-900">{cableEnd.name}</h3>
+									<h3 class="text-lg font-semibold text-primary">{cableEnd.name}</h3>
 								</div>
-								<p class="text-sm text-gray-500">{cableEnd.type} • {cableEnd.gender}</p>
+								<p class="text-sm text-muted-foreground">{cableEnd.type} • {cableEnd.gender}</p>
 							</div>
 							<div class="flex items-center space-x-2">
 								<button
 									on:click={() => startEdit(cableEnd)}
-									class="text-blue-600 hover:text-blue-800 p-1 rounded"
+									class="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 p-1 rounded transition-colors"
 									title="Edit"
 								>
 									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -221,7 +238,7 @@
 								</button>
 								<button
 									on:click={() => deleteCableEnd(cableEnd.id)}
-									class="text-red-600 hover:text-red-800 p-1 rounded"
+									class="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 p-1 rounded transition-colors"
 									title="Delete"
 								>
 									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -232,19 +249,19 @@
 						</div>
 
 						{#if cableEnd.description}
-							<div class="mb-4 p-3 bg-gray-50 rounded-lg">
-								<p class="text-sm text-gray-700">{cableEnd.description}</p>
+							<div class="mb-4 p-3 bg-muted/50 rounded-lg">
+								<p class="text-sm text-primary">{cableEnd.description}</p>
 							</div>
 						{/if}
 
-						<div class="flex items-center justify-between pt-4 border-t border-gray-100">
-							<div class="flex items-center text-sm text-gray-500">
+						<div class="flex items-center justify-between pt-4 border-t border-border">
+							<div class="flex items-center text-sm text-muted-foreground">
 								<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
 								</svg>
 								Cable End
 							</div>
-							<span class="text-xs text-gray-400">ID: {cableEnd.id}</span>
+							<span class="text-xs text-muted-foreground">ID: {cableEnd.id}</span>
 						</div>
 					</div>
 				</div>
@@ -256,27 +273,27 @@
 <!-- Add Cable End Modal -->
 {#if showAddModal}
 	<div class="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-		<div class="bg-white rounded-lg p-6 w-full max-w-2xl max-h-screen overflow-y-auto">
-			<h2 class="text-xl font-bold mb-4">Add New Cable End</h2>
+		<div class="bg-card rounded-lg p-6 w-full max-w-2xl max-h-screen overflow-y-auto border border-border">
+			<h2 class="text-xl font-bold text-primary mb-4">Add New Cable End</h2>
 			<form on:submit|preventDefault={addCableEnd} class="space-y-4">
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 					<div>
-						<label for="name" class="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+						<label for="name" class="block text-sm font-medium text-primary mb-1">Name *</label>
 						<input
 							id="name"
 							type="text"
 							bind:value={newCableEnd.name}
-							class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+							class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-background text-primary placeholder:text-muted-foreground"
 							placeholder="e.g., BNC Male"
 							required
 						/>
 					</div>
 					<div>
-						<label for="type" class="block text-sm font-medium text-gray-700 mb-1">Type *</label>
+						<label for="type" class="block text-sm font-medium text-primary mb-1">Type *</label>
 						<select
 							id="type"
 							bind:value={newCableEnd.type}
-							class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+							class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-background text-primary"
 							required
 						>
 							<option value="">Select connector type</option>
@@ -289,11 +306,11 @@
 
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 					<div>
-						<label for="gender" class="block text-sm font-medium text-gray-700 mb-1">Gender *</label>
+						<label for="gender" class="block text-sm font-medium text-primary mb-1">Gender *</label>
 						<select
 							id="gender"
 							bind:value={newCableEnd.gender}
-							class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+							class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-background text-primary"
 							required
 						>
 							<option value="">Select gender</option>
@@ -303,22 +320,22 @@
 						</select>
 					</div>
 					<div>
-						<label for="color" class="block text-sm font-medium text-gray-700 mb-1">Color</label>
+						<label for="color" class="block text-sm font-medium text-primary mb-1">Color</label>
 						<input
 							id="color"
 							type="color"
 							bind:value={newCableEnd.color}
-							class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+							class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-background"
 						/>
 					</div>
 				</div>
 
 				<div>
-					<label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+					<label for="description" class="block text-sm font-medium text-primary mb-1">Description</label>
 					<textarea
 						id="description"
 						bind:value={newCableEnd.description}
-						class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+						class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-background text-primary placeholder:text-muted-foreground"
 						rows="3"
 						placeholder="Additional details about this cable end"
 					></textarea>
@@ -328,13 +345,13 @@
 					<button
 						type="button"
 						on:click={() => (showAddModal = false)}
-						class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+						class="px-4 py-2 text-muted-foreground bg-muted hover:bg-muted/80 rounded-md transition-colors"
 					>
 						Cancel
 					</button>
 					<button
 						type="submit"
-						class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
+						class="px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white rounded-md transition-colors"
 					>
 						Add Cable End
 					</button>
@@ -347,26 +364,26 @@
 <!-- Edit Cable End Modal -->
 {#if editingCableEnd}
 	<div class="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-		<div class="bg-white rounded-lg p-6 w-full max-w-2xl max-h-screen overflow-y-auto">
-			<h2 class="text-xl font-bold mb-4">Edit Cable End</h2>
+		<div class="bg-card rounded-lg p-6 w-full max-w-2xl max-h-screen overflow-y-auto border border-border">
+			<h2 class="text-xl font-bold text-primary mb-4">Edit Cable End</h2>
 			<form on:submit|preventDefault={updateCableEnd} class="space-y-4">
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 					<div>
-						<label for="editName" class="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+						<label for="editName" class="block text-sm font-medium text-primary mb-1">Name *</label>
 						<input
 							id="editName"
 							type="text"
 							bind:value={editingCableEnd.name}
-							class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+							class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-background text-primary"
 							required
 						/>
 					</div>
 					<div>
-						<label for="editType" class="block text-sm font-medium text-gray-700 mb-1">Type *</label>
+						<label for="editType" class="block text-sm font-medium text-primary mb-1">Type *</label>
 						<select
 							id="editType"
 							bind:value={editingCableEnd.type}
-							class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+							class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-background text-primary"
 							required
 						>
 							<option value="">Select connector type</option>
@@ -379,11 +396,11 @@
 
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 					<div>
-						<label for="editGender" class="block text-sm font-medium text-gray-700 mb-1">Gender *</label>
+						<label for="editGender" class="block text-sm font-medium text-primary mb-1">Gender *</label>
 						<select
 							id="editGender"
 							bind:value={editingCableEnd.gender}
-							class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+							class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-background text-primary"
 							required
 						>
 							<option value="">Select gender</option>
@@ -393,22 +410,22 @@
 						</select>
 					</div>
 					<div>
-						<label for="editColor" class="block text-sm font-medium text-gray-700 mb-1">Color</label>
+						<label for="editColor" class="block text-sm font-medium text-primary mb-1">Color</label>
 						<input
 							id="editColor"
 							type="color"
 							bind:value={editingCableEnd.color}
-							class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+							class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-background"
 						/>
 					</div>
 				</div>
 
 				<div>
-					<label for="editDescription" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+					<label for="editDescription" class="block text-sm font-medium text-primary mb-1">Description</label>
 					<textarea
 						id="editDescription"
 						bind:value={editingCableEnd.description}
-						class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+						class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-background text-primary"
 						rows="3"
 					></textarea>
 				</div>
@@ -417,13 +434,13 @@
 					<button
 						type="button"
 						on:click={cancelEdit}
-						class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+						class="px-4 py-2 text-muted-foreground bg-muted hover:bg-muted/80 rounded-md transition-colors"
 					>
 						Cancel
 					</button>
 					<button
 						type="submit"
-						class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
+						class="px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white rounded-md transition-colors"
 					>
 						Update Cable End
 					</button>

@@ -1,1 +1,458 @@
 @import 'tailwindcss';
+
+/* Light mode CSS variables (default) */
+:root {
+	/* Primary colors - Main brand colors */
+	--primary-50: #eff6ff;
+	--primary-100: #dbeafe;
+	--primary-200: #bfdbfe;
+	--primary-300: #93c5fd;
+	--primary-400: #60a5fa;
+	--primary-500: #3b82f6;
+	--primary-600: #2563eb;
+	--primary-700: #1d4ed8;
+	--primary-800: #1e40af;
+	--primary-900: #1e3a8a;
+	--primary-950: #172554;
+
+	/* Secondary colors - Supporting colors */
+	--secondary-50: #f8fafc;
+	--secondary-100: #f1f5f9;
+	--secondary-200: #e2e8f0;
+	--secondary-300: #cbd5e1;
+	--secondary-400: #94a3b8;
+	--secondary-500: #64748b;
+	--secondary-600: #475569;
+	--secondary-700: #334155;
+	--secondary-800: #1e293b;
+	--secondary-900: #0f172a;
+	--secondary-950: #020617;
+
+	/* Tertiary colors - Accent colors */
+	--tertiary-50: #fef7ee;
+	--tertiary-100: #fdedd4;
+	--tertiary-200: #fbd7a5;
+	--tertiary-300: #f8bb6c;
+	--tertiary-400: #f59532;
+	--tertiary-500: #f2750a;
+	--tertiary-600: #e35d05;
+	--tertiary-700: #bc4508;
+	--tertiary-800: #95370e;
+	--tertiary-900: #782f0f;
+	--tertiary-950: #411505;
+
+	/* Background colors */
+	--bg-primary: #ffffff;
+	--bg-secondary: #f8fafc;
+	--bg-tertiary: #f1f5f9;
+	--bg-card: #ffffff;
+	--bg-sidebar: #ffffff;
+	--bg-input: #ffffff;
+	--bg-table: #ffffff;
+	--bg-table-stripe: #f8fafc;
+
+	/* Text colors - Improved contrast */
+	--text-primary: #0f172a;
+	--text-secondary: #334155;
+	--text-tertiary: #64748b;
+	--text-input: #0f172a;
+
+	/* Border colors */
+	--border-primary: #e2e8f0;
+	--border-secondary: #cbd5e1;
+	--border-sidebar: #e2e8f0;
+	--border-card: #e2e8f0;
+	--border-input: #cbd5e1;
+	--border-table: #e2e8f0;
+
+	/* Accent colors */
+	--accent-primary: #3b82f6;
+	--accent-secondary: #1d4ed8;
+	--accent-success: #059669;
+	--accent-warning: #d97706;
+	--accent-error: #dc2626;
+	--accent-info: #0891b2;
+
+	/* Shadows */
+	--shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+	--shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+	--shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+	--shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+	--shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+/* Dark mode CSS variables */
+[data-theme="dark"] {
+	/* Primary colors - Dark mode variants */
+	--primary-50: #172554;
+	--primary-100: #1e3a8a;
+	--primary-200: #1e40af;
+	--primary-300: #1d4ed8;
+	--primary-400: #2563eb;
+	--primary-500: #3b82f6;
+	--primary-600: #60a5fa;
+	--primary-700: #93c5fd;
+	--primary-800: #bfdbfe;
+	--primary-900: #dbeafe;
+	--primary-950: #eff6ff;
+
+	/* Secondary colors - Dark mode variants */
+	--secondary-50: #020617;
+	--secondary-100: #0f172a;
+	--secondary-200: #1e293b;
+	--secondary-300: #334155;
+	--secondary-400: #475569;
+	--secondary-500: #64748b;
+	--secondary-600: #94a3b8;
+	--secondary-700: #cbd5e1;
+	--secondary-800: #e2e8f0;
+	--secondary-900: #f1f5f9;
+	--secondary-950: #f8fafc;
+
+	/* Tertiary colors - Dark mode variants */
+	--tertiary-50: #411505;
+	--tertiary-100: #782f0f;
+	--tertiary-200: #95370e;
+	--tertiary-300: #bc4508;
+	--tertiary-400: #e35d05;
+	--tertiary-500: #f2750a;
+	--tertiary-600: #f59532;
+	--tertiary-700: #f8bb6c;
+	--tertiary-800: #fbd7a5;
+	--tertiary-900: #fdedd4;
+	--tertiary-950: #fef7ee;
+
+	/* Background colors - Properly dark */
+	--bg-primary: #1a1a1a;
+	--bg-secondary: #2a2a2a;
+	--bg-tertiary: #404040;
+	--bg-card: #2a2a2a;
+	--bg-sidebar: #1a1a1a;
+	--bg-input: #404040;
+	--bg-table: #2a2a2a;
+	--bg-table-stripe: #404040;
+
+	/* Text colors - High contrast for dark mode */
+	--text-primary: #ffffff;
+	--text-secondary: #f1f5f9;
+	--text-tertiary: #cbd5e1;
+	--text-input: #ffffff;
+
+	/* Border colors - Dark borders */
+	--border-primary: #404040;
+	--border-secondary: #525252;
+	--border-sidebar: #2a2a2a;
+	--border-card: #404040;
+	--border-input: #525252;
+	--border-table: #404040;
+
+	/* Accent colors - Brighter for dark mode */
+	--accent-primary: #60a5fa;
+	--accent-secondary: #93c5fd;
+	--accent-success: #34d399;
+	--accent-warning: #fbbf24;
+	--accent-error: #f87171;
+	--accent-info: #22d3ee;
+
+	/* Shadows */
+	--shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+	--shadow: 0 1px 3px 0 rgb(0 0 0 / 0.4), 0 1px 2px -1px rgb(0 0 0 / 0.4);
+	--shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+	--shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+	--shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.4), 0 8px 10px -6px rgb(0 0 0 / 0.4);
+}
+
+/* Apply CSS variables to Tailwind classes */
+.bg-primary { background-color: var(--bg-primary); }
+.bg-secondary { background-color: var(--bg-secondary); }
+.bg-tertiary { background-color: var(--bg-tertiary); }
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-tertiary { color: var(--text-tertiary); }
+.border-primary { border-color: var(--border-primary); }
+.border-secondary { border-color: var(--border-secondary); }
+.bg-accent { background-color: var(--accent-primary); }
+.text-accent { color: var(--accent-primary); }
+.bg-sidebar { background-color: var(--bg-sidebar); }
+.border-sidebar { border-color: var(--border-sidebar); }
+.bg-card { background-color: var(--bg-card); }
+.border-card { border-color: var(--border-card); }
+
+/* Primary color utilities */
+.bg-primary-50 { background-color: var(--primary-50); }
+.bg-primary-100 { background-color: var(--primary-100); }
+.bg-primary-200 { background-color: var(--primary-200); }
+.bg-primary-300 { background-color: var(--primary-300); }
+.bg-primary-400 { background-color: var(--primary-400); }
+.bg-primary-500 { background-color: var(--primary-500); }
+.bg-primary-600 { background-color: var(--primary-600); }
+.bg-primary-700 { background-color: var(--primary-700); }
+.bg-primary-800 { background-color: var(--primary-800); }
+.bg-primary-900 { background-color: var(--primary-900); }
+.bg-primary-950 { background-color: var(--primary-950); }
+
+.text-primary-50 { color: var(--primary-50); }
+.text-primary-100 { color: var(--primary-100); }
+.text-primary-200 { color: var(--primary-200); }
+.text-primary-300 { color: var(--primary-300); }
+.text-primary-400 { color: var(--primary-400); }
+.text-primary-500 { color: var(--primary-500); }
+.text-primary-600 { color: var(--primary-600); }
+.text-primary-700 { color: var(--primary-700); }
+.text-primary-800 { color: var(--primary-800); }
+.text-primary-900 { color: var(--primary-900); }
+.text-primary-950 { color: var(--primary-950); }
+
+.border-primary-50 { border-color: var(--primary-50); }
+.border-primary-100 { border-color: var(--primary-100); }
+.border-primary-200 { border-color: var(--primary-200); }
+.border-primary-300 { border-color: var(--primary-300); }
+.border-primary-400 { border-color: var(--primary-400); }
+.border-primary-500 { border-color: var(--primary-500); }
+.border-primary-600 { border-color: var(--primary-600); }
+.border-primary-700 { border-color: var(--primary-700); }
+.border-primary-800 { border-color: var(--primary-800); }
+.border-primary-900 { border-color: var(--primary-900); }
+.border-primary-950 { border-color: var(--primary-950); }
+
+/* Secondary color utilities */
+.bg-secondary-50 { background-color: var(--secondary-50); }
+.bg-secondary-100 { background-color: var(--secondary-100); }
+.bg-secondary-200 { background-color: var(--secondary-200); }
+.bg-secondary-300 { background-color: var(--secondary-300); }
+.bg-secondary-400 { background-color: var(--secondary-400); }
+.bg-secondary-500 { background-color: var(--secondary-500); }
+.bg-secondary-600 { background-color: var(--secondary-600); }
+.bg-secondary-700 { background-color: var(--secondary-700); }
+.bg-secondary-800 { background-color: var(--secondary-800); }
+.bg-secondary-900 { background-color: var(--secondary-900); }
+.bg-secondary-950 { background-color: var(--secondary-950); }
+
+.text-secondary-50 { color: var(--secondary-50); }
+.text-secondary-100 { color: var(--secondary-100); }
+.text-secondary-200 { color: var(--secondary-200); }
+.text-secondary-300 { color: var(--secondary-300); }
+.text-secondary-400 { color: var(--secondary-400); }
+.text-secondary-500 { color: var(--secondary-500); }
+.text-secondary-600 { color: var(--secondary-600); }
+.text-secondary-700 { color: var(--secondary-700); }
+.text-secondary-800 { color: var(--secondary-800); }
+.text-secondary-900 { color: var(--secondary-900); }
+.text-secondary-950 { color: var(--secondary-950); }
+
+.border-secondary-50 { border-color: var(--secondary-50); }
+.border-secondary-100 { border-color: var(--secondary-100); }
+.border-secondary-200 { border-color: var(--secondary-200); }
+.border-secondary-300 { border-color: var(--secondary-300); }
+.border-secondary-400 { border-color: var(--secondary-400); }
+.border-secondary-500 { border-color: var(--secondary-500); }
+.border-secondary-600 { border-color: var(--secondary-600); }
+.border-secondary-700 { border-color: var(--secondary-700); }
+.border-secondary-800 { border-color: var(--secondary-800); }
+.border-secondary-900 { border-color: var(--secondary-900); }
+.border-secondary-950 { border-color: var(--secondary-950); }
+
+/* Tertiary color utilities */
+.bg-tertiary-50 { background-color: var(--tertiary-50); }
+.bg-tertiary-100 { background-color: var(--tertiary-100); }
+.bg-tertiary-200 { background-color: var(--tertiary-200); }
+.bg-tertiary-300 { background-color: var(--tertiary-300); }
+.bg-tertiary-400 { background-color: var(--tertiary-400); }
+.bg-tertiary-500 { background-color: var(--tertiary-500); }
+.bg-tertiary-600 { background-color: var(--tertiary-600); }
+.bg-tertiary-700 { background-color: var(--tertiary-700); }
+.bg-tertiary-800 { background-color: var(--tertiary-800); }
+.bg-tertiary-900 { background-color: var(--tertiary-900); }
+.bg-tertiary-950 { background-color: var(--tertiary-950); }
+
+.text-tertiary-50 { color: var(--tertiary-50); }
+.text-tertiary-100 { color: var(--tertiary-100); }
+.text-tertiary-200 { color: var(--tertiary-200); }
+.text-tertiary-300 { color: var(--tertiary-300); }
+.text-tertiary-400 { color: var(--tertiary-400); }
+.text-tertiary-500 { color: var(--tertiary-500); }
+.text-tertiary-600 { color: var(--tertiary-600); }
+.text-tertiary-700 { color: var(--tertiary-700); }
+.text-tertiary-800 { color: var(--tertiary-800); }
+.text-tertiary-900 { color: var(--tertiary-900); }
+.text-tertiary-950 { color: var(--tertiary-950); }
+
+.border-tertiary-50 { border-color: var(--tertiary-50); }
+.border-tertiary-100 { border-color: var(--tertiary-100); }
+.border-tertiary-200 { border-color: var(--tertiary-200); }
+.border-tertiary-300 { border-color: var(--tertiary-300); }
+.border-tertiary-400 { border-color: var(--tertiary-400); }
+.border-tertiary-500 { border-color: var(--tertiary-500); }
+.border-tertiary-600 { border-color: var(--tertiary-600); }
+.border-tertiary-700 { border-color: var(--tertiary-700); }
+.border-tertiary-800 { border-color: var(--tertiary-800); }
+.border-tertiary-900 { border-color: var(--tertiary-900); }
+.border-tertiary-950 { border-color: var(--tertiary-950); }
+
+/* Shadow utilities */
+.shadow-custom { box-shadow: var(--shadow); }
+.shadow-custom-sm { box-shadow: var(--shadow-sm); }
+.shadow-custom-md { box-shadow: var(--shadow-md); }
+.shadow-custom-lg { box-shadow: var(--shadow-lg); }
+.shadow-custom-xl { box-shadow: var(--shadow-xl); }
+
+/* Additional utility classes for dark mode */
+.bg-input { background-color: var(--bg-input); }
+.border-input { border-color: var(--border-input); }
+.text-input { color: var(--text-input); }
+.bg-table { background-color: var(--bg-table); }
+.border-table { border-color: var(--border-table); }
+.bg-table-stripe { background-color: var(--bg-table-stripe); }
+
+/* Smooth transitions for theme switching */
+* {
+	transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+/* Form elements dark mode support */
+input, select, textarea {
+	background-color: var(--bg-input);
+	border-color: var(--border-input);
+	color: var(--text-input);
+}
+
+input:focus, select:focus, textarea:focus {
+	border-color: var(--accent-primary);
+	box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1);
+}
+
+/* Table dark mode support */
+table {
+	background-color: var(--bg-table);
+	border-color: var(--border-table);
+}
+
+tr:nth-child(even) {
+	background-color: var(--bg-table-stripe);
+}
+
+/* Status colors with dark mode support */
+.status-available {
+	background-color: var(--accent-success);
+	color: white;
+}
+
+.status-in-use {
+	background-color: var(--accent-primary);
+	color: white;
+}
+
+.status-maintenance {
+	background-color: var(--accent-warning);
+	color: white;
+}
+
+.status-retired {
+	background-color: var(--accent-error);
+	color: white;
+}
+
+/* Additional status color utilities for better dark mode support */
+.text-success { color: var(--accent-success); }
+.text-warning { color: var(--accent-warning); }
+.text-error { color: var(--accent-error); }
+.text-info { color: var(--accent-info); }
+
+.bg-success-light { 
+	background-color: var(--accent-success);
+	color: white;
+	opacity: 0.1;
+}
+
+.bg-warning-light { 
+	background-color: var(--accent-warning);
+	color: white;
+	opacity: 0.1;
+}
+
+.bg-error-light { 
+	background-color: var(--accent-error);
+	color: white;
+	opacity: 0.1;
+}
+
+.bg-info-light { 
+	background-color: var(--accent-info);
+	color: white;
+	opacity: 0.1;
+}
+
+/* Dark mode specific status backgrounds */
+[data-theme="dark"] .bg-success-light {
+	background-color: rgba(52, 211, 153, 0.2);
+}
+
+[data-theme="dark"] .bg-warning-light {
+	background-color: rgba(251, 191, 36, 0.2);
+}
+
+[data-theme="dark"] .bg-error-light {
+	background-color: rgba(248, 113, 113, 0.2);
+}
+
+[data-theme="dark"] .bg-info-light {
+	background-color: rgba(34, 211, 238, 0.2);
+}
+
+/* Mobile-specific improvements */
+@media (max-width: 768px) {
+	/* Improve touch targets */
+	button, a, input, select, textarea {
+		min-height: 44px;
+	}
+	
+	/* Better scrolling on mobile */
+	html, body {
+		-webkit-overflow-scrolling: touch;
+		scroll-behavior: smooth;
+	}
+	
+	/* Prevent zoom on input focus */
+	input[type="text"],
+	input[type="email"],
+	input[type="password"],
+	input[type="tel"],
+	input[type="number"],
+	input[type="date"],
+	select,
+	textarea {
+		font-size: 16px;
+	}
+	
+	/* Improve modal touch targets */
+	.modal button {
+		min-height: 48px;
+		padding: 12px 16px;
+	}
+}
+
+/* General mobile improvements */
+* {
+	-webkit-tap-highlight-color: transparent;
+}
+
+/* Smooth transitions for mobile */
+.transition-all {
+	transition: all 0.2s ease-in-out;
+}
+
+/* Better focus states for mobile */
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 2px solid var(--accent-primary);
+	outline-offset: 2px;
+}
+
+/* Improve button hover states on touch devices */
+@media (hover: none) {
+	button:hover {
+		transform: none;
+	}
+}

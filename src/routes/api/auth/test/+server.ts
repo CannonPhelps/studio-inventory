@@ -30,6 +30,16 @@ export const GET: RequestHandler = async ({ cookies }) => {
 		
 		console.log('Test endpoint - User:', session.user);
 		
+		// Test asset access
+		const assets = await prisma.asset.findMany({
+			include: {
+				category: true
+			},
+			take: 5
+		});
+		
+		console.log('Test endpoint - Assets found:', assets.length);
+		
 		return json({ 
 			authenticated: true,
 			user: {
@@ -43,6 +53,10 @@ export const GET: RequestHandler = async ({ cookies }) => {
 			session: {
 				id: session.id,
 				expiresAt: session.expiresAt
+			},
+			assets: {
+				count: assets.length,
+				sample: assets.slice(0, 2).map(a => ({ id: a.id, itemName: a.itemName, category: a.category?.name }))
 			}
 		});
 	} catch (error) {

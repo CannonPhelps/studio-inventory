@@ -3,8 +3,11 @@ import { requireAuth } from '$lib/server/routeProtection';
 import { prisma } from '$lib/db';
 import type { RequestHandler } from './$types';
 
-export const GET: RequestHandler = async () => {
+export const GET: RequestHandler = async (event) => {
 	try {
+		// Require authentication
+		await requireAuth(event);
+		
 		const checkouts = await prisma.checkout.findMany({
 			include: {
 				asset: true

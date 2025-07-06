@@ -1,9 +1,13 @@
 import { json } from '@sveltejs/kit';
+import { requireAuth } from '$lib/server/routeProtection';
 import type { RequestHandler } from './$types';
 import { db } from '$lib/db';
 
-export const GET: RequestHandler = async () => {
+export const GET: RequestHandler = async (event) => {
 	try {
+		// Require authentication
+		await requireAuth(event);
+		
 		const cableEnds = await db.cableEnd.findMany({
 			orderBy: { name: 'asc' }
 		});
@@ -14,9 +18,12 @@ export const GET: RequestHandler = async () => {
 	}
 };
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async (event) => {
 	try {
-		const body = await request.json();
+		// Require authentication
+		await requireAuth(event);
+		
+		const body = await event.request.json();
 		const { 
 			name, 
 			type, 

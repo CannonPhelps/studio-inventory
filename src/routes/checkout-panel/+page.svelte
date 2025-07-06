@@ -1,26 +1,67 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import type { PageData } from './$types';
+	import AppLayout from '$lib/components/AppLayout.svelte';
 
-	let searchQuery = '';
-	let selectedCategory = 'all';
-	let viewMode = 'grid'; // 'grid' or 'list'
-	let showCheckoutModal = false;
-	let showReturnModal = false;
-	let selectedAsset = null;
-	let checkoutForm = {
+	let { data } = $props<{ data: PageData }>();
+
+	interface Asset {
+		id: string;
+		itemName: string;
+		category?: {
+			id: string;
+			name: string;
+		};
+		status: string;
+		location: string;
+		serialNumber?: string;
+		image?: string;
+	}
+
+	interface Category {
+		id: string;
+		name: string;
+		count: number;
+	}
+
+	interface Checkout {
+		id: string;
+		asset?: Asset;
+		status: string;
+		expectedReturnDate?: string;
+	}
+
+	interface CheckoutForm {
+		userId: string;
+		expectedReturnDate: string;
+		notes: string;
+	}
+
+	interface ReturnForm {
+		condition: string;
+		notes: string;
+	}
+
+	let searchQuery = $state('');
+	let selectedCategory = $state('all');
+	let viewMode = $state<'grid' | 'list'>('grid');
+	let showCheckoutModal = $state(false);
+	let showReturnModal = $state(false);
+	let selectedAsset = $state<Asset | null>(null);
+	let checkoutForm = $state<CheckoutForm>({
 		userId: '',
 		expectedReturnDate: '',
 		notes: ''
-	};
-	let returnForm = {
+	});
+	let returnForm = $state<ReturnForm>({
 		condition: 'good',
 		notes: ''
-	};
+	});
 
-	let assets = [];
-	let categories = [];
-	let filteredAssets = [];
-	let myCheckouts = [];
+	let assets = $state<Asset[]>([]);
+	let categories = $state<Category[]>([]);
+	let filteredAssets = $state<Asset[]>([]);
+	let myCheckouts = $state<Checkout[]>([]);
 
 	onMount(async () => {
 		try {
@@ -57,15 +98,15 @@
 	});
 
 	function filterAssets() {
-		filteredAssets = assets.filter(asset => {
-			const matchesSearch = asset.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-								 asset.serialNumber.toLowerCase().includes(searchQuery.toLowerCase());
-			const matchesCategory = selectedCategory === 'all' || asset.category.toLowerCase() === selectedCategory;
+		filteredAssets = assets.filter((asset: Asset) => {
+			const matchesSearch = asset.itemName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+								 (asset.serialNumber && asset.serialNumber.toLowerCase().includes(searchQuery.toLowerCase()));
+			const matchesCategory = selectedCategory === 'all' || asset.category?.name.toLowerCase() === selectedCategory;
 			return matchesSearch && matchesCategory;
 		});
 	}
 
-	function openCheckoutModal(asset) {
+	function openCheckoutModal(asset: Asset) {
 		selectedAsset = asset;
 		checkoutForm = {
 			userId: 'current-user-id', // TODO: Get from auth
@@ -75,7 +116,7 @@
 		showCheckoutModal = true;
 	}
 
-	function openReturnModal(asset) {
+	function openReturnModal(asset: Asset) {
 		selectedAsset = asset;
 		returnForm = {
 			condition: 'good',
@@ -160,21 +201,21 @@
 		}
 	}
 
-	function getStatusColor(status) {
+	function getStatusColor(status: string) {
 		switch (status.toLowerCase()) {
-			case 'available': return 'text-green-600 bg-green-50';
-			case 'in use': return 'text-orange-600 bg-orange-50';
-			case 'maintenance': return 'text-red-600 bg-red-50';
-			default: return 'text-gray-600 bg-gray-50';
+			case 'available': return 'text-success bg-success-light';
+			case 'in use': return 'text-warning bg-warning-light';
+			case 'maintenance': return 'text-error bg-error-light';
+			default: return 'text-secondary bg-secondary-100';
 		}
 	}
 
-	function getCheckoutStatusColor(status) {
-		switch (status) {
-			case 'Checked Out': return 'text-blue-600 bg-blue-50';
-			case 'Overdue': return 'text-red-600 bg-red-50';
-			default: return 'text-gray-600 bg-gray-50';
-		}
+	function formatDate(dateString: string) {
+		return new Date(dateString).toLocaleDateString('en-US', {
+			year: 'numeric',
+			month: 'short',
+			day: 'numeric'
+		});
 	}
 </script>
 
@@ -182,355 +223,290 @@
 	<title>Checkout Panel - Studio Inventory</title>
 </svelte:head>
 
-<div class="space-y-6">
-	<!-- Header -->
-	<div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-6 text-white">
-		<div class="flex items-center justify-between">
-			<div>
-				<h1 class="text-3xl font-bold">Checkout Panel</h1>
-				<p class="text-blue-100 mt-2">Check out and return studio equipment</p>
+<AppLayout user={data.user}>
+	<div class="space-y-6">
+		<!-- Header -->
+		<div class="bg-gradient-to-r from-accent to-accent-secondary rounded-2xl p-4 md:p-6 text-white">
+			<div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+				<div>
+					<h1 class="text-2xl md:text-3xl font-bold">Checkout Panel</h1>
+					<p class="text-white/80 mt-2">Check out and return equipment</p>
+				</div>
+				<div class="hidden md:flex items-center space-x-4">
+					<div class="text-center">
+						<div class="text-2xl font-bold">{assets.filter(a => a.status === 'Available').length}</div>
+						<div class="text-white/80 text-sm">Available</div>
+					</div>
+					<div class="text-center">
+						<div class="text-2xl font-bold">{myCheckouts.length}</div>
+						<div class="text-white/80 text-sm">My Items</div>
+					</div>
+				</div>
 			</div>
-			<div class="hidden md:flex items-center space-x-4">
-				<div class="text-center">
-					<div class="text-2xl font-bold">{myCheckouts.length}</div>
-					<div class="text-blue-100 text-sm">My Checkouts</div>
+		</div>
+
+		<!-- My Checkouts Section -->
+		{#if myCheckouts.length > 0}
+			<div class="bg-card rounded-xl shadow-custom border border-card p-4 md:p-6">
+				<h2 class="text-lg md:text-xl font-semibold text-primary mb-4">My Checked Out Items</h2>
+				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+					{#each myCheckouts as checkout}
+						<div class="bg-secondary border border-card rounded-lg p-4">
+							<div class="flex items-center justify-between mb-3">
+								<div class="w-10 h-10 bg-tertiary rounded-lg flex items-center justify-center">
+									<span class="text-lg">📦</span>
+								</div>
+								<button
+									onclick={() => openReturnModal(checkout.asset)}
+									class="text-accent hover:text-accent-secondary text-sm font-medium"
+								>
+									Return
+								</button>
+							</div>
+							<h3 class="font-semibold text-primary mb-1">{checkout.asset?.itemName}</h3>
+							<p class="text-sm text-secondary mb-2">{checkout.asset?.category?.name}</p>
+							<div class="text-xs text-secondary">
+								Expected Return: {checkout.expectedReturnDate ? formatDate(checkout.expectedReturnDate) : 'Not set'}
+							</div>
+						</div>
+					{/each}
 				</div>
-				<div class="text-center">
-					<div class="text-2xl font-bold">{assets.filter(a => a.status === 'Available').length}</div>
-					<div class="text-blue-100 text-sm">Available Items</div>
+			</div>
+		{/if}
+
+		<!-- Search and Filters -->
+		<div class="bg-card rounded-xl shadow-custom border border-card p-4 md:p-6">
+			<div class="flex flex-col space-y-4">
+				<!-- Search -->
+				<div class="w-full">
+					<div class="relative">
+						<input
+							type="text"
+							bind:value={searchQuery}
+							oninput={filterAssets}
+							placeholder="Search equipment..."
+							class="w-full pl-10 pr-4 py-3 border border-input bg-input text-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+						/>
+						<svg class="absolute left-3 top-3.5 h-5 w-5 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+						</svg>
+					</div>
 				</div>
+
+				<!-- Filters -->
+				<div class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+					<select
+						bind:value={selectedCategory}
+						onchange={filterAssets}
+						class="flex-1 px-4 py-3 border border-input bg-input text-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+					>
+						{#each categories as category}
+							<option value={category.id}>{category.name} ({category.count})</option>
+						{/each}
+					</select>
+
+					<!-- View Mode Toggle -->
+					<div class="flex border border-input rounded-lg self-center">
+						<button
+							onclick={() => viewMode = 'grid'}
+							class="p-3 {viewMode === 'grid' ? 'bg-accent text-white' : 'bg-input text-input hover:bg-tertiary'} rounded-l-lg transition-colors"
+							aria-label="View as grid"
+						>
+							<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+							</svg>
+						</button>
+						<button
+							onclick={() => viewMode = 'list'}
+							class="p-3 {viewMode === 'list' ? 'bg-accent text-white' : 'bg-input text-input hover:bg-tertiary'} rounded-r-lg transition-colors"
+							aria-label="View as list"
+						>
+							<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+							</svg>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Available Equipment -->
+		<div class="bg-card rounded-xl shadow-custom border border-card">
+			<div class="p-4 md:p-6 border-b border-card">
+				<h2 class="text-lg md:text-xl font-semibold text-primary">Available Equipment ({filteredAssets.filter(a => a.status === 'Available').length} items)</h2>
+			</div>
+			<div class="p-4 md:p-6">
+				{#if viewMode === 'grid'}
+					<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+						{#each filteredAssets.filter(a => a.status === 'Available') as asset}
+							<div class="bg-secondary border border-card rounded-xl p-4 md:p-6 hover:shadow-custom transition-shadow">
+								<div class="text-center mb-4">
+									<div class="w-12 h-12 md:w-16 md:h-16 bg-tertiary rounded-lg flex items-center justify-center mx-auto mb-3">
+										<span class="text-2xl md:text-3xl">📦</span>
+									</div>
+									<h3 class="font-semibold text-primary mb-1 text-sm md:text-base truncate">{asset.itemName}</h3>
+									<p class="text-xs md:text-sm text-secondary truncate">{asset.category?.name}</p>
+								</div>
+								
+								<div class="space-y-2 mb-4">
+									<div class="flex justify-between text-xs md:text-sm">
+										<span class="text-secondary">Location:</span>
+										<span class="text-primary truncate ml-2">{asset.location}</span>
+									</div>
+									<div class="flex justify-between text-xs md:text-sm">
+										<span class="text-secondary">Serial:</span>
+										<span class="text-primary font-mono truncate ml-2">{asset.serialNumber || 'N/A'}</span>
+									</div>
+								</div>
+
+								<button
+									onclick={() => openCheckoutModal(asset)}
+									class="w-full bg-accent text-white py-2 px-3 rounded-lg text-sm font-medium hover:bg-accent-secondary transition-colors"
+								>
+									Check Out
+								</button>
+							</div>
+						{/each}
+					</div>
+				{:else}
+					<!-- List View -->
+					<div class="space-y-4">
+						{#each filteredAssets.filter(a => a.status === 'Available') as asset}
+							<div class="bg-secondary border border-card rounded-lg p-4 hover:shadow-custom transition-shadow">
+								<div class="flex items-center justify-between">
+									<div class="flex items-center space-x-4">
+										<div class="w-12 h-12 bg-tertiary rounded-lg flex items-center justify-center">
+											<span class="text-xl">📦</span>
+										</div>
+										<div>
+											<h3 class="font-semibold text-primary">{asset.itemName}</h3>
+											<p class="text-sm text-secondary">{asset.category?.name}</p>
+										</div>
+									</div>
+									<button
+										onclick={() => openCheckoutModal(asset)}
+										class="bg-accent text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-accent-secondary transition-colors"
+									>
+										Check Out
+									</button>
+								</div>
+							</div>
+						{/each}
+					</div>
+				{/if}
 			</div>
 		</div>
 	</div>
 
-	<!-- My Checkouts Summary -->
-	{#if myCheckouts.length > 0}
-		<div class="bg-white rounded-xl shadow-sm border border-gray-200">
-			<div class="p-6 border-b border-gray-200">
-				<div class="flex items-center justify-between">
-					<h2 class="text-xl font-semibold text-gray-900">My Checkouts</h2>
-					<a href="/my-checkouts" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
-						View All →
-					</a>
-				</div>
-			</div>
-			<div class="p-6">
-				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-					{#each myCheckouts as checkout}
-						<div class="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-							<div class="flex items-center justify-between mb-2">
-								<h3 class="font-medium text-gray-900">{checkout.assetName}</h3>
-								<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {getCheckoutStatusColor(checkout.status)}">
-									{checkout.status}
-								</span>
-							</div>
-							<div class="text-sm text-gray-600 space-y-1">
-								<p>Checked out: {checkout.checkoutDate}</p>
-								<p>Expected return: {checkout.expectedReturn}</p>
-							</div>
-							<div class="mt-3">
-								<button 
-									on:click={() => openReturnModal({ name: checkout.assetName })}
-									class="w-full bg-blue-600 text-white py-2 px-3 rounded-lg hover:bg-blue-700 transition-colors text-sm"
-								>
-									Return Item
-								</button>
-							</div>
+	<!-- Checkout Modal -->
+	{#if showCheckoutModal && selectedAsset}
+		<div class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+			<div class="bg-card rounded-xl shadow-custom border border-card p-6 w-full max-w-md">
+				<h3 class="text-lg font-semibold text-primary mb-4">Check Out Equipment</h3>
+				<div class="space-y-4">
+					<div>
+						<p class="block text-sm font-medium text-secondary mb-2">Equipment</p>
+						<div class="p-3 bg-secondary border border-card rounded-lg">
+							<div class="font-medium text-primary">{selectedAsset.itemName}</div>
+							<div class="text-sm text-secondary">{selectedAsset.category?.name}</div>
 						</div>
-					{/each}
+					</div>
+					
+					<div>
+						<label for="expected-return-date" class="block text-sm font-medium text-secondary mb-2">Expected Return Date</label>
+						<input
+							id="expected-return-date"
+							type="date"
+							bind:value={checkoutForm.expectedReturnDate}
+							class="w-full px-3 py-2 border border-input bg-input text-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+						/>
+					</div>
+					
+					<div>
+						<label for="checkout-notes" class="block text-sm font-medium text-secondary mb-2">Notes</label>
+						<textarea
+							id="checkout-notes"
+							bind:value={checkoutForm.notes}
+							rows="3"
+							class="w-full px-3 py-2 border border-input bg-input text-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+							placeholder="Optional notes..."
+						></textarea>
+					</div>
+				</div>
+				
+				<div class="flex space-x-3 mt-6">
+					<button
+						onclick={() => showCheckoutModal = false}
+						class="flex-1 px-4 py-2 border border-card bg-secondary text-primary rounded-lg hover:bg-tertiary transition-colors"
+					>
+						Cancel
+					</button>
+					<button
+						onclick={handleCheckout}
+						class="flex-1 px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent-secondary transition-colors"
+					>
+						Check Out
+					</button>
 				</div>
 			</div>
 		</div>
 	{/if}
 
-	<!-- Search and Filters -->
-	<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-		<div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0 md:space-x-4">
-			<!-- Search -->
-			<div class="flex-1">
-				<div class="relative">
-					<input
-						type="text"
-						bind:value={searchQuery}
-						on:input={filterAssets}
-						placeholder="Search by name or serial number..."
-						class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-					/>
-					<svg class="absolute left-3 top-3.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-					</svg>
-				</div>
-			</div>
-
-			<!-- Category Filter -->
-			<div class="flex items-center space-x-4">
-				<select
-					bind:value={selectedCategory}
-					on:change={filterAssets}
-					class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-				>
-					{#each categories as category}
-						<option value={category.id}>{category.name} ({category.count})</option>
-					{/each}
-				</select>
-
-				<!-- View Mode Toggle -->
-				<div class="flex border border-gray-300 rounded-lg">
-					<button
-						on:click={() => viewMode = 'grid'}
-						class="p-3 {viewMode === 'grid' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'} rounded-l-lg transition-colors"
-					>
-						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-						</svg>
-					</button>
-					<button
-						on:click={() => viewMode = 'list'}
-						class="p-3 {viewMode === 'list' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'} rounded-r-lg transition-colors"
-					>
-						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-						</svg>
-					</button>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<!-- Assets Grid/List -->
-	<div class="bg-white rounded-xl shadow-sm border border-gray-200">
-		<div class="p-6 border-b border-gray-200">
-			<div class="flex items-center justify-between">
-				<h2 class="text-xl font-semibold text-gray-900">Available Equipment</h2>
-				<p class="text-sm text-gray-600">{filteredAssets.length} items found</p>
-			</div>
-		</div>
-		<div class="p-6">
-			{#if viewMode === 'grid'}
-				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-					{#each filteredAssets as asset}
-						<div class="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-md transition-shadow">
-							<div class="text-center mb-4">
-								<div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-									<span class="text-3xl">{asset.image}</span>
-								</div>
-								<h3 class="font-semibold text-gray-900 mb-1">{asset.name}</h3>
-								<p class="text-sm text-gray-600">{asset.category}</p>
-							</div>
-							
-							<div class="space-y-2 mb-4">
-								<div class="flex justify-between text-sm">
-									<span class="text-gray-600">Status:</span>
-									<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {getStatusColor(asset.status)}">
-										{asset.status}
-									</span>
-								</div>
-								<div class="flex justify-between text-sm">
-									<span class="text-gray-600">Location:</span>
-									<span class="text-gray-900">{asset.location}</span>
-								</div>
-								<div class="flex justify-between text-sm">
-									<span class="text-gray-600">Serial:</span>
-									<span class="text-gray-900 font-mono">{asset.serialNumber}</span>
-								</div>
-							</div>
-
-							{#if asset.status === 'Available'}
-								<button
-									on:click={() => openCheckoutModal(asset)}
-									class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-								>
-									Check Out
-								</button>
-							{:else}
-								<button
-									disabled
-									class="w-full bg-gray-300 text-gray-500 py-2 px-4 rounded-lg cursor-not-allowed"
-								>
-									Not Available
-								</button>
-							{/if}
-						</div>
-					{/each}
-				</div>
-			{:else}
+	<!-- Return Modal -->
+	{#if showReturnModal && selectedAsset}
+		<div class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+			<div class="bg-card rounded-xl shadow-custom border border-card p-6 w-full max-w-md">
+				<h3 class="text-lg font-semibold text-primary mb-4">Return Equipment</h3>
 				<div class="space-y-4">
-					{#each filteredAssets as asset}
-						<div class="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-							<div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-								<span class="text-2xl">{asset.image}</span>
-							</div>
-							<div class="flex-1 min-w-0">
-								<h3 class="font-semibold text-gray-900">{asset.name}</h3>
-								<p class="text-sm text-gray-600">{asset.category} • {asset.location}</p>
-								<p class="text-sm text-gray-500 font-mono">SN: {asset.serialNumber}</p>
-							</div>
-							<div class="flex items-center space-x-3">
-								<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {getStatusColor(asset.status)}">
-									{asset.status}
-								</span>
-								{#if asset.status === 'Available'}
-									<button
-										on:click={() => openCheckoutModal(asset)}
-										class="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-									>
-										Check Out
-									</button>
-								{:else}
-									<button
-										disabled
-										class="bg-gray-300 text-gray-500 py-2 px-4 rounded-lg cursor-not-allowed"
-									>
-										Not Available
-									</button>
-								{/if}
-							</div>
+					<div>
+						<p class="block text-sm font-medium text-secondary mb-2">Equipment</p>
+						<div class="p-3 bg-secondary border border-card rounded-lg">
+							<div class="font-medium text-primary">{selectedAsset.itemName}</div>
+							<div class="text-sm text-secondary">{selectedAsset.category?.name}</div>
 						</div>
-					{/each}
-				</div>
-			{/if}
-		</div>
-	</div>
-</div>
-
-<!-- Checkout Modal -->
-{#if showCheckoutModal}
-	<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-		<div class="bg-white rounded-xl max-w-md w-full p-6">
-			<div class="flex items-center justify-between mb-4">
-				<h3 class="text-lg font-semibold text-gray-900">Check Out Item</h3>
-				<button
-					on:click={() => showCheckoutModal = false}
-					class="text-gray-400 hover:text-gray-600"
-				>
-					<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-					</svg>
-				</button>
-			</div>
-			
-			<div class="mb-4 p-4 bg-gray-50 rounded-lg">
-				<div class="flex items-center space-x-3">
-					<div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-						<span class="text-xl">{selectedAsset?.image}</span>
 					</div>
+					
 					<div>
-						<h4 class="font-medium text-gray-900">{selectedAsset?.name}</h4>
-						<p class="text-sm text-gray-600">{selectedAsset?.category}</p>
+						<label for="return-condition" class="block text-sm font-medium text-secondary mb-2">Condition</label>
+						<select
+							id="return-condition"
+							bind:value={returnForm.condition}
+							class="w-full px-3 py-2 border border-input bg-input text-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+						>
+							<option value="good">Good</option>
+							<option value="fair">Fair</option>
+							<option value="poor">Poor</option>
+							<option value="damaged">Damaged</option>
+						</select>
 					</div>
-				</div>
-			</div>
-
-			<form on:submit|preventDefault={handleCheckout} class="space-y-4">
-				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">Expected Return Date</label>
-					<input
-						type="date"
-						bind:value={checkoutForm.expectedReturnDate}
-						required
-						class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-					/>
+					
+					<div>
+						<label for="return-notes" class="block text-sm font-medium text-secondary mb-2">Notes</label>
+						<textarea
+							id="return-notes"
+							bind:value={returnForm.notes}
+							rows="3"
+							class="w-full px-3 py-2 border border-input bg-input text-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+							placeholder="Optional notes..."
+						></textarea>
+					</div>
 				</div>
 				
-				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">Notes (Optional)</label>
-					<textarea
-						bind:value={checkoutForm.notes}
-						rows="3"
-						class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-						placeholder="Any additional notes..."
-					></textarea>
-				</div>
-
-				<div class="flex space-x-3 pt-4">
+				<div class="flex space-x-3 mt-6">
 					<button
-						type="button"
-						on:click={() => showCheckoutModal = false}
-						class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+						onclick={() => showReturnModal = false}
+						class="flex-1 px-4 py-2 border border-card bg-secondary text-primary rounded-lg hover:bg-tertiary transition-colors"
 					>
 						Cancel
 					</button>
 					<button
-						type="submit"
-						class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+						onclick={handleReturn}
+						class="flex-1 px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent-secondary transition-colors"
 					>
-						Check Out
+						Return
 					</button>
-				</div>
-			</form>
-		</div>
-	</div>
-{/if}
-
-<!-- Return Modal -->
-{#if showReturnModal}
-	<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-		<div class="bg-white rounded-xl max-w-md w-full p-6">
-			<div class="flex items-center justify-between mb-4">
-				<h3 class="text-lg font-semibold text-gray-900">Return Item</h3>
-				<button
-					on:click={() => showReturnModal = false}
-					class="text-gray-400 hover:text-gray-600"
-				>
-					<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-					</svg>
-				</button>
-			</div>
-			
-			<div class="mb-4 p-4 bg-gray-50 rounded-lg">
-				<div class="flex items-center space-x-3">
-					<div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-						<span class="text-xl">📦</span>
-					</div>
-					<div>
-						<h4 class="font-medium text-gray-900">{selectedAsset?.name}</h4>
-						<p class="text-sm text-gray-600">Returning item</p>
-					</div>
 				</div>
 			</div>
-
-			<form on:submit|preventDefault={handleReturn} class="space-y-4">
-				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">Item Condition</label>
-					<select
-						bind:value={returnForm.condition}
-						required
-						class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-					>
-						<option value="excellent">Excellent - Like new</option>
-						<option value="good">Good - Minor wear</option>
-						<option value="fair">Fair - Some damage</option>
-						<option value="poor">Poor - Significant damage</option>
-					</select>
-				</div>
-				
-				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">Return Notes (Optional)</label>
-					<textarea
-						bind:value={returnForm.notes}
-						rows="3"
-						class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-						placeholder="Any issues or notes about the return..."
-					></textarea>
-				</div>
-
-				<div class="flex space-x-3 pt-4">
-					<button
-						type="button"
-						on:click={() => showReturnModal = false}
-						class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-					>
-						Cancel
-					</button>
-					<button
-						type="submit"
-						class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-					>
-						Return Item
-					</button>
-				</div>
-			</form>
 		</div>
-	</div>
-{/if} 
+	{/if}
+</AppLayout> 

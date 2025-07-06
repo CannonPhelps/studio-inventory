@@ -102,21 +102,21 @@
 
 	function getConditionColor(condition: string) {
 		switch (condition.toLowerCase()) {
-			case 'excellent': return 'text-green-600 bg-green-50';
-			case 'good': return 'text-blue-600 bg-blue-50';
-			case 'fair': return 'text-yellow-600 bg-yellow-50';
-			case 'poor': return 'text-red-600 bg-red-50';
-			default: return 'text-gray-600 bg-gray-50';
+			case 'excellent': return 'text-green-600 bg-green-50 dark:text-green-400 dark:bg-green-900/20';
+			case 'good': return 'text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/20';
+			case 'fair': return 'text-yellow-600 bg-yellow-50 dark:text-yellow-400 dark:bg-yellow-900/20';
+			case 'poor': return 'text-red-600 bg-red-50 dark:text-red-400 dark:bg-red-900/20';
+			default: return 'text-gray-600 bg-gray-50 dark:text-gray-400 dark:bg-gray-900/20';
 		}
 	}
 
 	function getMaintenanceTypeColor(type: string) {
 		switch (type.toLowerCase()) {
-			case 'preventive': return 'text-blue-600 bg-blue-50';
-			case 'repair': return 'text-red-600 bg-red-50';
-			case 'inspection': return 'text-green-600 bg-green-50';
-			case 'upgrade': return 'text-purple-600 bg-purple-50';
-			default: return 'text-gray-600 bg-gray-50';
+			case 'preventive': return 'text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/20';
+			case 'repair': return 'text-red-600 bg-red-50 dark:text-red-400 dark:bg-red-900/20';
+			case 'inspection': return 'text-green-600 bg-green-50 dark:text-green-400 dark:bg-green-900/20';
+			case 'upgrade': return 'text-purple-600 bg-purple-50 dark:text-purple-400 dark:bg-purple-900/20';
+			default: return 'text-gray-600 bg-gray-50 dark:text-gray-400 dark:bg-gray-900/20';
 		}
 	}
 </script>
@@ -129,12 +129,12 @@
 	<!-- Header -->
 	<div class="flex justify-between items-start">
 		<div>
-			<h1 class="text-3xl font-bold text-gray-900">Admin Maintenance</h1>
-			<p class="text-gray-600 mt-1">Manage asset maintenance and repairs</p>
+			<h1 class="text-3xl font-bold text-primary">Admin Maintenance</h1>
+			<p class="text-muted-foreground mt-1">Manage asset maintenance and repairs</p>
 		</div>
 		<button
-			onclick={() => showAddForm = !showAddForm}
-			class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
+			on:click={() => showAddForm = !showAddForm}
+			class="bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors"
 		>
 			{showAddForm ? 'Cancel' : 'Add Maintenance'}
 		</button>
@@ -142,16 +142,16 @@
 
 	<!-- Add Maintenance Form -->
 	{#if showAddForm}
-		<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-			<h2 class="text-xl font-semibold text-gray-900 mb-4">Add Maintenance Record</h2>
-			<form onsubmit={handleAddMaintenance} class="space-y-4">
+		<div class="bg-card rounded-xl shadow-sm border border-border p-6">
+			<h2 class="text-xl font-semibold text-primary mb-4">Add Maintenance Record</h2>
+			<form on:submit={handleAddMaintenance} class="space-y-4">
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 					<div>
-						<label for="asset" class="block text-sm font-medium text-gray-700 mb-1">Asset</label>
+						<label for="asset" class="block text-sm font-medium text-primary mb-1">Asset</label>
 						<select
 							id="asset"
 							bind:value={selectedAsset}
-							class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+							class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-background text-primary"
 							required
 						>
 							<option value="">Select an asset</option>
@@ -161,11 +161,11 @@
 						</select>
 					</div>
 					<div>
-						<label for="type" class="block text-sm font-medium text-gray-700 mb-1">Maintenance Type</label>
+						<label for="type" class="block text-sm font-medium text-primary mb-1">Maintenance Type</label>
 						<select
 							id="type"
 							bind:value={maintenanceType}
-							class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+							class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-background text-primary"
 							required
 						>
 							<option value="">Select type</option>
@@ -177,36 +177,36 @@
 					</div>
 				</div>
 				<div>
-					<label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+					<label for="description" class="block text-sm font-medium text-primary mb-1">Description</label>
 					<textarea
 						id="description"
 						bind:value={description}
 						rows="3"
-						class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+						class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-background text-primary placeholder:text-muted-foreground"
 						placeholder="Describe the maintenance performed..."
 						required
 					></textarea>
 				</div>
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 					<div>
-						<label for="cost" class="block text-sm font-medium text-gray-700 mb-1">Cost ($)</label>
+						<label for="cost" class="block text-sm font-medium text-primary mb-1">Cost ($)</label>
 						<input
 							type="number"
 							id="cost"
 							bind:value={cost}
 							step="0.01"
 							min="0"
-							class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+							class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-background text-primary placeholder:text-muted-foreground"
 							placeholder="0.00"
 						/>
 					</div>
 					<div>
-						<label for="notes" class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+						<label for="notes" class="block text-sm font-medium text-primary mb-1">Notes</label>
 						<input
 							type="text"
 							id="notes"
 							bind:value={notes}
-							class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+							class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-background text-primary placeholder:text-muted-foreground"
 							placeholder="Additional notes..."
 						/>
 					</div>
@@ -214,14 +214,14 @@
 				<div class="flex justify-end space-x-3">
 					<button
 						type="button"
-						onclick={() => showAddForm = false}
-						class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+						on:click={() => showAddForm = false}
+						class="px-4 py-2 text-muted-foreground bg-muted hover:bg-muted/80 rounded-md transition-colors"
 					>
 						Cancel
 					</button>
 					<button
 						type="submit"
-						class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors"
+						class="px-4 py-2 bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 text-white rounded-md transition-colors"
 					>
 						Add Maintenance
 					</button>
@@ -231,40 +231,40 @@
 	{/if}
 
 	<!-- Asset Maintenance Status -->
-	<div class="bg-white rounded-xl shadow-sm border border-gray-200">
-		<div class="p-6 border-b border-gray-200">
-			<h2 class="text-xl font-semibold text-gray-900">Asset Maintenance Status</h2>
-			<p class="text-gray-600 mt-1">Current condition and maintenance schedule</p>
+	<div class="bg-card rounded-xl shadow-sm border border-border">
+		<div class="p-6 border-b border-border">
+			<h2 class="text-xl font-semibold text-primary">Asset Maintenance Status</h2>
+			<p class="text-muted-foreground mt-1">Current condition and maintenance schedule</p>
 		</div>
 		<div class="overflow-x-auto">
 			{#if loading}
 				<div class="p-6 text-center">
-					<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600 mx-auto"></div>
-					<p class="text-gray-500 mt-2">Loading assets...</p>
+					<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+					<p class="text-muted-foreground mt-2">Loading assets...</p>
 				</div>
 			{:else if assets.length === 0}
 				<div class="p-6 text-center">
-					<div class="text-gray-400 text-4xl mb-4">🔧</div>
-					<p class="text-gray-500">No assets found</p>
+					<div class="text-muted-foreground text-4xl mb-4">🔧</div>
+					<p class="text-muted-foreground">No assets found</p>
 				</div>
 			{:else}
 				<table class="w-full">
-					<thead class="bg-gray-50">
+					<thead class="bg-muted/50">
 						<tr>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Asset</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Condition</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Maintenance</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Next Maintenance</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Asset</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Condition</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Last Maintenance</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Next Maintenance</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
 						</tr>
 					</thead>
-					<tbody class="bg-white divide-y divide-gray-200">
+					<tbody class="bg-card divide-y divide-border">
 						{#each assets as asset}
-							<tr class="hover:bg-gray-50">
+							<tr class="hover:bg-muted/50 transition-colors">
 								<td class="px-6 py-4 whitespace-nowrap">
 									<div>
-										<div class="text-sm font-medium text-gray-900">{asset.itemName}</div>
-										<div class="text-sm text-gray-500">{asset.serialNumber || 'No Serial'}</div>
+										<div class="text-sm font-medium text-primary">{asset.itemName}</div>
+										<div class="text-sm text-muted-foreground">{asset.serialNumber || 'No Serial'}</div>
 									</div>
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap">
@@ -272,14 +272,14 @@
 										{asset.condition}
 									</span>
 								</td>
-								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+								<td class="px-6 py-4 whitespace-nowrap text-sm text-primary">
 									{asset.lastMaintenance ? new Date(asset.lastMaintenance).toLocaleDateString() : 'Never'}
 								</td>
-								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+								<td class="px-6 py-4 whitespace-nowrap text-sm text-primary">
 									{asset.nextMaintenance ? new Date(asset.nextMaintenance).toLocaleDateString() : 'Not scheduled'}
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap">
-									<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-gray-600 bg-gray-50">
+									<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-muted-foreground bg-muted">
 										{asset.status}
 									</span>
 								</td>
@@ -292,36 +292,36 @@
 	</div>
 
 	<!-- Maintenance History -->
-	<div class="bg-white rounded-xl shadow-sm border border-gray-200">
-		<div class="p-6 border-b border-gray-200">
-			<h2 class="text-xl font-semibold text-gray-900">Maintenance History</h2>
-			<p class="text-gray-600 mt-1">Recent maintenance records</p>
+	<div class="bg-card rounded-xl shadow-sm border border-border">
+		<div class="p-6 border-b border-border">
+			<h2 class="text-xl font-semibold text-primary">Maintenance History</h2>
+			<p class="text-muted-foreground mt-1">Recent maintenance records</p>
 		</div>
 		<div class="overflow-x-auto">
 			{#if maintenanceRecords.length === 0}
 				<div class="p-6 text-center">
-					<div class="text-gray-400 text-4xl mb-4">📋</div>
-					<p class="text-gray-500">No maintenance records</p>
+					<div class="text-muted-foreground text-4xl mb-4">📋</div>
+					<p class="text-muted-foreground">No maintenance records</p>
 				</div>
 			{:else}
 				<table class="w-full">
-					<thead class="bg-gray-50">
+					<thead class="bg-muted/50">
 						<tr>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Asset</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Performed By</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cost</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Asset</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Type</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Description</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Performed By</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Date</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Cost</th>
 						</tr>
 					</thead>
-					<tbody class="bg-white divide-y divide-gray-200">
+					<tbody class="bg-card divide-y divide-border">
 						{#each maintenanceRecords.slice(0, 10) as record}
-							<tr class="hover:bg-gray-50">
+							<tr class="hover:bg-muted/50 transition-colors">
 								<td class="px-6 py-4 whitespace-nowrap">
 									<div>
-										<div class="text-sm font-medium text-gray-900">{record.asset.itemName}</div>
-										<div class="text-sm text-gray-500">{record.asset.serialNumber || 'No Serial'}</div>
+										<div class="text-sm font-medium text-primary">{record.asset.itemName}</div>
+										<div class="text-sm text-muted-foreground">{record.asset.serialNumber || 'No Serial'}</div>
 									</div>
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap">
@@ -329,14 +329,14 @@
 										{record.maintenanceType}
 									</span>
 								</td>
-								<td class="px-6 py-4 text-sm text-gray-900 max-w-xs truncate">
+								<td class="px-6 py-4 text-sm text-primary max-w-xs truncate">
 									{record.description}
 								</td>
-								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.performedBy}</td>
-								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+								<td class="px-6 py-4 whitespace-nowrap text-sm text-primary">{record.performedBy}</td>
+								<td class="px-6 py-4 whitespace-nowrap text-sm text-primary">
 									{new Date(record.performedAt).toLocaleDateString()}
 								</td>
-								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+								<td class="px-6 py-4 whitespace-nowrap text-sm text-primary">
 									{record.cost ? `$${record.cost.toFixed(2)}` : '-'}
 								</td>
 							</tr>

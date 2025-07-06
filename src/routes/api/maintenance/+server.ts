@@ -1,12 +1,18 @@
 import { json } from '@sveltejs/kit';
+import { requireAuth } from '$lib/server/routeProtection';
 import type { RequestHandler } from './$types';
 import { db } from '$lib/db';
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async (event) => {
 	try {
-		const assetId = url.searchParams.get('assetId');
+		// Require authentication
+		await requireAuth(event);
 		
-		const where: any = {};
+		const assetId = event.url.searchParams.get('assetId');
+		
+		const where: {
+			assetId?: number;
+		} = {};
 		
 		if (assetId) {
 			where.assetId = parseInt(assetId);
@@ -31,9 +37,12 @@ export const GET: RequestHandler = async ({ url }) => {
 	}
 };
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async (event) => {
 	try {
-		const { assetId, notes, performedBy } = await request.json();
+		// Require authentication
+		await requireAuth(event);
+		
+		const { assetId, notes, performedBy } = await event.request.json();
 		
 		if (!assetId) {
 			return json({ error: 'Asset ID is required' }, { status: 400 });

@@ -1,14 +1,24 @@
 import { json } from '@sveltejs/kit';
+import { requireAuth } from '$lib/server/routeProtection';
 import type { RequestHandler } from './$types';
 import { db } from '$lib/db';
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async (event) => {
 	try {
-		const assetId = url.searchParams.get('assetId');
-		const fromDate = url.searchParams.get('fromDate');
-		const toDate = url.searchParams.get('toDate');
+		// Require authentication
+		await requireAuth(event);
 		
-		const where: any = {};
+		const assetId = event.url.searchParams.get('assetId');
+		const fromDate = event.url.searchParams.get('fromDate');
+		const toDate = event.url.searchParams.get('toDate');
+		
+		const where: {
+			assetId?: number;
+			movedAt?: {
+				gte?: Date;
+				lte?: Date;
+			};
+		} = {};
 		
 		if (assetId) {
 			where.assetId = parseInt(assetId);
@@ -39,9 +49,12 @@ export const GET: RequestHandler = async ({ url }) => {
 	}
 };
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async (event) => {
 	try {
-		const { assetId, fromLocation, toLocation, reason, notes } = await request.json();
+		// Require authentication
+		await requireAuth(event);
+		
+		const { assetId, fromLocation, toLocation, reason, notes } = await event.request.json();
 		
 		if (!assetId || !fromLocation || !toLocation) {
 			return json({ error: 'Asset ID, from location, and to location are required' }, { status: 400 });

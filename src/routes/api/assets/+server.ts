@@ -6,7 +6,8 @@ import type { RequestHandler } from './$types';
 export const GET: RequestHandler = async (event) => {
 	try {
 		// Require authentication
-		await requireAuth(event);
+		const user = await requireAuth(event);
+		console.log('Assets API - User authenticated:', user.email, 'Role:', user.role);
 		
 		const assets = await prisma.asset.findMany({
 			include: {
@@ -17,6 +18,9 @@ export const GET: RequestHandler = async (event) => {
 			},
 			orderBy: { id: 'desc' }
 		});
+
+		console.log('Assets API - Found assets:', assets.length);
+		console.log('Assets API - First asset:', assets[0] ? assets[0].itemName : 'No assets');
 
 		return json(assets);
 	} catch (error) {

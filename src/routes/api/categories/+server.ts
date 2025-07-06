@@ -1,9 +1,13 @@
 import { json } from '@sveltejs/kit';
+import { requireAuth } from '$lib/server/routeProtection';
 import { prisma } from '$lib/db';
 import type { RequestHandler } from './$types';
 
-export const GET: RequestHandler = async () => {
+export const GET: RequestHandler = async (event) => {
 	try {
+		// Require authentication
+		await requireAuth(event);
+		
 		const categories = await prisma.category.findMany({
 			include: {
 				assets: true
@@ -23,9 +27,12 @@ export const GET: RequestHandler = async () => {
 	}
 };
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async (event) => {
 	try {
-		const data = await request.json();
+		// Require authentication
+		await requireAuth(event);
+		
+		const data = await event.request.json();
 		
 		const category = await prisma.category.create({
 			data: {

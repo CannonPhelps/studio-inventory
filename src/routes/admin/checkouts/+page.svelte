@@ -1,12 +1,34 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	let checkouts = [];
-	let assets = [];
-	let users = [];
+	interface Asset {
+		id: number;
+		itemName: string;
+		serialNumber?: string;
+		status: string;
+	}
+
+	interface User {
+		id: string;
+		name: string;
+		email: string;
+	}
+
+	interface Checkout {
+		id: number;
+		asset: Asset;
+		user: string;
+		checkoutAt: string;
+		dueAt: string;
+		returnedAt?: string;
+	}
+
+	let checkouts: Checkout[] = [];
+	let assets: Asset[] = [];
+	let users: User[] = [];
 	let loading = true;
 	let showCheckoutForm = false;
-	let selectedAsset = null;
+	let selectedAsset: number | null = null;
 	let selectedUser = '';
 	let dueDate = '';
 	let notes = '';
@@ -68,7 +90,7 @@
 		}
 	}
 
-	async function handleReturn(checkoutId) {
+	async function handleReturn(checkoutId: number) {
 		try {
 			const response = await fetch('/api/checkouts', {
 				method: 'PUT',
@@ -90,8 +112,10 @@
 		}
 	}
 
-	function getStatusColor(status) {
-		return status === 'Checked Out' ? 'text-orange-600 bg-orange-50' : 'text-green-600 bg-green-50';
+	function getStatusColor(status: string) {
+		return status === 'Checked Out' 
+			? 'text-orange-600 bg-orange-50 dark:bg-orange-900/20 dark:text-orange-400' 
+			: 'text-green-600 bg-green-50 dark:bg-green-900/20 dark:text-green-400';
 	}
 </script>
 
@@ -103,12 +127,12 @@
 	<!-- Header -->
 	<div class="flex items-center justify-between">
 		<div>
-			<h1 class="text-3xl font-bold text-gray-900">Admin Checkouts</h1>
-			<p class="text-gray-600 mt-1">Manage all asset checkouts and returns</p>
+			<h1 class="text-3xl font-bold text-primary">Admin Checkouts</h1>
+			<p class="text-secondary mt-1">Manage all asset checkouts and returns</p>
 		</div>
 		<button
 			onclick={() => showCheckoutForm = !showCheckoutForm}
-			class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+			class="bg-accent hover:bg-accent-secondary text-white px-4 py-2 rounded-lg transition-colors"
 		>
 			{showCheckoutForm ? 'Cancel' : 'New Checkout'}
 		</button>
@@ -116,14 +140,14 @@
 
 	<!-- Checkout Form -->
 	{#if showCheckoutForm}
-		<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-			<h2 class="text-xl font-semibold text-gray-900 mb-4">Create New Checkout</h2>
+		<div class="bg-card rounded-xl shadow-sm border border-card p-6">
+			<h2 class="text-xl font-semibold text-primary mb-4">Create New Checkout</h2>
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">Asset</label>
+					<label class="block text-sm font-medium text-secondary mb-2">Asset</label>
 					<select
 						bind:value={selectedAsset}
-						class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+						class="w-full p-3 border border-card bg-input text-input rounded-lg focus:ring-2 focus:ring-accent focus:border-accent"
 					>
 						<option value="">Select an asset</option>
 						{#each assets.filter(a => a.status === 'Available') as asset}
@@ -132,10 +156,10 @@
 					</select>
 				</div>
 				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">User</label>
+					<label class="block text-sm font-medium text-secondary mb-2">User</label>
 					<select
 						bind:value={selectedUser}
-						class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+						class="w-full p-3 border border-card bg-input text-input rounded-lg focus:ring-2 focus:ring-accent focus:border-accent"
 					>
 						<option value="">Select a user</option>
 						{#each users as user}
@@ -144,33 +168,33 @@
 					</select>
 				</div>
 				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">Due Date</label>
+					<label class="block text-sm font-medium text-secondary mb-2">Due Date</label>
 					<input
 						type="date"
 						bind:value={dueDate}
-						class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+						class="w-full p-3 border border-card bg-input text-input rounded-lg focus:ring-2 focus:ring-accent focus:border-accent"
 					/>
 				</div>
 				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">Notes</label>
+					<label class="block text-sm font-medium text-secondary mb-2">Notes</label>
 					<input
 						type="text"
 						bind:value={notes}
 						placeholder="Optional notes"
-						class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+						class="w-full p-3 border border-card bg-input text-input rounded-lg focus:ring-2 focus:ring-accent focus:border-accent"
 					/>
 				</div>
 			</div>
-			<div class="mt-6 flex justify-end space-x-3">
+			<div class="mt-6 flex space-x-3">
 				<button
 					onclick={() => showCheckoutForm = false}
-					class="px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+					class="flex-1 bg-tertiary hover:bg-secondary text-primary px-4 py-2 rounded-lg transition-colors"
 				>
 					Cancel
 				</button>
 				<button
 					onclick={handleCheckout}
-					class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors"
+					class="flex-1 bg-accent hover:bg-accent-secondary text-white px-6 py-2 rounded-lg transition-colors"
 				>
 					Create Checkout
 				</button>
@@ -179,48 +203,49 @@
 	{/if}
 
 	<!-- Checkouts Table -->
-	<div class="bg-white rounded-xl shadow-sm border border-gray-200">
-		<div class="p-6 border-b border-gray-200">
-			<h2 class="text-xl font-semibold text-gray-900">All Checkouts</h2>
-			<p class="text-gray-600 mt-1">View and manage all checkouts</p>
+	<div class="bg-card rounded-xl shadow-sm border border-card">
+		<div class="p-6 border-b border-card">
+			<h2 class="text-xl font-semibold text-primary">All Checkouts</h2>
+			<p class="text-secondary mt-1">View and manage all checkouts</p>
 		</div>
 		<div class="overflow-x-auto">
 			{#if loading}
 				<div class="p-6 text-center">
-					<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600 mx-auto"></div>
-					<p class="text-gray-500 mt-2">Loading checkouts...</p>
+					<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-accent mx-auto"></div>
+					<p class="text-secondary mt-2">Loading checkouts...</p>
 				</div>
 			{:else if checkouts.length === 0}
 				<div class="p-6 text-center">
-					<div class="text-gray-400 text-4xl mb-4">📤</div>
-					<p class="text-gray-500">No checkouts found</p>
+					<div class="text-tertiary text-4xl mb-4">📤</div>
+					<h3 class="text-lg font-medium text-primary mb-2">No checkouts found</h3>
+					<p class="text-secondary">Create your first checkout to get started.</p>
 				</div>
 			{:else}
 				<table class="w-full">
-					<thead class="bg-gray-50">
+					<thead class="bg-tertiary">
 						<tr>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Asset</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Checkout Date</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-secondary uppercase tracking-wider">Asset</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-secondary uppercase tracking-wider">User</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-secondary uppercase tracking-wider">Checkout Date</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-secondary uppercase tracking-wider">Due Date</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-secondary uppercase tracking-wider">Status</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-secondary uppercase tracking-wider">Actions</th>
 						</tr>
 					</thead>
-					<tbody class="bg-white divide-y divide-gray-200">
+					<tbody class="divide-y divide-card">
 						{#each checkouts as checkout}
-							<tr class="hover:bg-gray-50">
+							<tr class="hover:bg-tertiary transition-colors">
 								<td class="px-6 py-4 whitespace-nowrap">
 									<div>
-										<div class="text-sm font-medium text-gray-900">{checkout.asset.itemName}</div>
-										<div class="text-sm text-gray-500">{checkout.asset.serialNumber || 'No Serial'}</div>
+										<div class="text-sm font-medium text-primary">{checkout.asset.itemName}</div>
+										<div class="text-sm text-secondary">{checkout.asset.serialNumber || 'No Serial'}</div>
 									</div>
 								</td>
-								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{checkout.user}</td>
-								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+								<td class="px-6 py-4 whitespace-nowrap text-sm text-primary">{checkout.user}</td>
+								<td class="px-6 py-4 whitespace-nowrap text-sm text-primary">
 									{new Date(checkout.checkoutAt).toLocaleDateString()}
 								</td>
-								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+								<td class="px-6 py-4 whitespace-nowrap text-sm text-primary">
 									{new Date(checkout.dueAt).toLocaleDateString()}
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap">
@@ -232,12 +257,12 @@
 									{#if !checkout.returnedAt}
 										<button
 											onclick={() => handleReturn(checkout.id)}
-											class="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 px-3 py-1 rounded-md transition-colors"
+											class="text-error hover:text-red-700 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 px-3 py-1 rounded-md transition-colors"
 										>
 											Return
 										</button>
 									{:else}
-										<span class="text-gray-400">Returned</span>
+										<span class="text-tertiary">Returned</span>
 									{/if}
 								</td>
 							</tr>

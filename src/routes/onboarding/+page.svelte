@@ -64,11 +64,11 @@
 </svelte:head>
 
 <div
-	class="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4"
+	class="flex min-h-screen items-center justify-center bg-gradient-to-br from-secondary to-tertiary p-4"
 >
-	<div class="w-full max-w-2xl rounded-xl bg-white p-8 shadow-2xl">
+	<div class="w-full max-w-2xl rounded-xl bg-card p-8 shadow-2xl border border-card">
 		<div class="mb-8 text-center">
-			<div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-600">
+			<div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-accent">
 				<svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 					<path
 						stroke-linecap="round"
@@ -78,18 +78,18 @@
 					></path>
 				</svg>
 			</div>
-			<h1 class="mb-2 text-3xl font-bold text-gray-900">Welcome to Studio Inventory</h1>
-			<p class="text-gray-600">Let's set up your first admin account</p>
+			<h1 class="mb-2 text-3xl font-bold text-primary">Welcome to Studio Inventory</h1>
+			<p class="text-secondary">Let's set up your first admin account</p>
 		</div>
 
 		{#if error}
-			<div class="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-700">
+			<div class="mb-6 rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 px-4 py-3 text-red-700 dark:text-red-200">
 				{error}
 			</div>
 		{/if}
 
 		{#if success}
-			<div class="mb-6 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-green-700">
+			<div class="mb-6 rounded-lg border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 px-4 py-3 text-green-700 dark:text-green-200">
 				{success}
 			</div>
 		{/if}
@@ -99,7 +99,7 @@
 
 			<div class="w-full space-y-4">
 				<div>
-					<label for="name" class="mb-2 block text-sm font-medium text-gray-700">
+					<label for="name" class="mb-2 block text-sm font-medium text-primary">
 						Full Name *
 					</label>
 					<input
@@ -107,13 +107,13 @@
 						id="name"
 						bind:value={name}
 						required
-						class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+						class="w-full rounded-lg border border-input px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-accent bg-input text-input placeholder-secondary"
 						placeholder="Enter your full name"
 					/>
 				</div>
 
 				<div>
-					<label for="email" class="mb-2 block text-sm font-medium text-gray-700">
+					<label for="email" class="mb-2 block text-sm font-medium text-primary">
 						Email Address *
 					</label>
 					<input
@@ -121,13 +121,13 @@
 						id="email"
 						bind:value={email}
 						required
-						class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+						class="w-full rounded-lg border border-input px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-accent bg-input text-input placeholder-secondary"
 						placeholder="Enter your email address"
 					/>
 				</div>
 
 				<div>
-					<label for="password" class="mb-2 block text-sm font-medium text-gray-700">
+					<label for="password" class="mb-2 block text-sm font-medium text-primary">
 						Password *
 					</label>
 					<input
@@ -136,16 +136,16 @@
 						bind:value={password}
 						required
 						minlength="8"
-						class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+						class="w-full rounded-lg border border-input px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-accent bg-input text-input placeholder-secondary"
 						placeholder="Create a strong password"
 					/>
-					<p class="mt-1 text-xs text-gray-500">Must be at least 8 characters long</p>
+					<p class="mt-1 text-xs text-tertiary">Must be at least 8 characters long</p>
 				</div>
 			</div>
 
 			<div class="w-full space-y-4">
 				<div>
-					<label for="confirmPassword" class="mb-2 block text-sm font-medium text-gray-700">
+					<label for="confirmPassword" class="mb-2 block text-sm font-medium text-primary">
 						Confirm Password *
 					</label>
 					<input
@@ -153,33 +153,33 @@
 						id="confirmPassword"
 						bind:value={confirmPassword}
 						required
-						class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+						class="w-full rounded-lg border border-input px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-accent bg-input text-input placeholder-secondary"
 						placeholder="Confirm your password"
 					/>
 				</div>
 
 				<div>
-					<label for="department" class="mb-2 block text-sm font-medium text-gray-700">
+					<label for="department" class="mb-2 block text-sm font-medium text-primary">
 						Department
 					</label>
 					<input
 						type="text"
 						id="department"
 						bind:value={department}
-						class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+						class="w-full rounded-lg border border-input px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-accent bg-input text-input placeholder-secondary"
 						placeholder="e.g., IT, Operations, Studio"
 					/>
 				</div>
 
 				<div>
-					<label for="phone" class="mb-2 block text-sm font-medium text-gray-700">
+					<label for="phone" class="mb-2 block text-sm font-medium text-primary">
 						Phone Number
 					</label>
 					<input
 						type="tel"
 						id="phone"
 						bind:value={phone}
-						class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+						class="w-full rounded-lg border border-input px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-accent bg-input text-input placeholder-secondary"
 						placeholder="Enter your phone number"
 					/>
 				</div>
@@ -189,14 +189,14 @@
 			<button
 				type="submit"
 				disabled={isLoading}
-				class="w-full rounded-lg bg-blue-600 px-4 py-3 font-medium text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+				class="w-full rounded-lg bg-accent px-4 py-3 font-medium text-white transition-colors hover:bg-accent-secondary focus:ring-2 focus:ring-accent focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
 			>
 				{isLoading ? 'Creating Admin Account...' : 'Create Admin Account'}
 			</button>
 		</form>
 
 		<div class="mt-8 text-center">
-			<p class="text-sm text-gray-500">
+			<p class="text-sm text-tertiary">
 				This will create the first admin account for your Studio Inventory system.
 			</p>
 		</div>

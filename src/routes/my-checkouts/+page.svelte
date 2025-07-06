@@ -1,15 +1,19 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import type { PageData } from './$types';
+	import AppLayout from '$lib/components/AppLayout.svelte';
 
-	let checkouts = [];
-	let activeCheckouts = [];
-	let pastCheckouts = [];
-	let selectedCheckout = null;
-	let showReturnModal = false;
-	let returnForm = {
+	let { data } = $props<{ data: PageData }>();
+
+	let checkouts = $state<any[]>([]);
+	let activeCheckouts = $state<any[]>([]);
+	let pastCheckouts = $state<any[]>([]);
+	let selectedCheckout = $state<any>(null);
+	let showReturnModal = $state(false);
+	let returnForm = $state({
 		condition: 'good',
 		notes: ''
-	};
+	});
 
 	onMount(async () => {
 		try {
@@ -76,10 +80,10 @@
 
 	function getStatusColor(status) {
 		switch (status) {
-			case 'Checked Out': return 'text-blue-600 bg-blue-50';
-			case 'Overdue': return 'text-red-600 bg-red-50';
-			case 'Returned': return 'text-green-600 bg-green-50';
-			default: return 'text-gray-600 bg-gray-50';
+			case 'Checked Out': return 'text-primary bg-primary-100';
+			case 'Overdue': return 'text-error bg-error-light';
+			case 'Returned': return 'text-success bg-success-light';
+			default: return 'text-secondary bg-secondary-100';
 		}
 	}
 
@@ -117,287 +121,231 @@
 	<title>My Checkouts - Studio Inventory</title>
 </svelte:head>
 
-<div class="space-y-6">
-	<!-- Header -->
-	<div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-6 text-white">
-		<div class="flex items-center justify-between">
-			<div>
-				<h1 class="text-3xl font-bold">My Checkouts</h1>
-				<p class="text-blue-100 mt-2">Manage your checked out equipment</p>
-			</div>
-			<div class="hidden md:flex items-center space-x-4">
-				<div class="text-center">
-					<div class="text-2xl font-bold">{activeCheckouts.length}</div>
-					<div class="text-blue-100 text-sm">Active Checkouts</div>
+<AppLayout user={data.user}>
+	<div class="space-y-6">
+		<!-- Header -->
+		<div class="bg-gradient-to-r from-accent to-accent-secondary rounded-2xl p-4 md:p-6 text-white">
+			<div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+				<div>
+					<h1 class="text-2xl md:text-3xl font-bold">My Checkouts</h1>
+					<p class="text-white/80 mt-2">Manage your checked out equipment</p>
 				</div>
-				<div class="text-center">
-					<div class="text-2xl font-bold">{pastCheckouts.length}</div>
-					<div class="text-blue-100 text-sm">Past Checkouts</div>
+				<div class="hidden md:flex items-center space-x-4">
+					<div class="text-center">
+						<div class="text-2xl font-bold">{activeCheckouts.length}</div>
+						<div class="text-white/80 text-sm">Active Checkouts</div>
+					</div>
+					<div class="text-center">
+						<div class="text-2xl font-bold">{pastCheckouts.length}</div>
+						<div class="text-white/80 text-sm">Past Checkouts</div>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
 
-	<!-- Active Checkouts -->
-	{#if activeCheckouts.length > 0}
-		<div class="bg-white rounded-xl shadow-sm border border-gray-200">
-			<div class="p-6 border-b border-gray-200">
-				<h2 class="text-xl font-semibold text-gray-900">Active Checkouts</h2>
-				<p class="text-gray-600 mt-1">Items currently checked out to you</p>
-			</div>
-			<div class="p-6">
-				<div class="space-y-4">
-					{#each activeCheckouts as checkout}
-						<div class="border border-gray-200 rounded-xl p-6 hover:shadow-md transition-shadow">
-							<div class="flex items-start justify-between">
-								<div class="flex items-start space-x-4">
-									<div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-										<span class="text-2xl">{getStatusIcon(checkout.status)}</span>
+		<!-- Active Checkouts -->
+		{#if activeCheckouts.length > 0}
+			<div class="bg-card rounded-xl shadow-custom border border-card">
+				<div class="p-4 md:p-6 border-b border-card">
+					<h2 class="text-lg md:text-xl font-semibold text-primary">Active Checkouts</h2>
+					<p class="text-secondary mt-1">Items currently checked out to you</p>
+				</div>
+				<div class="p-4 md:p-6">
+					<div class="space-y-4">
+						{#each activeCheckouts as checkout}
+							<div class="border border-card rounded-xl p-4 md:p-6 hover:shadow-custom transition-shadow bg-secondary">
+								<div class="flex items-start justify-between">
+									<div class="flex items-start space-x-3 md:space-x-4 flex-1 min-w-0">
+										<div class="w-10 h-10 md:w-12 md:h-12 bg-tertiary rounded-lg flex items-center justify-center flex-shrink-0">
+											<span class="text-xl md:text-2xl">{getStatusIcon(checkout.status)}</span>
+										</div>
+										<div class="flex-1 min-w-0">
+											<div class="flex flex-col sm:flex-row sm:items-center sm:space-x-3 mb-2 space-y-1 sm:space-y-0">
+												<h3 class="text-base md:text-lg font-semibold text-primary truncate">{checkout.assetName}</h3>
+												<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {getStatusColor(checkout.status)} self-start sm:self-center">
+													{checkout.status}
+												</span>
+											</div>
+											
+											<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 text-sm">
+												<div>
+													<span class="text-secondary text-xs md:text-sm">Serial Number:</span>
+													<p class="font-mono text-primary text-xs md:text-sm truncate">{checkout.serialNumber}</p>
+												</div>
+												<div>
+													<span class="text-secondary text-xs md:text-sm">Location:</span>
+													<p class="text-primary text-xs md:text-sm truncate">{checkout.location}</p>
+												</div>
+												<div>
+													<span class="text-secondary text-xs md:text-sm">Checkout Date:</span>
+													<p class="text-primary text-xs md:text-sm">{formatDate(checkout.checkoutDate)}</p>
+												</div>
+												<div>
+													<span class="text-secondary text-xs md:text-sm">Expected Return:</span>
+													<p class="text-primary text-xs md:text-sm {isOverdue(checkout.expectedReturn) ? 'text-error font-medium' : ''}">
+														{formatDate(checkout.expectedReturn)}
+														{#if isOverdue(checkout.expectedReturn)}
+															<span class="text-xs text-error block">Overdue</span>
+														{:else}
+															<span class="text-xs text-secondary block">
+																{getDaysRemaining(checkout.expectedReturn)} days remaining
+															</span>
+														{/if}
+													</p>
+												</div>
+											</div>
+											
+											{#if checkout.notes}
+												<div class="mt-3">
+													<span class="text-secondary text-xs md:text-sm">Notes:</span>
+													<p class="text-primary text-xs md:text-sm italic truncate">"{checkout.notes}"</p>
+												</div>
+											{/if}
+										</div>
 									</div>
-									<div class="flex-1">
-										<div class="flex items-center space-x-3 mb-2">
-											<h3 class="text-lg font-semibold text-gray-900">{checkout.assetName}</h3>
-											<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {getStatusColor(checkout.status)}">
+									
+									<div class="flex flex-col space-y-2 ml-4">
+										<button
+											on:click={() => openReturnModal(checkout)}
+											class="bg-accent text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-accent-secondary transition-colors"
+										>
+											Return Item
+										</button>
+										<a
+											href="/checkout-panel"
+											class="text-accent hover:text-accent-secondary text-sm font-medium text-center"
+										>
+											Check Out More
+										</a>
+									</div>
+								</div>
+							</div>
+						{/each}
+					</div>
+				</div>
+			</div>
+		{:else}
+			<!-- Empty State -->
+			<div class="bg-card rounded-xl shadow-custom border border-card p-8 text-center">
+				<div class="w-16 h-16 bg-tertiary rounded-full flex items-center justify-center mx-auto mb-4">
+					<svg class="w-8 h-8 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+					</svg>
+				</div>
+				<h3 class="text-lg font-medium text-primary mb-2">No Active Checkouts</h3>
+				<p class="text-secondary mb-6">You haven't checked out any equipment yet.</p>
+				<a
+					href="/checkout-panel"
+					class="inline-flex items-center px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent-secondary transition-colors"
+				>
+					Browse Equipment
+				</a>
+			</div>
+		{/if}
+
+		<!-- Past Checkouts -->
+		{#if pastCheckouts.length > 0}
+			<div class="bg-card rounded-xl shadow-custom border border-card">
+				<div class="p-4 md:p-6 border-b border-card">
+					<h2 class="text-lg md:text-xl font-semibold text-primary">Past Checkouts</h2>
+					<p class="text-secondary mt-1">Previously returned items</p>
+				</div>
+				<div class="p-4 md:p-6">
+					<div class="space-y-4">
+						{#each pastCheckouts as checkout}
+							<div class="border border-card rounded-lg p-4 hover:shadow-custom transition-shadow bg-secondary">
+								<div class="flex items-center space-x-4">
+									<div class="w-10 h-10 bg-tertiary rounded-lg flex items-center justify-center">
+										<span class="text-xl">{getStatusIcon(checkout.status)}</span>
+									</div>
+									<div class="flex-1 min-w-0">
+										<div class="flex items-center space-x-3 mb-1">
+											<h3 class="font-semibold text-primary truncate">{checkout.assetName}</h3>
+											<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {getStatusColor(checkout.status)}">
 												{checkout.status}
 											</span>
 										</div>
-										
-										<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+										<div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
 											<div>
-												<span class="text-gray-600">Serial Number:</span>
-												<p class="font-mono text-gray-900">{checkout.serialNumber}</p>
+												<span class="text-secondary text-xs">Checkout:</span>
+												<p class="text-primary text-xs">{formatDate(checkout.checkoutDate)}</p>
 											</div>
 											<div>
-												<span class="text-gray-600">Location:</span>
-												<p class="text-gray-900">{checkout.location}</p>
+												<span class="text-secondary text-xs">Return:</span>
+												<p class="text-primary text-xs">{formatDate(checkout.returnDate)}</p>
 											</div>
 											<div>
-												<span class="text-gray-600">Checkout Date:</span>
-												<p class="text-gray-900">{formatDate(checkout.checkoutDate)}</p>
+												<span class="text-secondary text-xs">Duration:</span>
+												<p class="text-primary text-xs">{getDaysRemaining(checkout.expectedReturn)} days</p>
 											</div>
 											<div>
-												<span class="text-gray-600">Expected Return:</span>
-												<p class="text-gray-900 {isOverdue(checkout.expectedReturn) ? 'text-red-600 font-medium' : ''}">
-													{formatDate(checkout.expectedReturn)}
-													{#if isOverdue(checkout.expectedReturn)}
-														<span class="text-xs text-red-500 block">Overdue</span>
-													{:else}
-														<span class="text-xs text-gray-500 block">
-															{getDaysRemaining(checkout.expectedReturn)} days remaining
-														</span>
-													{/if}
-												</p>
+												<span class="text-secondary text-xs">Condition:</span>
+												<p class="text-primary text-xs capitalize">{checkout.returnCondition || 'Good'}</p>
 											</div>
 										</div>
-										
-										{#if checkout.notes}
-											<div class="mt-3">
-												<span class="text-gray-600 text-sm">Notes:</span>
-												<p class="text-gray-900 text-sm italic">"{checkout.notes}"</p>
-											</div>
-										{/if}
 									</div>
 								</div>
-								
-								<div class="flex flex-col space-y-2">
-									<button
-										on:click={() => openReturnModal(checkout)}
-										class="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-									>
-										Return Item
-									</button>
-									<a
-										href="/checkout-panel"
-										class="text-blue-600 hover:text-blue-700 text-sm font-medium text-center"
-									>
-										Check Out More
-									</a>
-								</div>
 							</div>
-						</div>
-					{/each}
+						{/each}
+					</div>
 				</div>
 			</div>
-		</div>
-	{:else}
-		<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
-			<div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-				<span class="text-3xl">📦</span>
-			</div>
-			<h3 class="text-lg font-semibold text-gray-900 mb-2">No Active Checkouts</h3>
-			<p class="text-gray-600 mb-6">You don't have any items checked out right now.</p>
-			<a
-				href="/checkout-panel"
-				class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-			>
-				Browse Available Equipment
-				<svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-				</svg>
-			</a>
-		</div>
-	{/if}
-
-	<!-- Past Checkouts -->
-	{#if pastCheckouts.length > 0}
-		<div class="bg-white rounded-xl shadow-sm border border-gray-200">
-			<div class="p-6 border-b border-gray-200">
-				<h2 class="text-xl font-semibold text-gray-900">Checkout History</h2>
-				<p class="text-gray-600 mt-1">Previously returned items</p>
-			</div>
-			<div class="p-6">
-				<div class="overflow-x-auto">
-					<table class="w-full">
-						<thead>
-							<tr class="border-b border-gray-200">
-								<th class="text-left py-3 px-4 font-medium text-gray-900">Item</th>
-								<th class="text-left py-3 px-4 font-medium text-gray-900">Checkout Date</th>
-								<th class="text-left py-3 px-4 font-medium text-gray-900">Expected Return</th>
-								<th class="text-left py-3 px-4 font-medium text-gray-900">Actual Return</th>
-								<th class="text-left py-3 px-4 font-medium text-gray-900">Status</th>
-							</tr>
-						</thead>
-						<tbody class="divide-y divide-gray-200">
-							{#each pastCheckouts as checkout}
-								<tr class="hover:bg-gray-50 transition-colors">
-									<td class="py-4 px-4">
-										<div>
-											<div class="font-medium text-gray-900">{checkout.assetName}</div>
-											<div class="text-sm text-gray-600 font-mono">{checkout.serialNumber}</div>
-										</div>
-									</td>
-									<td class="py-4 px-4 text-sm text-gray-900">{formatDate(checkout.checkoutDate)}</td>
-									<td class="py-4 px-4 text-sm text-gray-900">{formatDate(checkout.expectedReturn)}</td>
-									<td class="py-4 px-4 text-sm text-gray-900">{formatDate(checkout.actualReturn)}</td>
-									<td class="py-4 px-4">
-										<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {getStatusColor(checkout.status)}">
-											{checkout.status}
-										</span>
-									</td>
-								</tr>
-							{/each}
-						</tbody>
-					</table>
-				</div>
-			</div>
-		</div>
-	{/if}
-
-	<!-- Quick Actions -->
-	<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-		<h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-		<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-			<a
-				href="/checkout-panel"
-				class="flex items-center p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-all duration-200"
-			>
-				<div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
-					<span class="text-xl">📤</span>
-				</div>
-				<div>
-					<h4 class="font-medium text-gray-900">Check Out Equipment</h4>
-					<p class="text-sm text-gray-600">Browse available items</p>
-				</div>
-			</a>
-			
-			<a
-				href="/assets"
-				class="flex items-center p-4 border border-gray-200 rounded-lg hover:border-green-300 hover:bg-green-50 transition-all duration-200"
-			>
-				<div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-4">
-					<span class="text-xl">📦</span>
-				</div>
-				<div>
-					<h4 class="font-medium text-gray-900">Browse Inventory</h4>
-					<p class="text-sm text-gray-600">View all equipment</p>
-				</div>
-			</a>
-			
-			<a
-				href="/maintenance"
-				class="flex items-center p-4 border border-gray-200 rounded-lg hover:border-orange-300 hover:bg-orange-50 transition-all duration-200"
-			>
-				<div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center mr-4">
-					<span class="text-xl">🔧</span>
-				</div>
-				<div>
-					<h4 class="font-medium text-gray-900">Report Issues</h4>
-					<p class="text-sm text-gray-600">Maintenance requests</p>
-				</div>
-			</a>
-		</div>
+		{/if}
 	</div>
-</div>
 
-<!-- Return Modal -->
-{#if showReturnModal}
-	<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-		<div class="bg-white rounded-xl max-w-md w-full p-6">
-			<div class="flex items-center justify-between mb-4">
-				<h3 class="text-lg font-semibold text-gray-900">Return Item</h3>
-				<button
-					on:click={() => showReturnModal = false}
-					class="text-gray-400 hover:text-gray-600"
-				>
-					<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-					</svg>
-				</button>
-			</div>
-			
-			<div class="mb-4 p-4 bg-gray-50 rounded-lg">
-				<div class="flex items-center space-x-3">
-					<div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-						<span class="text-xl">📦</span>
-					</div>
+	<!-- Return Modal -->
+	{#if showReturnModal && selectedCheckout}
+		<div class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+			<div class="bg-card rounded-xl shadow-custom border border-card p-6 w-full max-w-md">
+				<h3 class="text-lg font-semibold text-primary mb-4">Return Equipment</h3>
+				<div class="space-y-4">
 					<div>
-						<h4 class="font-medium text-gray-900">{selectedCheckout?.assetName}</h4>
-						<p class="text-sm text-gray-600">Serial: {selectedCheckout?.serialNumber}</p>
+						<label class="block text-sm font-medium text-secondary mb-2">Equipment</label>
+						<div class="p-3 bg-secondary border border-card rounded-lg">
+							<div class="font-medium text-primary">{selectedCheckout.assetName}</div>
+							<div class="text-sm text-secondary">Serial: {selectedCheckout.serialNumber}</div>
+						</div>
 					</div>
-				</div>
-			</div>
-
-			<form on:submit|preventDefault={handleReturn} class="space-y-4">
-				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">Item Condition</label>
-					<select
-						bind:value={returnForm.condition}
-						required
-						class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-					>
-						<option value="excellent">Excellent - Like new</option>
-						<option value="good">Good - Minor wear</option>
-						<option value="fair">Fair - Some damage</option>
-						<option value="poor">Poor - Significant damage</option>
-					</select>
+					
+					<div>
+						<label class="block text-sm font-medium text-secondary mb-2">Condition</label>
+						<select
+							bind:value={returnForm.condition}
+							class="w-full px-3 py-2 border border-input bg-input text-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+						>
+							<option value="good">Good</option>
+							<option value="fair">Fair</option>
+							<option value="poor">Poor</option>
+							<option value="damaged">Damaged</option>
+						</select>
+					</div>
+					
+					<div>
+						<label class="block text-sm font-medium text-secondary mb-2">Notes</label>
+						<textarea
+							bind:value={returnForm.notes}
+							rows="3"
+							class="w-full px-3 py-2 border border-input bg-input text-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+							placeholder="Optional notes..."
+						></textarea>
+					</div>
 				</div>
 				
-				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">Return Notes (Optional)</label>
-					<textarea
-						bind:value={returnForm.notes}
-						rows="3"
-						class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-						placeholder="Any issues or notes about the return..."
-					></textarea>
-				</div>
-
-				<div class="flex space-x-3 pt-4">
+				<div class="flex space-x-3 mt-6">
 					<button
-						type="button"
 						on:click={() => showReturnModal = false}
-						class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+						class="flex-1 px-4 py-2 border border-card bg-secondary text-primary rounded-lg hover:bg-tertiary transition-colors"
 					>
 						Cancel
 					</button>
 					<button
-						type="submit"
-						class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+						on:click={handleReturn}
+						class="flex-1 px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent-secondary transition-colors"
 					>
-						Return Item
+						Return
 					</button>
 				</div>
-			</form>
+			</div>
 		</div>
-	</div>
-{/if} 
+	{/if}
+</AppLayout> 

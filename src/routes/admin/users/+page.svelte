@@ -179,9 +179,9 @@
 
 	function getRoleColor(role: string) {
 		switch (role) {
-			case 'admin': return 'text-red-600 bg-red-50';
-			case 'user': return 'text-blue-600 bg-blue-50';
-			default: return 'text-gray-600 bg-gray-50';
+			case 'admin': return 'text-red-600 bg-red-50 dark:bg-red-900/20';
+			case 'user': return 'text-blue-600 bg-blue-50 dark:bg-blue-900/20';
+			default: return 'text-gray-600 bg-gray-50 dark:bg-gray-900/20';
 		}
 	}
 </script>
@@ -194,61 +194,65 @@
 	<!-- Header -->
 	<div class="flex justify-between items-start">
 		<div>
-			<h1 class="text-3xl font-bold text-gray-900">User Management</h1>
-			<p class="text-gray-600 mt-1">Manage system users and permissions</p>
+			<h1 class="text-3xl font-bold text-primary">User Management</h1>
+			<p class="text-secondary mt-1">Manage system users and permissions</p>
 		</div>
 		<div class="flex space-x-3">
 			<button
-				onclick={fixUsers}
-				class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg transition-colors"
+				on:click={openAddModal}
+				class="bg-accent hover:bg-accent-secondary text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
 			>
-				Fix Users
+				<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+				</svg>
+				Add User
 			</button>
 			<button
-				onclick={openAddModal}
-				class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
+				on:click={fixUsers}
+				class="bg-tertiary-500 hover:bg-tertiary-600 text-white px-4 py-2 rounded-lg transition-colors"
 			>
-				Add User
+				Fix Users
 			</button>
 		</div>
 	</div>
 
-	<!-- Users Table -->
-	<div class="bg-white rounded-xl shadow-sm border border-gray-200">
-		<div class="p-6 border-b border-gray-200">
-			<h2 class="text-xl font-semibold text-gray-900">All Users</h2>
-			<p class="text-gray-600 mt-1">System users and their roles</p>
+	{#if loading}
+		<div class="flex justify-center items-center py-12">
+			<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
 		</div>
-		<div class="overflow-x-auto">
-			{#if loading}
-				<div class="p-6 text-center">
-					<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600 mx-auto"></div>
-					<p class="text-gray-500 mt-2">Loading users...</p>
-				</div>
-			{:else if users.length === 0}
-				<div class="p-6 text-center">
-					<div class="text-gray-400 text-4xl mb-4">👥</div>
-					<p class="text-gray-500">No users found</p>
-				</div>
-			{:else}
+	{:else if users.length === 0}
+		<div class="text-center py-12">
+			<div class="text-tertiary text-4xl mb-4">👥</div>
+			<h3 class="text-lg font-medium text-primary mb-2">No users found</h3>
+			<p class="text-secondary mb-4">Create your first user to get started.</p>
+			<button
+				on:click={openAddModal}
+				class="bg-accent hover:bg-accent-secondary text-white px-4 py-2 rounded-lg transition-colors"
+			>
+				Add User
+			</button>
+		</div>
+	{:else}
+		<!-- Users Table -->
+		<div class="rounded-xl shadow-sm border border-card bg-card">
+			<div class="overflow-x-auto">
 				<table class="w-full">
-					<thead class="bg-gray-50">
+					<thead class="bg-tertiary border-b border-card">
 						<tr>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-secondary uppercase tracking-wider">User</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-secondary uppercase tracking-wider">Role</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-secondary uppercase tracking-wider">Department</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-secondary uppercase tracking-wider">Created</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-secondary uppercase tracking-wider">Actions</th>
 						</tr>
 					</thead>
-					<tbody class="bg-white divide-y divide-gray-200">
+					<tbody class="divide-y divide-card">
 						{#each users as user}
-							<tr class="hover:bg-gray-50">
+							<tr class="hover:bg-tertiary transition-colors">
 								<td class="px-6 py-4 whitespace-nowrap">
 									<div>
-										<div class="text-sm font-medium text-gray-900">{user.name}</div>
-										<div class="text-sm text-gray-500">{user.email}</div>
+										<div class="text-sm font-medium text-primary">{user.name}</div>
+										<div class="text-sm text-secondary">{user.email}</div>
 									</div>
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap">
@@ -256,24 +260,31 @@
 										{user.role}
 									</span>
 								</td>
-								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.department || '-'}</td>
-								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.phone || '-'}</td>
-								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+								<td class="px-6 py-4 whitespace-nowrap text-sm text-secondary">
+									{user.department || '-'}
+								</td>
+								<td class="px-6 py-4 whitespace-nowrap text-sm text-secondary">
 									{new Date(user.createdAt).toLocaleDateString()}
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
 									<div class="flex space-x-2">
 										<button
-											onclick={() => openEditModal(user)}
-											class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded transition-colors"
+											on:click={() => openEditModal(user)}
+											class="text-accent hover:text-accent-secondary transition-colors"
+											aria-label="Edit user"
 										>
-											Edit
+											<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+											</svg>
 										</button>
 										<button
-											onclick={() => openDeleteModal(user)}
-											class="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 px-2 py-1 rounded transition-colors"
+											on:click={() => openDeleteModal(user)}
+											class="text-error hover:text-red-700 transition-colors"
+											aria-label="Delete user"
 										>
-											Delete
+											<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+											</svg>
 										</button>
 									</div>
 								</td>
@@ -281,89 +292,94 @@
 						{/each}
 					</tbody>
 				</table>
-			{/if}
+			</div>
 		</div>
-	</div>
+	{/if}
 </div>
 
 <!-- Add User Modal -->
 {#if showAddModal}
-	<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-		<div class="bg-white rounded-xl p-6 w-full max-w-md mx-4">
-			<h2 class="text-xl font-semibold text-gray-900 mb-4">Add New User</h2>
-			<form onsubmit={handleAddUser} class="space-y-4">
+	<div class="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+		<div class="bg-card rounded-xl p-6 w-full max-w-md border border-card">
+			<h2 class="text-xl font-bold text-primary mb-4">Add New User</h2>
+			<form on:submit|preventDefault={handleAddUser} class="space-y-4">
 				<div>
-					<label for="add-email" class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+					<label for="name" class="block text-sm font-medium text-secondary mb-1">Name *</label>
 					<input
-						type="email"
-						id="add-email"
-						bind:value={formData.email}
-						class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
-						required
-					/>
-				</div>
-				<div>
-					<label for="add-name" class="block text-sm font-medium text-gray-700 mb-1">Name *</label>
-					<input
+						id="name"
 						type="text"
-						id="add-name"
 						bind:value={formData.name}
-						class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+						class="w-full px-3 py-2 border border-card bg-input text-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
+						placeholder="Enter full name"
 						required
 					/>
 				</div>
 				<div>
-					<label for="add-password" class="block text-sm font-medium text-gray-700 mb-1">Password *</label>
+					<label for="email" class="block text-sm font-medium text-secondary mb-1">Email *</label>
 					<input
-						type="password"
-						id="add-password"
-						bind:value={formData.password}
-						class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+						id="email"
+						type="email"
+						bind:value={formData.email}
+						class="w-full px-3 py-2 border border-card bg-input text-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
+						placeholder="Enter email address"
 						required
 					/>
 				</div>
 				<div>
-					<label for="add-role" class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+					<label for="password" class="block text-sm font-medium text-secondary mb-1">Password *</label>
+					<input
+						id="password"
+						type="password"
+						bind:value={formData.password}
+						class="w-full px-3 py-2 border border-card bg-input text-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
+						placeholder="Enter password"
+						required
+					/>
+				</div>
+				<div>
+					<label for="role" class="block text-sm font-medium text-secondary mb-1">Role</label>
 					<select
-						id="add-role"
+						id="role"
 						bind:value={formData.role}
-						class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+						class="w-full px-3 py-2 border border-card bg-input text-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
 					>
 						<option value="user">User</option>
 						<option value="admin">Admin</option>
 					</select>
 				</div>
 				<div>
-					<label for="add-department" class="block text-sm font-medium text-gray-700 mb-1">Department</label>
+					<label for="department" class="block text-sm font-medium text-secondary mb-1">Department</label>
 					<input
+						id="department"
 						type="text"
-						id="add-department"
 						bind:value={formData.department}
-						class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+						class="w-full px-3 py-2 border border-card bg-input text-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
+						placeholder="Enter department"
 					/>
 				</div>
 				<div>
-					<label for="add-phone" class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+					<label for="phone" class="block text-sm font-medium text-secondary mb-1">Phone</label>
 					<input
+						id="phone"
 						type="tel"
-						id="add-phone"
 						bind:value={formData.phone}
-						class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+						class="w-full px-3 py-2 border border-card bg-input text-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
+						placeholder="Enter phone number"
 					/>
 				</div>
-				<div class="flex justify-end space-x-3 pt-4">
-					<button
-						type="button"
-						onclick={() => showAddModal = false}
-						class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
-					>
-						Cancel
-					</button>
+				<div class="flex space-x-3 pt-4">
 					<button
 						type="submit"
-						class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors"
+						class="flex-1 bg-accent hover:bg-accent-secondary text-white py-2 px-4 rounded-lg transition-colors"
 					>
 						Add User
+					</button>
+					<button
+						type="button"
+						on:click={() => (showAddModal = false)}
+						class="flex-1 bg-tertiary hover:bg-secondary text-primary py-2 px-4 rounded-lg transition-colors"
+					>
+						Cancel
 					</button>
 				</div>
 			</form>
@@ -373,81 +389,86 @@
 
 <!-- Edit User Modal -->
 {#if showEditModal}
-	<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-		<div class="bg-white rounded-xl p-6 w-full max-w-md mx-4">
-			<h2 class="text-xl font-semibold text-gray-900 mb-4">Edit User</h2>
-			<form onsubmit={handleEditUser} class="space-y-4">
+	<div class="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+		<div class="bg-card rounded-xl p-6 w-full max-w-md border border-card">
+			<h2 class="text-xl font-bold text-primary mb-4">Edit User</h2>
+			<form on:submit|preventDefault={handleEditUser} class="space-y-4">
 				<div>
-					<label for="edit-email" class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+					<label for="edit-name" class="block text-sm font-medium text-secondary mb-1">Name *</label>
 					<input
-						type="email"
-						id="edit-email"
-						bind:value={formData.email}
-						class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
-						required
-					/>
-				</div>
-				<div>
-					<label for="edit-name" class="block text-sm font-medium text-gray-700 mb-1">Name *</label>
-					<input
-						type="text"
 						id="edit-name"
+						type="text"
 						bind:value={formData.name}
-						class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+						class="w-full px-3 py-2 border border-card bg-input text-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
+						placeholder="Enter full name"
 						required
 					/>
 				</div>
 				<div>
-					<label for="edit-password" class="block text-sm font-medium text-gray-700 mb-1">Password (leave blank to keep current)</label>
+					<label for="edit-email" class="block text-sm font-medium text-secondary mb-1">Email *</label>
 					<input
-						type="password"
-						id="edit-password"
-						bind:value={formData.password}
-						class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+						id="edit-email"
+						type="email"
+						bind:value={formData.email}
+						class="w-full px-3 py-2 border border-card bg-input text-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
+						placeholder="Enter email address"
+						required
 					/>
 				</div>
 				<div>
-					<label for="edit-role" class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+					<label for="edit-password" class="block text-sm font-medium text-secondary mb-1">Password (leave blank to keep current)</label>
+					<input
+						id="edit-password"
+						type="password"
+						bind:value={formData.password}
+						class="w-full px-3 py-2 border border-card bg-input text-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
+						placeholder="Enter new password"
+					/>
+				</div>
+				<div>
+					<label for="edit-role" class="block text-sm font-medium text-secondary mb-1">Role</label>
 					<select
 						id="edit-role"
 						bind:value={formData.role}
-						class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+						class="w-full px-3 py-2 border border-card bg-input text-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
 					>
 						<option value="user">User</option>
 						<option value="admin">Admin</option>
 					</select>
 				</div>
 				<div>
-					<label for="edit-department" class="block text-sm font-medium text-gray-700 mb-1">Department</label>
+					<label for="edit-department" class="block text-sm font-medium text-secondary mb-1">Department</label>
 					<input
-						type="text"
 						id="edit-department"
+						type="text"
 						bind:value={formData.department}
-						class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+						class="w-full px-3 py-2 border border-card bg-input text-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
+						placeholder="Enter department"
 					/>
 				</div>
 				<div>
-					<label for="edit-phone" class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+					<label for="edit-phone" class="block text-sm font-medium text-secondary mb-1">Phone</label>
 					<input
-						type="tel"
 						id="edit-phone"
+						type="tel"
 						bind:value={formData.phone}
-						class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+						class="w-full px-3 py-2 border border-card bg-input text-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
+						placeholder="Enter phone number"
 					/>
 				</div>
-				<div class="flex justify-end space-x-3 pt-4">
-					<button
-						type="button"
-						onclick={() => showEditModal = false}
-						class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
-					>
-						Cancel
-					</button>
+				<div class="flex space-x-3 pt-4">
 					<button
 						type="submit"
-						class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
+						class="flex-1 bg-accent hover:bg-accent-secondary text-white py-2 px-4 rounded-lg transition-colors"
 					>
 						Update User
+					</button>
+					<button
+						type="button"
+						on:click={() => (showEditModal = false)}
+						class="flex-1 bg-tertiary hover:bg-secondary text-primary py-2 px-4 rounded-lg transition-colors"
+					>
+						Cancel
 					</button>
 				</div>
 			</form>
@@ -455,26 +476,26 @@
 	</div>
 {/if}
 
-<!-- Delete Confirmation Modal -->
+<!-- Delete User Modal -->
 {#if showDeleteModal}
-	<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-		<div class="bg-white rounded-xl p-6 w-full max-w-md mx-4">
-			<h2 class="text-xl font-semibold text-gray-900 mb-4">Delete User</h2>
-			<p class="text-gray-600 mb-6">
+	<div class="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+		<div class="bg-card rounded-xl p-6 w-full max-w-md border border-card">
+			<h2 class="text-xl font-bold text-primary mb-4">Delete User</h2>
+			<p class="text-secondary mb-6">
 				Are you sure you want to delete <strong>{selectedUser?.name}</strong>? This action cannot be undone.
 			</p>
-			<div class="flex justify-end space-x-3">
+			<div class="flex space-x-3">
 				<button
-					onclick={() => showDeleteModal = false}
-					class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
-				>
-					Cancel
-				</button>
-				<button
-					onclick={handleDeleteUser}
-					class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors"
+					on:click={handleDeleteUser}
+					class="flex-1 bg-error hover:bg-red-700 text-white py-2 px-4 rounded-lg transition-colors"
 				>
 					Delete User
+				</button>
+				<button
+					on:click={() => (showDeleteModal = false)}
+					class="flex-1 bg-tertiary hover:bg-secondary text-primary py-2 px-4 rounded-lg transition-colors"
+				>
+					Cancel
 				</button>
 			</div>
 		</div>
