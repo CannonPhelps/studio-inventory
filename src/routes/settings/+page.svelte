@@ -79,20 +79,20 @@
 
 			const data = await response.json();
 
-					if (response.ok) {
-			showMessage('Password changed successfully! You will be redirected to login.', 'success');
-			currentPassword = '';
-			newPassword = '';
-			confirmPassword = '';
-			showPasswordForm = false;
-			
-			// Redirect to login after a short delay
-			setTimeout(() => {
-				window.location.href = '/login';
-			}, 2000);
-		} else {
-			showMessage(data.error || 'Failed to change password', 'error');
-		}
+			if (response.ok) {
+				showMessage('Password changed successfully! You will be redirected to login.', 'success');
+				currentPassword = '';
+				newPassword = '';
+				confirmPassword = '';
+				showPasswordForm = false;
+				
+				// Redirect to login after a short delay
+				setTimeout(() => {
+					window.location.href = '/login';
+				}, 2000);
+			} else {
+				showMessage(data.error || 'Failed to change password', 'error');
+			}
 		} catch (error) {
 			console.error('Error changing password:', error);
 			showMessage('An error occurred. Please try again.', 'error');
@@ -131,6 +131,27 @@
 			messageType = '';
 		}, 5000);
 	}
+
+	function handleProfileSubmit(event: Event) {
+		event.preventDefault();
+		handleProfileUpdate();
+	}
+
+	function handlePasswordSubmit(event: Event) {
+		event.preventDefault();
+		handlePasswordChange();
+	}
+
+	function showPasswordFormHandler() {
+		showPasswordForm = true;
+	}
+
+	function cancelPasswordForm() {
+		showPasswordForm = false;
+		currentPassword = '';
+		newPassword = '';
+		confirmPassword = '';
+	}
 </script>
 
 <svelte:head>
@@ -138,11 +159,11 @@
 </svelte:head>
 
 <AppLayout user={data.user}>
-	<div class="space-y-4 md:space-y-6">
+	<div class="space-y-6">
 		<!-- Header -->
 		<div>
-			<h1 class="text-2xl md:text-3xl font-bold text-primary">Settings</h1>
-			<p class="mt-2 text-secondary">Manage your account settings and preferences</p>
+			<h1 class="text-3xl font-bold text-primary">Settings</h1>
+			<p class="mt-2 text-secondary text-base">Manage your account settings and preferences</p>
 		</div>
 
 		{#if message}
@@ -156,11 +177,11 @@
 				<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
 			</div>
 		{:else if user}
-			<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+			<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 				<!-- Profile Settings -->
-				<div class="bg-card rounded-xl shadow-custom border border-card p-4 md:p-6">
-					<h2 class="text-lg md:text-xl font-semibold text-primary mb-4">Profile Information</h2>
-					<form on:submit|preventDefault={handleProfileUpdate} class="space-y-4">
+				<div class="bg-card rounded-xl shadow-custom border border-card p-6">
+					<h2 class="text-xl font-semibold text-primary mb-4">Profile Information</h2>
+					<form onsubmit={handleProfileSubmit} class="space-y-4">
 						<div>
 							<label for="name" class="block text-sm font-medium text-primary mb-1">
 								Full Name
@@ -169,7 +190,7 @@
 								id="name"
 								type="text"
 								bind:value={profileForm.name}
-								class="w-full px-3 py-3 md:py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent bg-input text-input placeholder-secondary"
+								class="w-full px-3 py-3 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent bg-input text-input placeholder-secondary text-base"
 								placeholder="Enter your full name"
 							/>
 						</div>
@@ -182,7 +203,7 @@
 								id="email"
 								type="email"
 								bind:value={profileForm.email}
-								class="w-full px-3 py-3 md:py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent bg-input text-input placeholder-secondary"
+								class="w-full px-3 py-3 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent bg-input text-input placeholder-secondary text-base"
 								placeholder="Enter your email"
 							/>
 						</div>
@@ -195,7 +216,7 @@
 								id="department"
 								type="text"
 								bind:value={profileForm.department}
-								class="w-full px-3 py-3 md:py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent bg-input text-input placeholder-secondary"
+								class="w-full px-3 py-3 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent bg-input text-input placeholder-secondary text-base"
 								placeholder="Enter your department"
 							/>
 						</div>
@@ -208,14 +229,14 @@
 								id="phone"
 								type="tel"
 								bind:value={profileForm.phone}
-								class="w-full px-3 py-3 md:py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent bg-input text-input placeholder-secondary"
+								class="w-full px-3 py-3 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent bg-input text-input placeholder-secondary text-base"
 								placeholder="Enter your phone number"
 							/>
 						</div>
 
 						<button
 							type="submit"
-							class="w-full bg-accent text-white py-2 px-4 rounded-lg hover:bg-accent-secondary focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 transition-colors duration-200"
+							class="w-full bg-accent text-white py-3 px-4 rounded-lg font-medium hover:bg-accent-secondary transition-colors duration-200 shadow-custom-sm touch-manipulation"
 						>
 							Update Profile
 						</button>
@@ -223,18 +244,26 @@
 				</div>
 
 				<!-- Password Settings -->
-				<div class="bg-card rounded-xl shadow-custom border border-card p-4 md:p-6">
-					<h2 class="text-lg md:text-xl font-semibold text-primary mb-4">Change Password</h2>
+				<div class="bg-card rounded-xl shadow-custom border border-card p-6">
+					<h2 class="text-xl font-semibold text-primary mb-4">Change Password</h2>
 					
 					{#if !showPasswordForm}
-						<button
-							on:click={() => showPasswordForm = true}
-							class="w-full bg-accent text-white py-2 px-4 rounded-lg hover:bg-accent-secondary focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 transition-colors duration-200"
-						>
-							Change Password
-						</button>
+						<div class="text-center py-6">
+							<div class="w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-3">
+								<svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+								</svg>
+							</div>
+							<p class="text-secondary text-base mb-4">Keep your account secure by updating your password regularly</p>
+							<button
+								onclick={showPasswordFormHandler}
+								class="bg-accent text-white py-2 px-4 rounded-lg font-medium hover:bg-accent-secondary transition-colors duration-200 shadow-custom-sm touch-manipulation"
+							>
+								Change Password
+							</button>
+						</div>
 					{:else}
-						<form on:submit|preventDefault={handlePasswordChange} class="space-y-4">
+						<form onsubmit={handlePasswordSubmit} class="space-y-4">
 							<div>
 								<label for="currentPassword" class="block text-sm font-medium text-primary mb-1">
 									Current Password
@@ -243,7 +272,7 @@
 									id="currentPassword"
 									type="password"
 									bind:value={currentPassword}
-									class="w-full px-3 py-3 md:py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent bg-input text-input placeholder-secondary"
+									class="w-full px-3 py-3 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent bg-input text-input placeholder-secondary text-base"
 									placeholder="Enter current password"
 								/>
 							</div>
@@ -256,7 +285,7 @@
 									id="newPassword"
 									type="password"
 									bind:value={newPassword}
-									class="w-full px-3 py-3 md:py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent bg-input text-input placeholder-secondary"
+									class="w-full px-3 py-3 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent bg-input text-input placeholder-secondary text-base"
 									placeholder="Enter new password"
 								/>
 							</div>
@@ -269,7 +298,7 @@
 									id="confirmPassword"
 									type="password"
 									bind:value={confirmPassword}
-									class="w-full px-3 py-3 md:py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent bg-input text-input placeholder-secondary"
+									class="w-full px-3 py-3 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent bg-input text-input placeholder-secondary text-base"
 									placeholder="Confirm new password"
 								/>
 							</div>
@@ -277,19 +306,14 @@
 							<div class="flex space-x-3">
 								<button
 									type="submit"
-									class="flex-1 bg-accent text-white py-2 px-4 rounded-lg hover:bg-accent-secondary focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 transition-colors duration-200"
+									class="flex-1 bg-accent text-white py-3 px-4 rounded-lg font-medium hover:bg-accent-secondary transition-colors duration-200 shadow-custom-sm touch-manipulation"
 								>
 									Update Password
 								</button>
 								<button
 									type="button"
-									on:click={() => {
-										showPasswordForm = false;
-										currentPassword = '';
-										newPassword = '';
-										confirmPassword = '';
-									}}
-									class="flex-1 bg-secondary text-primary py-2 px-4 rounded-lg hover:bg-tertiary focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 transition-colors duration-200 border border-card"
+									onclick={cancelPasswordForm}
+									class="flex-1 bg-secondary text-primary py-3 px-4 rounded-lg font-medium hover:bg-tertiary transition-colors duration-200 border border-card touch-manipulation"
 								>
 									Cancel
 								</button>
@@ -300,24 +324,24 @@
 			</div>
 
 			<!-- Account Information -->
-			<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-				<h2 class="text-xl font-semibold text-gray-900 mb-4">Account Information</h2>
-				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+			<div class="bg-card rounded-xl shadow-custom border border-card p-6">
+				<h2 class="text-xl font-semibold text-primary mb-4">Account Information</h2>
+				<div class="grid grid-cols-2 gap-4">
 					<div>
-						<label class="block text-sm font-medium text-gray-500">User ID</label>
-						<p class="text-sm text-gray-900 font-mono">{user.id}</p>
+						<label class="block text-sm font-medium text-secondary mb-1">User ID</label>
+						<p class="text-primary font-mono text-sm">{user.id}</p>
 					</div>
 					<div>
-						<label class="block text-sm font-medium text-gray-500">Role</label>
-						<p class="text-sm text-gray-900 capitalize">{user.role}</p>
+						<label class="block text-sm font-medium text-secondary mb-1">Role</label>
+						<p class="text-primary capitalize text-sm">{user.role}</p>
 					</div>
 					<div>
-						<label class="block text-sm font-medium text-gray-500">Member Since</label>
-						<p class="text-sm text-gray-900">{new Date(user.createdAt).toLocaleDateString()}</p>
+						<label class="block text-sm font-medium text-secondary mb-1">Member Since</label>
+						<p class="text-primary text-sm">{user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}</p>
 					</div>
 					<div>
-						<label class="block text-sm font-medium text-gray-500">Last Updated</label>
-						<p class="text-sm text-gray-900">{new Date(user.updatedAt).toLocaleDateString()}</p>
+						<label class="block text-sm font-medium text-secondary mb-1">Last Updated</label>
+						<p class="text-primary text-sm">{user.updatedAt ? new Date(user.updatedAt).toLocaleDateString() : 'N/A'}</p>
 					</div>
 				</div>
 			</div>

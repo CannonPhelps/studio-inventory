@@ -226,13 +226,13 @@
 <AppLayout user={data.user}>
 	<div class="space-y-6">
 		<!-- Header -->
-		<div class="bg-gradient-to-r from-accent to-accent-secondary rounded-2xl p-4 md:p-6 text-white">
-			<div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+		<div class="bg-gradient-to-r from-accent to-accent-secondary rounded-2xl p-6 text-white">
+			<div class="flex items-center justify-between">
 				<div>
-					<h1 class="text-2xl md:text-3xl font-bold">Checkout Panel</h1>
-					<p class="text-white/80 mt-2">Check out and return equipment</p>
+					<h1 class="text-3xl font-bold">Checkout Panel</h1>
+					<p class="text-white/80 mt-2 text-base">Check out and return equipment</p>
 				</div>
-				<div class="hidden md:flex items-center space-x-4">
+				<div class="flex items-center space-x-4">
 					<div class="text-center">
 						<div class="text-2xl font-bold">{assets.filter(a => a.status === 'Available').length}</div>
 						<div class="text-white/80 text-sm">Available</div>
@@ -247,9 +247,9 @@
 
 		<!-- My Checkouts Section -->
 		{#if myCheckouts.length > 0}
-			<div class="bg-card rounded-xl shadow-custom border border-card p-4 md:p-6">
-				<h2 class="text-lg md:text-xl font-semibold text-primary mb-4">My Checked Out Items</h2>
-				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+			<div class="bg-card rounded-xl shadow-custom border border-card p-6">
+				<h2 class="text-xl font-semibold text-primary mb-4">My Checked Out Items</h2>
+				<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 					{#each myCheckouts as checkout}
 						<div class="bg-secondary border border-card rounded-lg p-4">
 							<div class="flex items-center justify-between mb-3">
@@ -263,8 +263,8 @@
 									Return
 								</button>
 							</div>
-							<h3 class="font-semibold text-primary mb-1">{checkout.asset?.itemName}</h3>
-							<p class="text-sm text-secondary mb-2">{checkout.asset?.category?.name}</p>
+							<h3 class="font-semibold text-primary mb-1 text-base truncate">{checkout.asset?.itemName}</h3>
+							<p class="text-sm text-secondary mb-2 truncate">{checkout.asset?.category?.name}</p>
 							<div class="text-xs text-secondary">
 								Expected Return: {checkout.expectedReturnDate ? formatDate(checkout.expectedReturnDate) : 'Not set'}
 							</div>
@@ -275,7 +275,7 @@
 		{/if}
 
 		<!-- Search and Filters -->
-		<div class="bg-card rounded-xl shadow-custom border border-card p-4 md:p-6">
+		<div class="bg-card rounded-xl shadow-custom border border-card p-6">
 			<div class="flex flex-col space-y-4">
 				<!-- Search -->
 				<div class="w-full">
@@ -285,7 +285,7 @@
 							bind:value={searchQuery}
 							oninput={filterAssets}
 							placeholder="Search equipment..."
-							class="w-full pl-10 pr-4 py-3 border border-input bg-input text-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+							class="w-full pl-10 pr-4 py-3 border border-input bg-input text-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent text-base"
 						/>
 						<svg class="absolute left-3 top-3.5 h-5 w-5 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -294,19 +294,19 @@
 				</div>
 
 				<!-- Filters -->
-				<div class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+				<div class="flex items-center space-x-4">
 					<select
 						bind:value={selectedCategory}
 						onchange={filterAssets}
-						class="flex-1 px-4 py-3 border border-input bg-input text-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+						class="flex-1 px-4 py-3 border border-input bg-input text-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent text-base"
 					>
 						{#each categories as category}
 							<option value={category.id}>{category.name} ({category.count})</option>
 						{/each}
 					</select>
 
-					<!-- View Mode Toggle -->
-					<div class="flex border border-input rounded-lg self-center">
+					<!-- View Mode Toggle (hidden on mobile) -->
+					<div class="hidden sm:flex border border-input rounded-lg self-center">
 						<button
 							onclick={() => viewMode = 'grid'}
 							class="p-3 {viewMode === 'grid' ? 'bg-accent text-white' : 'bg-input text-input hover:bg-tertiary'} rounded-l-lg transition-colors"
@@ -332,28 +332,28 @@
 
 		<!-- Available Equipment -->
 		<div class="bg-card rounded-xl shadow-custom border border-card">
-			<div class="p-4 md:p-6 border-b border-card">
-				<h2 class="text-lg md:text-xl font-semibold text-primary">Available Equipment ({filteredAssets.filter(a => a.status === 'Available').length} items)</h2>
+			<div class="p-6 border-b border-card">
+				<h2 class="text-xl font-semibold text-primary">Available Equipment ({filteredAssets.filter(a => a.status === 'Available').length} items)</h2>
 			</div>
-			<div class="p-4 md:p-6">
+			<div class="p-6">
 				{#if viewMode === 'grid'}
-					<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+					<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
 						{#each filteredAssets.filter(a => a.status === 'Available') as asset}
-							<div class="bg-secondary border border-card rounded-xl p-4 md:p-6 hover:shadow-custom transition-shadow">
+							<div class="bg-secondary border border-card rounded-xl p-6 hover:shadow-custom transition-shadow">
 								<div class="text-center mb-4">
-									<div class="w-12 h-12 md:w-16 md:h-16 bg-tertiary rounded-lg flex items-center justify-center mx-auto mb-3">
-										<span class="text-2xl md:text-3xl">📦</span>
+									<div class="w-16 h-16 bg-tertiary rounded-lg flex items-center justify-center mx-auto mb-3">
+										<span class="text-3xl">📦</span>
 									</div>
-									<h3 class="font-semibold text-primary mb-1 text-sm md:text-base truncate">{asset.itemName}</h3>
-									<p class="text-xs md:text-sm text-secondary truncate">{asset.category?.name}</p>
+									<h3 class="font-semibold text-primary mb-1 text-base truncate">{asset.itemName}</h3>
+									<p class="text-sm text-secondary truncate">{asset.category?.name}</p>
 								</div>
 								
 								<div class="space-y-2 mb-4">
-									<div class="flex justify-between text-xs md:text-sm">
+									<div class="flex justify-between text-sm">
 										<span class="text-secondary">Location:</span>
 										<span class="text-primary truncate ml-2">{asset.location}</span>
 									</div>
-									<div class="flex justify-between text-xs md:text-sm">
+									<div class="flex justify-between text-sm">
 										<span class="text-secondary">Serial:</span>
 										<span class="text-primary font-mono truncate ml-2">{asset.serialNumber || 'N/A'}</span>
 									</div>
@@ -369,23 +369,23 @@
 						{/each}
 					</div>
 				{:else}
-					<!-- List View -->
-					<div class="space-y-4">
+					<!-- List View (hidden on mobile) -->
+					<div class="hidden sm:space-y-4 sm:block">
 						{#each filteredAssets.filter(a => a.status === 'Available') as asset}
 							<div class="bg-secondary border border-card rounded-lg p-4 hover:shadow-custom transition-shadow">
 								<div class="flex items-center justify-between">
-									<div class="flex items-center space-x-4">
-										<div class="w-12 h-12 bg-tertiary rounded-lg flex items-center justify-center">
+									<div class="flex items-center space-x-3 min-w-0 flex-1">
+										<div class="w-12 h-12 bg-tertiary rounded-lg flex items-center justify-center flex-shrink-0">
 											<span class="text-xl">📦</span>
 										</div>
-										<div>
-											<h3 class="font-semibold text-primary">{asset.itemName}</h3>
-											<p class="text-sm text-secondary">{asset.category?.name}</p>
+										<div class="min-w-0 flex-1">
+											<h3 class="font-semibold text-primary text-base truncate">{asset.itemName}</h3>
+											<p class="text-sm text-secondary truncate">{asset.category?.name}</p>
 										</div>
 									</div>
 									<button
 										onclick={() => openCheckoutModal(asset)}
-										class="bg-accent text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-accent-secondary transition-colors"
+										class="bg-accent text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-accent-secondary transition-colors text-center"
 									>
 										Check Out
 									</button>

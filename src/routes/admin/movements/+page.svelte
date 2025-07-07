@@ -224,27 +224,27 @@
 	<div class="bg-card rounded-xl shadow-sm border border-border">
 		<div class="p-6 border-b border-border">
 			<h2 class="text-xl font-semibold text-primary">Current Asset Locations</h2>
-			<p class="text-muted-foreground mt-1">Where assets are currently located</p>
+			<p class="text-primary mt-1">Where assets are currently located</p>
 		</div>
 		<div class="overflow-x-auto">
 			{#if loading}
 				<div class="p-6 text-center">
 					<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-					<p class="text-muted-foreground mt-2">Loading assets...</p>
+					<p class="text-primary mt-2">Loading assets...</p>
 				</div>
 			{:else if assets.length === 0}
 				<div class="p-6 text-center">
 					<div class="text-muted-foreground text-4xl mb-4">📍</div>
-					<p class="text-muted-foreground">No assets found</p>
+					<p class="text-primary">No assets found</p>
 				</div>
 			{:else}
 				<table class="w-full">
 					<thead class="bg-muted/50">
 						<tr>
-							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Asset</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Current Location</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Last Moved</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-primary uppercase tracking-wider">Asset</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-primary uppercase tracking-wider">Current Location</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-primary uppercase tracking-wider">Status</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-primary uppercase tracking-wider">Last Moved</th>
 						</tr>
 					</thead>
 					<tbody class="bg-card divide-y divide-border">
@@ -253,12 +253,12 @@
 								<td class="px-6 py-4 whitespace-nowrap">
 									<div>
 										<div class="text-sm font-medium text-primary">{asset.itemName}</div>
-										<div class="text-sm text-muted-foreground">{asset.serialNumber || 'No Serial'}</div>
+										<div class="text-sm text-primary">{asset.serialNumber || 'No Serial'}</div>
 									</div>
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap text-sm text-primary">{asset.location}</td>
 								<td class="px-6 py-4 whitespace-nowrap">
-									<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-muted-foreground bg-muted">
+									<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-primary bg-muted">
 										{asset.status}
 									</span>
 								</td>
@@ -277,24 +277,24 @@
 	<div class="bg-card rounded-xl shadow-sm border border-border">
 		<div class="p-6 border-b border-border">
 			<h2 class="text-xl font-semibold text-primary">Movement History</h2>
-			<p class="text-muted-foreground mt-1">Recent asset movements</p>
+			<p class="text-primary mt-1">Recent asset movements</p>
 		</div>
 		<div class="overflow-x-auto">
 			{#if movements.length === 0}
 				<div class="p-6 text-center">
 					<div class="text-muted-foreground text-4xl mb-4">📋</div>
-					<p class="text-muted-foreground">No movement records</p>
+					<p class="text-primary">No movement records</p>
 				</div>
 			{:else}
 				<table class="w-full">
 					<thead class="bg-muted/50">
 						<tr>
-							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Asset</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">From</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">To</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Reason</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Moved By</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Date</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-primary uppercase tracking-wider">Asset</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-primary uppercase tracking-wider">From</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-primary uppercase tracking-wider">To</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-primary uppercase tracking-wider">Reason</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-primary uppercase tracking-wider">Moved By</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-primary uppercase tracking-wider">Date</th>
 						</tr>
 					</thead>
 					<tbody class="bg-card divide-y divide-border">
@@ -303,7 +303,7 @@
 								<td class="px-6 py-4 whitespace-nowrap">
 									<div>
 										<div class="text-sm font-medium text-primary">{movement.asset.itemName}</div>
-										<div class="text-sm text-muted-foreground">{movement.asset.serialNumber || 'No Serial'}</div>
+										<div class="text-sm text-primary">{movement.asset.serialNumber || 'No Serial'}</div>
 									</div>
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap text-sm text-primary">{movement.fromLocation}</td>

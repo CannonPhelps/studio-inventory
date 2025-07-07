@@ -108,7 +108,7 @@
 	<!-- Header -->
 	<div class="text-center">
 		<h1 class="text-3xl font-bold text-primary">Import Data</h1>
-		<p class="mt-2 text-muted-foreground">Upload CSV files to import your inventory data</p>
+		<p class="mt-2 text-primary">Upload CSV files to import your inventory data</p>
 	</div>
 
 	<!-- Import Type Selection -->
@@ -124,7 +124,7 @@
 						<span class="text-2xl mr-3">{type.icon}</span>
 						<h3 class="font-semibold text-primary">{type.label}</h3>
 					</div>
-					<p class="text-sm text-muted-foreground">{type.description}</p>
+					<p class="text-sm text-primary">{type.description}</p>
 				</button>
 			{/each}
 		</div>
@@ -164,7 +164,7 @@
 			</div>
 		{/if}
 
-		<div class="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-muted-foreground transition-colors">
+		<div class="border-2 border-dashed border-border rounded-lg p-8 text-center border-primary hover:border-muted-foreground transition-colors">
 			<input
 				id="fileInput"
 				type="file"
@@ -175,15 +175,15 @@
 			
 			{#if !selectedFile}
 				<div class="space-y-4">
-					<svg class="mx-auto h-12 w-12 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<svg class="mx-auto h-12 w-12 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
 					</svg>
 					<div>
 						<label for="fileInput" class="cursor-pointer">
 							<span class="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium">Click to upload</span>
-							<span class="text-muted-foreground"> or drag and drop</span>
+							<span class="text-primary"> or drag and drop</span>
 						</label>
-						<p class="text-sm text-muted-foreground">CSV files only</p>
+						<p class="text-sm text-primary">CSV files only</p>
 					</div>
 				</div>
 			{:else}
@@ -193,12 +193,12 @@
 					</svg>
 					<div>
 						<p class="text-sm font-medium text-primary">{selectedFile.name}</p>
-						<p class="text-sm text-muted-foreground">{(selectedFile.size / 1024).toFixed(1)} KB</p>
+						<p class="text-sm text-primary">{(selectedFile.size / 1024).toFixed(1)} KB</p>
 					</div>
 					<div class="flex justify-center gap-3">
 						<button
 							on:click={resetForm}
-							class="px-4 py-2 text-muted-foreground bg-muted hover:bg-muted/80 rounded-lg transition-colors"
+							class="px-4 py-2 text-primary bg-muted hover:bg-muted/80 rounded-lg transition-colors"
 						>
 							Remove
 						</button>
@@ -224,7 +224,7 @@
 
 		{#if isUploading}
 			<div class="mt-6">
-				<div class="flex justify-between text-sm text-muted-foreground mb-2">
+				<div class="flex justify-between text-sm text-primary mb-2">
 					<span>Uploading...</span>
 					<span>{uploadProgress}%</span>
 				</div>
@@ -297,7 +297,7 @@
 			<div class="mt-4 flex justify-end">
 				<button
 					on:click={resetForm}
-					class="px-4 py-2 bg-muted hover:bg-muted/80 text-muted-foreground rounded-lg transition-colors"
+					class="px-4 py-2 bg-muted hover:bg-muted/80 text-primary rounded-lg transition-colors"
 				>
 					Import Another File
 				</button>
@@ -307,11 +307,11 @@
 
 	<!-- Help Section -->
 	<div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800">
-		<h2 class="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-3">Import Guidelines</h2>
+		<h2 class="text-lg font-semibold text-primary mb-3">Import Guidelines</h2>
 		<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 			<div>
-				<h3 class="font-medium text-blue-900 dark:text-blue-100 mb-2">File Requirements</h3>
-				<ul class="text-sm text-blue-800 dark:text-blue-200 space-y-1">
+				<h3 class="font-medium text-primary mb-2">File Requirements</h3>
+				<ul class="text-sm text-primary space-y-1">
 					<li>• CSV format only</li>
 					<li>• First row should contain headers</li>
 					<li>• Use commas to separate values</li>
@@ -319,8 +319,8 @@
 				</ul>
 			</div>
 			<div>
-				<h3 class="font-medium text-blue-900 dark:text-blue-100 mb-2">Tips for Success</h3>
-				<ul class="text-sm text-blue-800 dark:text-blue-200 space-y-1">
+				<h3 class="font-medium text-primary mb-2">Tips for Success</h3>
+				<ul class="text-sm text-primary space-y-1">
 					<li>• Download and review the template first</li>
 					<li>• Ensure required fields are filled</li>
 					<li>• Check for duplicate serial numbers</li>

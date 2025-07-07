@@ -18,9 +18,17 @@ const getInitialTheme = () => {
 // Create the store
 export const theme = writable<'light' | 'dark'>(getInitialTheme());
 
-// Subscribe to theme changes and update DOM
+// Subscribe to theme changes and update DOM (only on changes, not initial load)
 if (browser) {
+	let isInitialLoad = true;
+	
 	theme.subscribe((value) => {
+		// Skip the initial load since theme is already applied by the script in app.html
+		if (isInitialLoad) {
+			isInitialLoad = false;
+			return;
+		}
+		
 		// Update localStorage
 		localStorage.setItem('theme', value);
 		

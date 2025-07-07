@@ -145,7 +145,7 @@
 
 <AppLayout user={data.user}>
 	<!-- Debug Information (temporary) -->
-	<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+	<!-- <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
 		<strong>Debug Info:</strong><br>
 		Loading: {loading}<br>
 		Assets Count: {assets.length}<br>
@@ -154,7 +154,7 @@
 		User: {data.user?.email} ({data.user?.role})<br>
 		First Asset: {assets[0] ? assets[0].itemName : 'None'}<br>
 		First Category: {categories[0] ? categories[0].name : 'None'}
-	</div>
+	</div> -->
 
 	{#if loading}
 		<div class="flex justify-center items-center py-12">
@@ -162,14 +162,14 @@
 		</div>
 	{:else}
 		<!-- Welcome Section -->
-		<div class="mb-6 md:mb-8">
-			<div class="bg-gradient-to-r from-primary-500 to-primary-600 rounded-2xl p-6 md:p-8 text-white shadow-custom-lg">
-				<div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+		<div class="mb-8">
+			<div class="bg-gradient-to-r from-primary-500 to-primary-600 rounded-2xl p-8 text-white shadow-custom-lg">
+				<div class="flex items-center justify-between">
 					<div>
-						<h1 class="text-2xl md:text-3xl font-bold mb-2">Welcome to Studio Inventory</h1>
-						<p class="text-white/90 text-base md:text-lg">Manage your equipment and track everything in one place</p>
+						<h1 class="text-3xl font-bold mb-2">Welcome to Studio Inventory</h1>
+						<p class=" text-lg">Manage your equipment and track everything in one place</p>
 					</div>
-					<div class="hidden md:block">
+					<div>
 						<div class="w-24 h-24 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center shadow-custom">
 							<svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -181,81 +181,81 @@
 		</div>
 
 		<!-- Stats Cards -->
-		<div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-4 md:gap-6 mb-6 md:mb-8">
-			<div class="bg-card rounded-xl shadow-custom p-4 md:p-6 border border-card hover:shadow-custom-md transition-all duration-200">
-				<div class="flex items-center">
-					<div class="p-2 md:p-3 bg-primary-100 rounded-lg">
-						<svg class="w-5 h-5 md:w-6 md:h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+		<div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6 mb-8">
+			<div class="bg-card rounded-xl shadow-custom p-6 border border-card hover:shadow-custom-md transition-all duration-200">
+				<div class="flex flex-col items-start sm:flex-row sm:items-center">
+					<div class="p-3 bg-primary-100 rounded-lg self-center">
+						<svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
 						</svg>
 					</div>
-					<div class="ml-3 md:ml-4">
-						<p class="text-xs md:text-sm font-medium text-secondary">Total Items</p>
-						<p class="text-lg md:text-2xl font-bold text-primary">{stats.total}</p>
+					<div class="mx-auto lg:ml-4 mt-2">
+						<p class="text-sm font-medium text-secondary">Total Items</p>
+						<p class="text-2xl font-bold text-primary text-center">{stats.total}</p>
 					</div>
 				</div>
 			</div>
 
-			<div class="bg-card rounded-xl shadow-custom p-4 md:p-6 border border-card hover:shadow-custom-md transition-all duration-200">
-				<div class="flex items-center">
-					<div class="p-2 md:p-3 bg-success-light rounded-lg">
-						<svg class="w-5 h-5 md:w-6 md:h-6 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+			<div class="bg-card rounded-xl shadow-custom p-6 border border-card hover:shadow-custom-md transition-all duration-200">
+				<div class="flex flex-col items-start sm:flex-row sm:items-center">
+					<div class="p-3 bg-success-light rounded-lg self-center">
+						<svg class="w-6 h-6 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
 						</svg>
 					</div>
-					<div class="ml-3 md:ml-4">
-						<p class="text-xs md:text-sm font-medium text-secondary">Available</p>
-						<p class="text-lg md:text-2xl font-bold text-primary">{stats.available}</p>
+					<div class="mx-auto lg:ml-4 mt-2">
+						<p class="text-sm font-medium text-secondary">Available</p>
+						<p class="text-2xl font-bold text-primary text-center">{stats.available}</p>
 					</div>
 				</div>
 			</div>
 
-			<div class="bg-card rounded-xl shadow-custom p-4 md:p-6 border border-card hover:shadow-custom-md transition-all duration-200">
-				<div class="flex items-center">
-					<div class="p-2 md:p-3 bg-primary-100 rounded-lg">
-						<svg class="w-5 h-5 md:w-6 md:h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+			<div class="bg-card rounded-xl shadow-custom p-6 border border-card hover:shadow-custom-md transition-all duration-200">
+				<div class="flex flex-col items-start sm:flex-row sm:items-center">
+					<div class="p-3 bg-primary-100 rounded-lg self-center">
+						<svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
 						</svg>
 					</div>
-					<div class="ml-3 md:ml-4">
-						<p class="text-xs md:text-sm font-medium text-secondary">In Use</p>
-						<p class="text-lg md:text-2xl font-bold text-primary">{stats.inUse}</p>
+					<div class="mx-auto lg:ml-4 mt-2">
+						<p class="text-sm font-medium text-secondary">In Use</p>
+						<p class="text-2xl font-bold text-primary text-center">{stats.inUse}</p>
 					</div>
 				</div>
 			</div>
 
-			<div class="bg-card rounded-xl shadow-custom p-4 md:p-6 border border-card hover:shadow-custom-md transition-all duration-200">
-				<div class="flex items-center">
-					<div class="p-2 md:p-3 bg-warning-light rounded-lg">
-						<svg class="w-5 h-5 md:w-6 md:h-6 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+			<div class="bg-card rounded-xl shadow-custom p-6 border border-card hover:shadow-custom-md transition-all duration-200">
+				<div class="flex flex-col items-start sm:flex-row sm:items-center">
+					<div class="p-3 bg-warning-light rounded-lg self-center">
+						<svg class="w-6 h-6 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
 						</svg>
 					</div>
-					<div class="ml-3 md:ml-4">
-						<p class="text-xs md:text-sm font-medium text-secondary">Maintenance</p>
-						<p class="text-lg md:text-2xl font-bold text-primary">{stats.maintenance}</p>
+					<div class="mx-auto lg:ml-4 mt-2">
+						<p class="text-sm font-medium text-secondary">Maintenance</p>
+						<p class="text-2xl font-bold text-primary text-center">{stats.maintenance}</p>
 					</div>
 				</div>
 			</div>
 
-			<div class="bg-card rounded-xl shadow-custom p-4 md:p-6 border border-card col-span-2 lg:col-span-1 hover:shadow-custom-md transition-all duration-200">
-				<div class="flex items-center">
-					<div class="p-2 md:p-3 bg-tertiary-100 rounded-lg">
-						<svg class="w-5 h-5 md:w-6 md:h-6 text-tertiary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+			<div class="bg-card rounded-xl shadow-custom p-6 border border-card hover:shadow-custom-md transition-all duration-200">
+				<div class="flex flex-col items-start sm:flex-row sm:items-center">
+					<div class="p-3 bg-tertiary-100 rounded-lg self-center">
+						<svg class="w-6 h-6 text-tertiary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
 						</svg>
 					</div>
-					<div class="ml-3 md:ml-4">
-						<p class="text-xs md:text-sm font-medium text-secondary">Checkouts</p>
-						<p class="text-lg md:text-2xl font-bold text-primary">{stats.checkouts}</p>
+					<div class="mx-auto lg:ml-4 mt-2">
+						<p class="text-sm font-medium text-secondary">Checkouts</p>
+						<p class="text-2xl font-bold text-primary text-center">{stats.checkouts}</p>
 					</div>
 				</div>
 			</div>
 		</div>
 
 		<!-- Charts and Analytics -->
-		<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 mb-6 md:mb-8">
+		<div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 mb-8">
 			<!-- Recent Assets -->
 			<div class="bg-card rounded-xl shadow-custom border border-card">
 				<div class="p-6 border-b border-card">
@@ -267,18 +267,18 @@
 						<div class="space-y-4">
 							{#each assets.slice(0, 5) as asset}
 								<div class="flex items-center justify-between p-3 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-all duration-200">
-									<div class="flex items-center space-x-3">
-										<div class="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center">
+									<div class="flex items-center space-x-3 min-w-0 flex-1">
+										<div class="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center flex-shrink-0">
 											<svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
 											</svg>
 										</div>
-										<div>
-											<p class="text-sm font-medium text-primary">{asset.itemName}</p>
-											<p class="text-xs text-secondary">{asset.category?.name || 'Uncategorized'}</p>
+										<div class="min-w-0 flex-1">
+											<p class="text-sm font-medium text-primary truncate">{asset.itemName}</p>
+											<p class="text-xs text-secondary truncate">{asset.category?.name || 'Uncategorized'}</p>
 										</div>
 									</div>
-									<span class="px-2 py-1 text-xs font-medium rounded-full {getStatusColor(asset.status)}">
+									<span class="px-2 py-1 text-xs font-medium rounded-full {getStatusColor(asset.status)} flex-shrink-0 ml-2">
 										{asset.status}
 									</span>
 								</div>
@@ -306,13 +306,13 @@
 						<div class="space-y-4">
 							{#each categories.slice(0, 6) as category}
 								<div class="flex items-center justify-between">
-									<div class="flex items-center space-x-3">
-										<div class="w-8 h-8 rounded-lg flex items-center justify-center {getCategoryColor(category.name)}">
+									<div class="flex items-center space-x-3 min-w-0 flex-1">
+										<div class="w-8 h-8 rounded-lg flex items-center justify-center {getCategoryColor(category.name)} flex-shrink-0">
 											<span class="text-xs font-bold">{category.name.charAt(0)}</span>
 										</div>
-										<span class="text-sm font-medium text-primary">{category.name}</span>
+										<span class="text-sm font-medium text-primary truncate">{category.name}</span>
 									</div>
-									<div class="flex items-center space-x-2">
+									<div class="flex items-center space-x-2 flex-shrink-0">
 										<div class="w-16 bg-secondary-200 rounded-full h-2">
 											<div class="bg-primary-500 h-2 rounded-full" style="width: {(getCategoryCount(category.name) / stats.total * 100) || 0}%"></div>
 										</div>
@@ -340,8 +340,8 @@
 				<p class="text-sm text-secondary mt-1">Common tasks and shortcuts</p>
 			</div>
 			<div class="p-6">
-				<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-					<a href="/assets" class="group p-4 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-all duration-200 text-center">
+				<div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
+					<a href="/assets" class="group p-4 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-all duration-200 text-center touch-manipulation">
 						<div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:bg-primary-200 transition-all duration-200">
 							<svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -350,7 +350,7 @@
 						<p class="text-sm font-medium text-primary">View Assets</p>
 					</a>
 					
-					<a href="/checkout-panel" class="group p-4 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-all duration-200 text-center">
+					<a href="/checkout-panel" class="group p-4 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-all duration-200 text-center touch-manipulation">
 						<div class="w-12 h-12 bg-accent-success/10 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:bg-accent-success/20 transition-all duration-200">
 							<svg class="w-6 h-6 text-accent-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -359,7 +359,7 @@
 						<p class="text-sm font-medium text-primary">Checkout Item</p>
 					</a>
 					
-					<a href="/returns" class="group p-4 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-all duration-200 text-center">
+					<a href="/returns" class="group p-4 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-all duration-200 text-center touch-manipulation">
 						<div class="w-12 h-12 bg-accent-warning/10 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:bg-accent-warning/20 transition-all duration-200">
 							<svg class="w-6 h-6 text-accent-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
@@ -368,7 +368,7 @@
 						<p class="text-sm font-medium text-primary">Return Item</p>
 					</a>
 					
-					<a href="/settings" class="group p-4 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-all duration-200 text-center">
+					<a href="/settings" class="group p-4 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-all duration-200 text-center touch-manipulation">
 						<div class="w-12 h-12 bg-tertiary-100 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:bg-tertiary-200 transition-all duration-200">
 							<svg class="w-6 h-6 text-tertiary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />

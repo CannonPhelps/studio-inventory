@@ -74,14 +74,14 @@
 	<!-- Header -->
 	<div>
 		<h1 class="text-3xl font-bold text-primary">Admin Returns</h1>
-		<p class="text-muted-foreground mt-1">Manage asset returns and track return history</p>
+		<p class="text-primary mt-1">Manage asset returns and track return history</p>
 	</div>
 
 	<!-- Active Checkouts -->
 	<div class="bg-card rounded-xl shadow-sm border border-border">
 		<div class="p-6 border-b border-border">
 			<h2 class="text-xl font-semibold text-primary">Active Checkouts</h2>
-			<p class="text-muted-foreground mt-1">Items currently checked out</p>
+			<p class="text-primary mt-1">Items currently checked out</p>
 		</div>
 		<div class="overflow-x-auto">
 			{#if loading}
@@ -92,7 +92,7 @@
 			{:else if checkouts.filter(c => !c.returnedAt).length === 0}
 				<div class="p-6 text-center">
 					<div class="text-muted-foreground text-4xl mb-4">📥</div>
-					<p class="text-muted-foreground">No active checkouts</p>
+					<p class="text-primary">No active checkouts</p>
 				</div>
 			{:else}
 				<table class="w-full">
@@ -147,23 +147,23 @@
 	<div class="bg-card rounded-xl shadow-sm border border-border">
 		<div class="p-6 border-b border-border">
 			<h2 class="text-xl font-semibold text-primary">Return History</h2>
-			<p class="text-muted-foreground mt-1">Recently returned items</p>
+			<p class="text-primary mt-1">Recently returned items</p>
 		</div>
 		<div class="overflow-x-auto">
 			{#if checkouts.filter(c => c.returnedAt).length === 0}
 				<div class="p-6 text-center">
 					<div class="text-muted-foreground text-4xl mb-4">📋</div>
-					<p class="text-muted-foreground">No return history</p>
+					<p class="text-primary">No return history</p>
 				</div>
 			{:else}
 				<table class="w-full">
 					<thead class="bg-muted/50">
 						<tr>
-							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Asset</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">User</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Checkout Date</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Return Date</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-primary uppercase tracking-wider">Asset</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-primary uppercase tracking-wider">User</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-primary uppercase tracking-wider">Checkout Date</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-primary uppercase tracking-wider">Return Date</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-primary uppercase tracking-wider">Status</th>
 						</tr>
 					</thead>
 					<tbody class="bg-card divide-y divide-border">
@@ -172,7 +172,7 @@
 								<td class="px-6 py-4 whitespace-nowrap">
 									<div>
 										<div class="text-sm font-medium text-primary">{checkout.asset.itemName}</div>
-										<div class="text-sm text-muted-foreground">{checkout.asset.serialNumber || 'No Serial'}</div>
+										<div class="text-sm text-primary">{checkout.asset.serialNumber || 'No Serial'}</div>
 									</div>
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap text-sm text-primary">{checkout.user}</td>

@@ -208,7 +208,7 @@
 	<!-- Header -->
 	<div>
 		<h1 class="text-3xl font-bold text-primary">Admin Settings</h1>
-		<p class="mt-2 text-muted-foreground">Manage system settings and your account preferences</p>
+		<p class="mt-2 text-primary">Manage system settings and your account preferences</p>
 	</div>
 
 	{#if message}
@@ -235,7 +235,7 @@
 							id="systemName"
 							type="text"
 							bind:value={adminSettings.systemName}
-							class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-background text-primary placeholder:text-muted-foreground"
+							class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-background text-primary placeholder:text-primary"
 							placeholder="Enter system name"
 						/>
 					</div>
@@ -315,7 +315,7 @@
 							id="name"
 							type="text"
 							bind:value={profileForm.name}
-							class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-background text-primary placeholder:text-muted-foreground"
+							class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-background text-primary placeholder:text-primary"
 							placeholder="Enter your full name"
 						/>
 					</div>
@@ -328,7 +328,7 @@
 							id="email"
 							type="email"
 							bind:value={profileForm.email}
-							class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-background text-primary placeholder:text-muted-foreground"
+							class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-background text-primary placeholder:text-primary"
 							placeholder="Enter your email"
 						/>
 					</div>
@@ -341,7 +341,7 @@
 							id="department"
 							type="text"
 							bind:value={profileForm.department}
-							class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-background text-primary placeholder:text-muted-foreground"
+							class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-background text-primary placeholder:text-primary"
 							placeholder="Enter your department"
 						/>
 					</div>
@@ -354,7 +354,7 @@
 							id="phone"
 							type="tel"
 							bind:value={profileForm.phone}
-							class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-background text-primary placeholder:text-muted-foreground"
+							class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-background text-primary placeholder:text-primary"
 							placeholder="Enter your phone number"
 						/>
 					</div>
@@ -379,11 +379,11 @@
 				{#if !showPasswordForm}
 					<div class="text-center py-8">
 						<div class="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-							<svg class="w-8 h-8 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
 							</svg>
 						</div>
-						<p class="text-muted-foreground mb-4">Keep your account secure by using a strong password</p>
+						<p class="text-primary mb-4">Keep your account secure by using a strong password</p>
 						<button
 							on:click={() => showPasswordForm = true}
 							class="bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors"
@@ -402,7 +402,7 @@
 								type="password"
 								bind:value={currentPassword}
 								required
-								class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-background text-primary placeholder:text-muted-foreground"
+								class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-background text-primary placeholder:text-primary"
 								placeholder="Enter your current password"
 							/>
 						</div>
@@ -416,10 +416,10 @@
 								type="password"
 								bind:value={newPassword}
 								required
-								class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-background text-primary placeholder:text-muted-foreground"
+								class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-background text-primary placeholder:text-primary"
 								placeholder="Enter your new password"
 							/>
-							<p class="mt-1 text-xs text-muted-foreground">Password must be at least 8 characters long</p>
+							<p class="mt-1 text-xs text-primary">Password must be at least 8 characters long</p>
 						</div>
 
 						<div>
@@ -431,7 +431,7 @@
 								type="password"
 								bind:value={confirmPassword}
 								required
-								class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-background text-primary placeholder:text-muted-foreground"
+								class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-background text-primary placeholder:text-primary"
 								placeholder="Confirm your new password"
 							/>
 						</div>
@@ -451,7 +451,7 @@
 									newPassword = '';
 									confirmPassword = '';
 								}}
-								class="flex-1 bg-muted text-muted-foreground hover:bg-muted/80 px-4 py-2 rounded-lg transition-colors"
+								class="flex-1 bg-muted text-primary hover:bg-muted/80 px-4 py-2 rounded-lg transition-colors"
 							>
 								Cancel
 							</button>
@@ -465,19 +465,19 @@
 				<h2 class="text-xl font-semibold text-primary mb-4">Account Information</h2>
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 					<div>
-						<p class="block text-sm font-medium text-muted-foreground">User ID</p>
+						<p class="block text-sm font-medium text-primary">User ID</p>
 						<p class="text-sm text-primary font-mono">{user.id}</p>
 					</div>
 					<div>
-						<p class="block text-sm font-medium text-muted-foreground">Role</p>
+						<p class="block text-sm font-medium text-primary">Role</p>
 						<p class="text-sm text-primary capitalize">{user.role}</p>
 					</div>
 					<div>
-						<p class="block text-sm font-medium text-muted-foreground">Member Since</p>
+						<p class="block text-sm font-medium text-primary">Member Since</p>
 						<p class="text-sm text-primary">{new Date(user.createdAt).toLocaleDateString()}</p>
 					</div>
 					<div>
-						<p class="block text-sm font-medium text-muted-foreground">Last Updated</p>
+						<p class="block text-sm font-medium text-primary">Last Updated</p>
 						<p class="text-sm text-primary">{new Date(user.updatedAt).toLocaleDateString()}</p>
 					</div>
 				</div>
@@ -485,9 +485,9 @@
 		</div>
 	{:else}
 		<div class="text-center py-12">
-			<div class="text-muted-foreground text-6xl mb-4">🔒</div>
+			<div class="text-primary text-6xl mb-4">🔒</div>
 			<h3 class="text-lg font-medium text-primary mb-2">Access Denied</h3>
-			<p class="text-muted-foreground">You need to be logged in to access settings.</p>
+			<p class="text-primary">You need to be logged in to access settings.</p>
 		</div>
 	{/if}
 </div> 

@@ -130,7 +130,7 @@
 	<div class="flex justify-between items-start">
 		<div>
 			<h1 class="text-3xl font-bold text-primary">Admin Maintenance</h1>
-			<p class="text-muted-foreground mt-1">Manage asset maintenance and repairs</p>
+			<p class="text-primary mt-1">Manage asset maintenance and repairs</p>
 		</div>
 		<button
 			on:click={() => showAddForm = !showAddForm}
@@ -182,7 +182,7 @@
 						id="description"
 						bind:value={description}
 						rows="3"
-						class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-background text-primary placeholder:text-muted-foreground"
+						class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-background text-primary placeholder:text-primary"
 						placeholder="Describe the maintenance performed..."
 						required
 					></textarea>
@@ -196,7 +196,7 @@
 							bind:value={cost}
 							step="0.01"
 							min="0"
-							class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-background text-primary placeholder:text-muted-foreground"
+							class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-background text-primary placeholder:text-primary"
 							placeholder="0.00"
 						/>
 					</div>
@@ -206,7 +206,7 @@
 							type="text"
 							id="notes"
 							bind:value={notes}
-							class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-background text-primary placeholder:text-muted-foreground"
+							class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-background text-primary placeholder:text-primary"
 							placeholder="Additional notes..."
 						/>
 					</div>
@@ -215,7 +215,7 @@
 					<button
 						type="button"
 						on:click={() => showAddForm = false}
-						class="px-4 py-2 text-muted-foreground bg-muted hover:bg-muted/80 rounded-md transition-colors"
+						class="px-4 py-2 text-primary bg-muted hover:bg-muted/80 rounded-md transition-colors"
 					>
 						Cancel
 					</button>
@@ -234,28 +234,28 @@
 	<div class="bg-card rounded-xl shadow-sm border border-border">
 		<div class="p-6 border-b border-border">
 			<h2 class="text-xl font-semibold text-primary">Asset Maintenance Status</h2>
-			<p class="text-muted-foreground mt-1">Current condition and maintenance schedule</p>
+			<p class="text-primary mt-1">Current condition and maintenance schedule</p>
 		</div>
 		<div class="overflow-x-auto">
 			{#if loading}
 				<div class="p-6 text-center">
 					<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-					<p class="text-muted-foreground mt-2">Loading assets...</p>
+					<p class="text-primary mt-2">Loading assets...</p>
 				</div>
 			{:else if assets.length === 0}
 				<div class="p-6 text-center">
-					<div class="text-muted-foreground text-4xl mb-4">🔧</div>
-					<p class="text-muted-foreground">No assets found</p>
+					<div class="text-primary text-4xl mb-4">🔧</div>
+					<p class="text-primary">No assets found</p>
 				</div>
 			{:else}
 				<table class="w-full">
 					<thead class="bg-muted/50">
 						<tr>
-							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Asset</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Condition</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Last Maintenance</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Next Maintenance</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-primary uppercase tracking-wider">Asset</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-primary uppercase tracking-wider">Condition</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-primary uppercase tracking-wider">Last Maintenance</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-primary uppercase tracking-wider">Next Maintenance</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-primary uppercase tracking-wider">Status</th>
 						</tr>
 					</thead>
 					<tbody class="bg-card divide-y divide-border">
@@ -264,7 +264,7 @@
 								<td class="px-6 py-4 whitespace-nowrap">
 									<div>
 										<div class="text-sm font-medium text-primary">{asset.itemName}</div>
-										<div class="text-sm text-muted-foreground">{asset.serialNumber || 'No Serial'}</div>
+										<div class="text-sm text-primary">{asset.serialNumber || 'No Serial'}</div>
 									</div>
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap">
@@ -279,7 +279,7 @@
 									{asset.nextMaintenance ? new Date(asset.nextMaintenance).toLocaleDateString() : 'Not scheduled'}
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap">
-									<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-muted-foreground bg-muted">
+									<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-primary bg-muted">
 										{asset.status}
 									</span>
 								</td>
@@ -295,24 +295,24 @@
 	<div class="bg-card rounded-xl shadow-sm border border-border">
 		<div class="p-6 border-b border-border">
 			<h2 class="text-xl font-semibold text-primary">Maintenance History</h2>
-			<p class="text-muted-foreground mt-1">Recent maintenance records</p>
+			<p class="text-primary mt-1">Recent maintenance records</p>
 		</div>
 		<div class="overflow-x-auto">
 			{#if maintenanceRecords.length === 0}
 				<div class="p-6 text-center">
-					<div class="text-muted-foreground text-4xl mb-4">📋</div>
-					<p class="text-muted-foreground">No maintenance records</p>
+					<div class="text-primary text-4xl mb-4">📋</div>
+					<p class="text-primary">No maintenance records</p>
 				</div>
 			{:else}
 				<table class="w-full">
 					<thead class="bg-muted/50">
 						<tr>
-							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Asset</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Type</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Description</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Performed By</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Date</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Cost</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-primary uppercase tracking-wider">Asset</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-primary uppercase tracking-wider">Type</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-primary uppercase tracking-wider">Description</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-primary uppercase tracking-wider">Performed By</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-primary uppercase tracking-wider">Date</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-primary uppercase tracking-wider">Cost</th>
 						</tr>
 					</thead>
 					<tbody class="bg-card divide-y divide-border">
@@ -321,7 +321,7 @@
 								<td class="px-6 py-4 whitespace-nowrap">
 									<div>
 										<div class="text-sm font-medium text-primary">{record.asset.itemName}</div>
-										<div class="text-sm text-muted-foreground">{record.asset.serialNumber || 'No Serial'}</div>
+										<div class="text-sm text-primary">{record.asset.serialNumber || 'No Serial'}</div>
 									</div>
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap">
