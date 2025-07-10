@@ -56,7 +56,7 @@
 </script>
 
 <!-- Main app layout with sidebar -->
-<div class="bg-primary min-h-screen">
+<div class="bg-gradient-to-br from-primary via-secondary to-tertiary min-h-screen">
 	<!-- Top Bar (Mobile Only) -->
 	<div class="bg-card border-card shadow-custom fixed top-0 right-0 left-0 z-40 border-b lg:hidden">
 		<div class="flex items-center justify-between px-4 py-3">

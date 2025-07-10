@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import Card from '$lib/components/Card.svelte';
+	import SectionHeader from '$lib/components/SectionHeader.svelte';
 
 	let assets: any[] = [];
 	let categories: any[] = [];
@@ -18,7 +20,7 @@
 		quantity: 1,
 		categoryId: '',
 		modelBrand: '',
-		serialNumber: '',
+		serialNumbers: [] as string[],
 		location: '',
 		status: 'Available',
 		purchaseDate: '',
@@ -31,6 +33,9 @@
 		cableTypeId: '',
 		cableLength: ''
 	};
+
+	let newSerialNumber = '';
+	let migratingSerials = false;
 
 	onMount(async () => {
 		await Promise.all([loadAssets(), loadCategories()]);
@@ -89,7 +94,7 @@
 					quantity: 1,
 					categoryId: '',
 					modelBrand: '',
-					serialNumber: '',
+					serialNumbers: [],
 					location: '',
 					status: 'Available',
 					purchaseDate: '',
@@ -119,7 +124,7 @@
 			quantity: asset.quantity,
 			categoryId: asset.categoryId ? asset.categoryId.toString() : '',
 			modelBrand: asset.modelBrand || '',
-			serialNumber: asset.serialNumber || '',
+			serialNumbers: asset.serialNumbers ? asset.serialNumbers.map((sn: any) => sn.serialNumber) : [],
 			location: asset.location || '',
 			status: asset.status,
 			purchaseDate: asset.purchaseDate ? asset.purchaseDate.split('T')[0] : '',
@@ -187,6 +192,17 @@
 		}
 	}
 
+	function addSerialNumber() {
+		if (newSerialNumber.trim()) {
+			newAsset.serialNumbers = [...newAsset.serialNumbers, newSerialNumber.trim()];
+			newSerialNumber = '';
+		}
+	}
+
+	function removeSerialNumber(index: number) {
+		newAsset.serialNumbers = newAsset.serialNumbers.filter((_, i) => i !== index);
+	}
+
 	function getStatusColor(status: string) {
 		switch (status) {
 			case 'Available':
@@ -208,24 +224,40 @@
 			'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
 			'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400',
 			'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400',
-			'bg-pink-100 text-pink-800 dark:bg-pink-900/20 dark:text-pink-400',
-			'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400'
+			'bg-pink-100 text-pink-800 dark:bg-pink-900/20 dark:text-pink-400'
 		];
-		const index = categories.findIndex((c) => c.name === categoryName);
-		return colors[index % colors.length];
+		const index = categoryName ? categoryName.charCodeAt(0) % colors.length : 0;
+		return colors[index];
 	}
 
 	$: filteredAssets = assets.filter((asset) => {
-		if (searchTerm && !asset.itemName.toLowerCase().includes(searchTerm.toLowerCase()))
-			return false;
-		if (selectedCategory && asset.categoryId !== parseInt(selectedCategory)) return false;
-		if (selectedStatus && asset.status !== selectedStatus) return false;
-		return true;
+		const matchesSearch = searchTerm
+			? asset.itemName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+			  asset.modelBrand?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+			  (asset.serialNumbers && asset.serialNumbers.some((sn: { serialNumber: string }) => 
+				sn.serialNumber && sn.serialNumber.toLowerCase().includes(searchTerm.toLowerCase())
+			  ))
+			: true;
+		const matchesCategory = selectedCategory ? asset.categoryId.toString() === selectedCategory : true;
+		const matchesStatus = selectedStatus ? asset.status === selectedStatus : true;
+		return matchesSearch && matchesCategory && matchesStatus;
 	});
 
-	$: if (showEditModal) {
-		console.log('Edit modal is open, categoryId:', newAsset.categoryId);
-	}
+	async function migrateSerials() {
+    if (!confirm('This will copy serialNumber values into the new AssetSerialNumber table. Proceed?')) return;
+    migratingSerials = true;
+    try {
+        const res = await fetch('/api/admin/migrate-serial-numbers', { method: 'POST' });
+        const data = await res.json();
+        alert(`Migrated ${data.migrated} serial numbers.`);
+        await loadAssets();
+    } catch (e) {
+        alert('Migration failed. Check console for details.');
+        console.error(e);
+    } finally {
+        migratingSerials = false;
+    }
+ }
 </script>
 
 <svelte:head>
@@ -234,24 +266,32 @@
 
 <div class="space-y-6">
 	<!-- Header -->
-	<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-		<div>
-			<h1 class="text-3xl font-bold text-primary">Assets</h1>
-			<p class="text-secondary mt-2">Manage your studio equipment and inventory</p>
-		</div>
-		<button
-			onclick={() => (showAddModal = true)}
-			class="mt-4 flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-white transition-colors hover:bg-accent-secondary sm:mt-0"
-		>
-			<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-			</svg>
-			Add Asset
-		</button>
-	</div>
+	<SectionHeader 
+	    title="Assets" 
+	    subtitle="Manage your studio equipment and inventory" 
+	    gradient="from-accent to-accent-secondary">
+    <button
+        onclick={() => (showAddModal = true)}
+        class="flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-white transition-colors hover:bg-accent-secondary"
+    >
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        Add Asset
+    </button>
+    <button
+        onclick={migrateSerials}
+        class="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-white transition-colors hover:bg-indigo-700 disabled:opacity-50"
+        disabled={migratingSerials}
+      >
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7" />
+        </svg>
+        {migratingSerials ? 'Migrating...' : 'Migrate Serials'}
+      </button>
+</SectionHeader>
 
-	<!-- Filters and Search -->
-	<div class="bg-card border-card rounded-xl border p-6 shadow-sm">
+<Card gradient="from-secondary/20 to-secondary/10" padding="p-6" className="">
 		<div class="grid grid-cols-1 gap-4 md:grid-cols-4">
 			<!-- Search -->
 			<div class="md:col-span-2">
@@ -354,7 +394,7 @@
 			</div>
 			<p class="text-sm text-secondary">{filteredAssets.length} assets found</p>
 		</div>
-	</div>
+	</Card>
 
 	{#if loading}
 		<div class="flex items-center justify-center py-12">
@@ -410,10 +450,16 @@
 									<span class="font-medium text-primary">{asset.modelBrand}</span>
 								</div>
 							{/if}
-							{#if asset.serialNumber}
+							{#if asset.serialNumbers && asset.serialNumbers.length > 0}
 								<div class="flex justify-between text-sm">
 									<span class="text-secondary">Serial:</span>
-									<span class="font-mono text-xs text-primary">{asset.serialNumber}</span>
+									<div class="flex flex-wrap gap-1">
+										{#each asset.serialNumbers as sn}
+											<span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400">
+												{sn.serialNumber}
+											</span>
+										{/each}
+									</div>
 								</div>
 							{/if}
 							{#if asset.location}
@@ -498,13 +544,13 @@
 							>
 						</tr>
 					</thead>
-					<tbody class="divide-y divide-card">
+					<tbody class="divide-y divide-card bg-card">
 						{#each filteredAssets as asset}
 							<tr class="hover:bg-tertiary transition-colors">
 								<td class="px-6 py-4 whitespace-nowrap">
 									<div>
 										<div class="text-sm font-medium text-primary">{asset.itemName}</div>
-										<div class="text-sm text-secondary">{asset.modelBrand}</div>
+										<div class="text-sm text-secondary">{asset.modelBrand || '-'}</div>
 									</div>
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap">
@@ -513,7 +559,7 @@
 											asset.category?.name
 										)}"
 									>
-										{asset.category?.name}
+										{asset.category?.name || 'Uncategorized'}
 									</span>
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap">
@@ -528,25 +574,37 @@
 								<td class="px-6 py-4 text-sm whitespace-nowrap text-primary"
 									>{asset.location || '-'}</td
 								>
-								<td class="px-6 py-4 font-mono text-sm whitespace-nowrap text-primary"
-									>{asset.serialNumber || '-'}</td
-								>
+								<td class="px-6 py-4 font-mono text-sm whitespace-nowrap text-primary">
+									{#if asset.serialNumbers && asset.serialNumbers.length > 0}
+										<div class="flex flex-wrap gap-1">
+											{#each asset.serialNumbers as sn}
+												<span class="inline-flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-800">
+													{sn.serialNumber}
+												</span>
+											{/each}
+										</div>
+									{:else}
+										-
+									{/if}
+								</td>
 								<td class="px-6 py-4 text-sm whitespace-nowrap text-primary">
 									{asset.purchasePrice ? `$${asset.purchasePrice}` : '-'}
 								</td>
 								<td class="px-6 py-4 text-sm font-medium whitespace-nowrap">
-									<button
-										onclick={() => openEditModal(asset)}
-										class="mr-3 text-accent hover:text-accent-secondary transition-colors"
-									>
-										Edit
-									</button>
-									<button
-										onclick={() => openDeleteModal(asset)}
-										class="text-error hover:text-red-700 transition-colors"
-									>
-										Delete
-									</button>
+									<div class="flex space-x-3">
+										<button
+											onclick={() => openEditModal(asset)}
+											class="text-accent hover:text-accent-secondary transition-colors"
+										>
+											Edit
+										</button>
+										<button
+											onclick={() => openDeleteModal(asset)}
+											class="text-error hover:text-red-700 transition-colors"
+										>
+											Delete
+										</button>
+									</div>
 								</td>
 							</tr>
 						{/each}
@@ -610,15 +668,48 @@
 					</div>
 					<div>
 						<label for="serialNumber" class="mb-1 block text-sm font-medium text-gray-700"
-							>Serial Number</label
+							>Serial Numbers</label
 						>
-						<input
-							id="serialNumber"
-							type="text"
-							bind:value={newAsset.serialNumber}
-							class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-							placeholder="Enter serial number"
-						/>
+						<div class="space-y-2">
+							<div class="flex gap-2">
+								<input
+									id="serialNumber"
+									type="text"
+									bind:value={newSerialNumber}
+									onkeypress={(e) => e.key === 'Enter' && (e.preventDefault(), addSerialNumber())}
+									class="flex-1 rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+									placeholder="Enter serial number"
+								/>
+								<button
+									type="button"
+									onclick={addSerialNumber}
+									class="flex items-center gap-1 rounded-md bg-accent px-3 py-2 text-white text-sm transition-colors hover:bg-accent-secondary"
+								>
+									<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+									</svg>
+									Add
+								</button>
+							</div>
+							{#if newAsset.serialNumbers.length > 0}
+								<div class="flex flex-wrap gap-2">
+									{#each newAsset.serialNumbers as serialNumber, index}
+										<span class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-800">
+											{serialNumber}
+											<button
+												type="button"
+												onclick={() => removeSerialNumber(index)}
+												class="ml-1 text-blue-600 hover:text-blue-800"
+											>
+												<svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+												</svg>
+											</button>
+										</span>
+									{/each}
+								</div>
+							{/if}
+						</div>
 					</div>
 				</div>
 
@@ -738,31 +829,31 @@
 <!-- Edit Asset Modal -->
 {#if showEditModal}
 	<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-		<div class="bg-primary max-h-screen w-full max-w-2xl overflow-y-auto rounded-lg p-6">
-			<h2 class="mb-4 text-xl font-bold">Edit Asset</h2>
+		<div class="bg-card max-h-screen w-full max-w-2xl overflow-y-auto rounded-xl p-6 border border-card">
+			<h2 class="mb-4 text-xl font-bold text-primary">Edit Asset</h2>
 			<form onsubmit={handleEditAsset} class="space-y-4">
 				<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
 					<div>
-						<label for="edit-itemName" class="mb-1 block text-sm font-medium text-gray-700"
+						<label for="edit-itemName" class="mb-1 block text-sm font-medium text-secondary"
 							>Item Name *</label
 						>
 						<input
 							id="edit-itemName"
 							type="text"
 							bind:value={newAsset.itemName}
-							class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+							class="w-full rounded-lg border border-card bg-input text-input px-3 py-2 focus:ring-2 focus:ring-accent focus:outline-none"
 							placeholder="Enter item name"
 							required
 						/>
 					</div>
 					<div>
-						<label for="edit-categoryId" class="mb-1 block text-sm font-medium text-gray-700"
+						<label for="edit-categoryId" class="mb-1 block text-sm font-medium text-secondary"
 							>Category *</label
 						>
 						<select
 							id="edit-categoryId"
 							bind:value={newAsset.categoryId}
-							class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+							class="w-full rounded-lg border border-card bg-input text-input px-3 py-2 focus:ring-2 focus:ring-accent focus:outline-none"
 							required
 						>
 							<option value="">Select category</option>
@@ -775,53 +866,86 @@
 
 				<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
 					<div>
-						<label for="edit-modelBrand" class="mb-1 block text-sm font-medium text-gray-700"
+						<label for="edit-modelBrand" class="mb-1 block text-sm font-medium text-secondary"
 							>Model/Brand</label
 						>
 						<input
 							id="edit-modelBrand"
 							type="text"
 							bind:value={newAsset.modelBrand}
-							class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+							class="w-full rounded-lg border border-card bg-input text-input px-3 py-2 focus:ring-2 focus:ring-accent focus:outline-none"
 							placeholder="e.g., Samsung, Apple"
 						/>
 					</div>
 					<div>
-						<label for="edit-serialNumber" class="mb-1 block text-sm font-medium text-gray-700"
-							>Serial Number</label
+						<label for="edit-serialNumber" class="mb-1 block text-sm font-medium text-secondary"
+							>Serial Numbers</label
 						>
-						<input
-							id="edit-serialNumber"
-							type="text"
-							bind:value={newAsset.serialNumber}
-							class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-							placeholder="Enter serial number"
-						/>
+						<div class="space-y-2">
+							<div class="flex gap-2">
+								<input
+									id="edit-serialNumber"
+									type="text"
+									bind:value={newSerialNumber}
+									onkeypress={(e) => e.key === 'Enter' && (e.preventDefault(), addSerialNumber())}
+									class="flex-1 rounded-lg border border-card bg-input text-input px-3 py-2 focus:ring-2 focus:ring-accent focus:outline-none"
+									placeholder="Enter serial number"
+								/>
+								<button
+									type="button"
+									onclick={addSerialNumber}
+									class="flex items-center gap-1 rounded-md bg-accent px-3 py-2 text-white text-sm transition-colors hover:bg-accent-secondary"
+								>
+									<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+									</svg>
+									Add
+								</button>
+							</div>
+							{#if newAsset.serialNumbers.length > 0}
+								<div class="flex flex-wrap gap-2">
+									{#each newAsset.serialNumbers as serialNumber, index}
+										<span class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-800">
+											{serialNumber}
+											<button
+												type="button"
+												onclick={() => removeSerialNumber(index)}
+												class="ml-1 text-blue-600 hover:text-blue-800"
+											>
+												<svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+												</svg>
+											</button>
+										</span>
+									{/each}
+								</div>
+							{/if}
+						</div>
 					</div>
 				</div>
 
 				<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
 					<div>
-						<label for="edit-assetNumber" class="mb-1 block text-sm font-medium text-gray-700"
+						<label for="edit-assetNumber" class="mb-1 block text-sm font-medium text-secondary"
 							>Asset Number</label
 						>
 						<input
 							id="edit-assetNumber"
 							type="text"
 							bind:value={newAsset.assetNumber}
-							class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+							class="w-full rounded-lg border border-card bg-input text-input px-3 py-2 focus:ring-2 focus:ring-accent focus:outline-none"
 							placeholder="e.g., AST-001, INV-2024-001"
 						/>
 					</div>
 					<div>
-						<label for="edit-supplier" class="mb-1 block text-sm font-medium text-gray-700"
+						<label for="edit-supplier" class="mb-1 block text-sm font-medium text-secondary"
 							>Supplier</label
 						>
 						<input
 							id="edit-supplier"
 							type="text"
 							bind:value={newAsset.supplier}
-							class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+							class="w-full rounded-lg border border-card bg-input text-input px-3 py-2 focus:ring-2 focus:ring-accent focus:outline-none"
 							placeholder="e.g., Amazon, Local Store"
 						/>
 					</div>
@@ -829,25 +953,25 @@
 
 				<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
 					<div>
-						<label for="edit-location" class="mb-1 block text-sm font-medium text-gray-700"
+						<label for="edit-location" class="mb-1 block text-sm font-medium text-secondary"
 							>Location</label
 						>
 						<input
 							id="edit-location"
 							type="text"
 							bind:value={newAsset.location}
-							class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+							class="w-full rounded-lg border border-card bg-input text-input px-3 py-2 focus:ring-2 focus:ring-accent focus:outline-none"
 							placeholder="e.g., Studio, Storage Room"
 						/>
 					</div>
 					<div>
-						<label for="edit-status" class="mb-1 block text-sm font-medium text-gray-700"
+						<label for="edit-status" class="mb-1 block text-sm font-medium text-secondary"
 							>Status</label
 						>
 						<select
 							id="edit-status"
 							bind:value={newAsset.status}
-							class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+							class="w-full rounded-lg border border-card bg-input text-input px-3 py-2 focus:ring-2 focus:ring-accent focus:outline-none"
 						>
 							<option value="Available">Available</option>
 							<option value="In Use">In Use</option>
@@ -859,18 +983,18 @@
 
 				<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
 					<div>
-						<label for="edit-purchaseDate" class="mb-1 block text-sm font-medium text-gray-700"
+						<label for="edit-purchaseDate" class="mb-1 block text-sm font-medium text-secondary"
 							>Purchase Date</label
 						>
 						<input
 							id="edit-purchaseDate"
 							type="date"
 							bind:value={newAsset.purchaseDate}
-							class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+							class="w-full rounded-lg border border-card bg-input text-input px-3 py-2 focus:ring-2 focus:ring-accent focus:outline-none"
 						/>
 					</div>
 					<div>
-						<label for="edit-purchasePrice" class="mb-1 block text-sm font-medium text-gray-700"
+						<label for="edit-purchasePrice" class="mb-1 block text-sm font-medium text-secondary"
 							>Purchase Price</label
 						>
 						<input
@@ -878,34 +1002,34 @@
 							type="number"
 							step="0.01"
 							bind:value={newAsset.purchasePrice}
-							class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+							class="w-full rounded-lg border border-card bg-input text-input px-3 py-2 focus:ring-2 focus:ring-accent focus:outline-none"
 							placeholder="0.00"
 						/>
 					</div>
 				</div>
 
 				<div>
-					<label for="edit-notes" class="mb-1 block text-sm font-medium text-gray-700">Notes</label>
+					<label for="edit-notes" class="mb-1 block text-sm font-medium text-secondary">Notes</label>
 					<textarea
 						id="edit-notes"
 						bind:value={newAsset.notes}
-						class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+						class="w-full rounded-lg border border-card bg-input text-input px-3 py-2 focus:ring-2 focus:ring-accent focus:outline-none"
 						rows="3"
 						placeholder="Additional notes about this asset"
 					></textarea>
 				</div>
 
-				<div class="flex justify-end gap-3 pt-4">
+				<div class="flex space-x-3 pt-4">
 					<button
 						type="button"
 						onclick={() => (showEditModal = false)}
-						class="rounded-md bg-gray-100 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-200"
+						class="flex-1 bg-tertiary hover:bg-secondary text-primary py-2 px-4 rounded-lg transition-colors"
 					>
 						Cancel
 					</button>
 					<button
 						type="submit"
-						class="rounded-md bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+						class="flex-1 bg-accent hover:bg-accent-secondary text-white py-2 px-4 rounded-lg transition-colors"
 					>
 						Update Asset
 					</button>
@@ -918,22 +1042,22 @@
 <!-- Delete Confirmation Modal -->
 {#if showDeleteModal}
 	<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-		<div class="bg-primary mx-4 w-full max-w-md rounded-lg p-6">
-			<h2 class="mb-4 text-xl font-bold">Delete Asset</h2>
-			<p class="mb-6 text-gray-600">
-				Are you sure you want to delete <strong>{selectedAsset?.itemName}</strong>? This action
+		<div class="bg-card mx-4 w-full max-w-md rounded-xl p-6 border border-card">
+			<h2 class="mb-4 text-xl font-bold text-primary">Delete Asset</h2>
+			<p class="mb-6 text-secondary">
+				Are you sure you want to delete <strong class="text-primary">{selectedAsset?.itemName}</strong>? This action
 				cannot be undone.
 			</p>
-			<div class="flex justify-end gap-3">
+			<div class="flex space-x-3">
 				<button
 					onclick={() => (showDeleteModal = false)}
-					class="rounded-md bg-gray-100 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-200"
+					class="flex-1 bg-tertiary hover:bg-secondary text-primary py-2 px-4 rounded-lg transition-colors"
 				>
 					Cancel
 				</button>
 				<button
 					onclick={handleDeleteAsset}
-					class="rounded-md bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700"
+					class="flex-1 bg-error hover:text-red-700 text-white py-2 px-4 rounded-lg transition-colors"
 				>
 					Delete Asset
 				</button>

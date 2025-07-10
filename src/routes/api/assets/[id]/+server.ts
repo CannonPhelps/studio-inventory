@@ -1,24 +1,32 @@
 import { json } from '@sveltejs/kit';
 import { requireAdmin } from '$lib/server/routeProtection';
 import { prisma } from '$lib/db';
+import { AuditService } from '$lib/server/audit';
 import type { RequestHandler } from './$types';
 
 export const PUT: RequestHandler = async (event) => {
 	try {
 		// Check if current user is admin
-		await requireAdmin(event);
+		const user = await requireAdmin(event);
 
 		const assetId = parseInt(event.params.id);
 		const updateData = await event.request.json();
 
 		// Check if asset exists
 		const existingAsset = await prisma.asset.findUnique({
-			where: { id: assetId }
+			where: { id: assetId },
+			include: { serialNumbers: true }
 		});
 
 		if (!existingAsset) {
 			return json({ error: 'Asset not found' }, { status: 404 });
 		}
+
+		// Handle serial numbers update
+		const serialNumbers = updateData.serialNumbers || [];
+		const serialNumbersData = Array.isArray(serialNumbers) 
+			? serialNumbers.filter(sn => sn && sn.trim())
+			: (updateData.serialNumber && updateData.serialNumber.trim() ? [updateData.serialNumber] : []);
 
 		// Prepare update data
 		const data: {
@@ -26,7 +34,6 @@ export const PUT: RequestHandler = async (event) => {
 			quantity: number;
 			categoryId: number;
 			modelBrand?: string | null;
-			serialNumber?: string | null;
 			location?: string | null;
 			status: string;
 			notes?: string | null;
@@ -43,7 +50,6 @@ export const PUT: RequestHandler = async (event) => {
 			quantity: parseInt(updateData.quantity) || 1,
 			categoryId: updateData.categoryId ? parseInt(updateData.categoryId) : 1,
 			modelBrand: updateData.modelBrand || null,
-			serialNumber: updateData.serialNumber || null,
 			location: updateData.location || null,
 			status: updateData.status,
 			notes: updateData.notes || null,
@@ -67,15 +73,33 @@ export const PUT: RequestHandler = async (event) => {
 			data.cableLength = parseFloat(updateData.cableLength);
 		}
 
-		// Update asset
+		// Update asset and serial numbers
 		const updatedAsset = await prisma.asset.update({
 			where: { id: assetId },
-			data,
+			data: {
+				...data,
+				serialNumbers: {
+					deleteMany: {},
+					create: serialNumbersData.map(sn => ({ serialNumber: sn }))
+				}
+			},
 			include: {
 				category: true,
-				cableType: true
+				cableType: true,
+				serialNumbers: true
 			}
 		});
+
+		// Log the asset update
+		await AuditService.logAssetAction(
+			'UPDATE',
+			assetId,
+			user.id,
+			{ itemName: existingAsset.itemName, status: existingAsset.status },
+			{ itemName: updatedAsset.itemName, status: updatedAsset.status },
+			`Asset "${updatedAsset.itemName}" updated`,
+			event
+		);
 
 		return json(updatedAsset);
 	} catch (error) {
@@ -87,7 +111,7 @@ export const PUT: RequestHandler = async (event) => {
 export const DELETE: RequestHandler = async (event) => {
 	try {
 		// Check if current user is admin
-		await requireAdmin(event);
+		const user = await requireAdmin(event);
 
 		const assetId = parseInt(event.params.id);
 
@@ -126,6 +150,17 @@ export const DELETE: RequestHandler = async (event) => {
 		await prisma.movement.deleteMany({
 			where: { assetId: assetId }
 		});
+
+		// Log the asset deletion
+		await AuditService.logAssetAction(
+			'DELETE',
+			assetId,
+			user.id,
+			{ itemName: existingAsset.itemName, status: existingAsset.status },
+			undefined,
+			`Asset "${existingAsset.itemName}" deleted`,
+			event
+		);
 
 		// Delete asset
 		await prisma.asset.delete({

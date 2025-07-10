@@ -18,16 +18,26 @@
 	});
 
 	const adminNavigation = [
-		{ name: 'Dashboard', href: '/admin', icon: '📊', current: true },
+		{ name: 'Overview', href: '/admin', icon: '📊', current: true },
+		{ name: 'Analytics', href: '/admin/dashboard', icon: '📈', current: false },
 		{ name: 'Assets', href: '/admin/assets', icon: '📦', current: false },
 		{ name: 'Categories', href: '/admin/categories', icon: '🏷️', current: false },
+		{ name: 'Rooms', href: '/admin/rooms', icon: '🏢', current: false },
+		{ name: 'Projects', href: '/admin/projects', icon: '📂', current: false },
+		{ name: 'Finances', href: '/admin/finances', icon: '💰', current: false },
 		{ name: 'Bulk Cables', href: '/admin/bulk-cables', icon: '📏', current: false },
+		{ name: 'Kits', href: '/admin/kits', icon: '🎒', current: false },
 		{ name: 'Users', href: '/admin/users', icon: '👥', current: false },
 		{ name: 'Checkouts', href: '/admin/checkouts', icon: '📤', current: false },
 		{ name: 'Returns', href: '/admin/returns', icon: '📥', current: false },
 		{ name: 'Movements', href: '/admin/movements', icon: '🔄', current: false },
+		{ name: 'Cable Routes', href: '/admin/cable-routes', icon: '🗺️', current: false },
 		{ name: 'Maintenance', href: '/admin/maintenance', icon: '🔧', current: false },
 		{ name: 'Import', href: '/admin/import', icon: '📥', current: false },
+		{ name: 'Audit Logs', href: '/admin/audit-logs', icon: '📋', current: false },
+		{ name: 'Backups', href: '/admin/backups', icon: '💾', current: false },
+		{ name: 'Communications', href: '/admin/communications', icon: '📧', current: false },
+		{ name: 'Automated Tasks', href: '/admin/automated-tasks', icon: '⏰', current: false },
 		{ name: 'Settings', href: '/admin/settings', icon: '⚙️', current: false }
 	];
 

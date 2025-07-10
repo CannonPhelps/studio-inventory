@@ -44,7 +44,7 @@
 	function filterAssets() {
 		filteredAssets = assets.filter(asset => {
 			const matchesSearch = asset.itemName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-								 (asset.serialNumber && asset.serialNumber.toLowerCase().includes(searchQuery.toLowerCase()));
+								 (asset.serialNumbers && asset.serialNumbers.some(sn => sn.serialNumber.toLowerCase().includes(searchQuery.toLowerCase())));
 			const matchesCategory = selectedCategory === 'all' || asset.category?.name.toLowerCase() === selectedCategory;
 			const matchesStatus = selectedStatus === 'all' || asset.status.toLowerCase() === selectedStatus;
 			return matchesSearch && matchesCategory && matchesStatus;
@@ -200,7 +200,7 @@
 									</div>
 									<div class="flex justify-between text-xs sm:text-sm">
 										<span class="text-secondary">Serial:</span>
-										<span class="text-primary font-mono truncate ml-2">{asset.serialNumber || 'N/A'}</span>
+										<span class="text-primary font-mono truncate ml-2">{asset.serialNumbers && asset.serialNumbers.length > 0 ? asset.serialNumbers.map(sn => sn.serialNumber).join(', ') : 'N/A'}</span>
 									</div>
 									<div class="flex justify-between text-xs sm:text-sm">
 										<span class="text-secondary">Purchase:</span>

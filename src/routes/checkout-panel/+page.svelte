@@ -14,7 +14,7 @@
 		};
 		status: string;
 		location: string;
-		serialNumber?: string;
+		serialNumbers?: Array<{ serialNumber: string }>;
 		image?: string;
 	}
 
@@ -100,7 +100,7 @@
 	function filterAssets() {
 		filteredAssets = assets.filter((asset: Asset) => {
 			const matchesSearch = asset.itemName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-								 (asset.serialNumber && asset.serialNumber.toLowerCase().includes(searchQuery.toLowerCase()));
+								 (asset.serialNumbers && asset.serialNumbers.some(sn => sn.serialNumber.toLowerCase().includes(searchQuery.toLowerCase())));
 			const matchesCategory = selectedCategory === 'all' || asset.category?.name.toLowerCase() === selectedCategory;
 			return matchesSearch && matchesCategory;
 		});
@@ -355,7 +355,7 @@
 									</div>
 									<div class="flex justify-between text-sm">
 										<span class="text-secondary">Serial:</span>
-										<span class="text-primary font-mono truncate ml-2">{asset.serialNumber || 'N/A'}</span>
+										<span class="text-primary font-mono truncate ml-2">{asset.serialNumbers && asset.serialNumbers.length > 0 ? asset.serialNumbers.map(sn => sn.serialNumber).join(', ') : 'N/A'}</span>
 									</div>
 								</div>
 

@@ -348,7 +348,7 @@
 		{:else}
 			<div class="text-center py-12">
 				<div class="text-gray-400 text-6xl mb-4">🔒</div>
-				<h3 class="text-lg font-medium text-gray-900 mb-2">Access Denied</h3>
+				<h3 class="text-lg font-medium text-primary mb-2">Access Denied</h3>
 				<p class="text-gray-500">You need to be logged in to access settings.</p>
 			</div>
 		{/if}

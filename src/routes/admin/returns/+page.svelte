@@ -4,7 +4,7 @@
 	interface Asset {
 		id: string;
 		itemName: string;
-		serialNumber?: string;
+		serialNumbers?: Array<{ serialNumber: string }>;
 		status: string;
 	}
 
@@ -112,7 +112,7 @@
 								<td class="px-6 py-4 whitespace-nowrap">
 									<div>
 										<div class="text-sm font-medium text-primary">{checkout.asset.itemName}</div>
-										<div class="text-sm text-muted-foreground">{checkout.asset.serialNumber || 'No Serial'}</div>
+										<div class="text-sm text-muted-foreground">{checkout.asset.serialNumbers?.[0]?.serialNumber || 'No Serial'}</div>
 									</div>
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap text-sm text-primary">{checkout.user}</td>
@@ -172,7 +172,7 @@
 								<td class="px-6 py-4 whitespace-nowrap">
 									<div>
 										<div class="text-sm font-medium text-primary">{checkout.asset.itemName}</div>
-										<div class="text-sm text-primary">{checkout.asset.serialNumber || 'No Serial'}</div>
+										<div class="text-sm text-primary">{checkout.asset.serialNumbers?.[0]?.serialNumber || 'No Serial'}</div>
 									</div>
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap text-sm text-primary">{checkout.user}</td>

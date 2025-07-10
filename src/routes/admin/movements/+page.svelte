@@ -4,7 +4,7 @@
 	interface Asset {
 		id: string;
 		itemName: string;
-		serialNumber?: string;
+		serialNumbers?: Array<{ serialNumber: string }>;
 		location: string;
 		status: string;
 	}
@@ -145,7 +145,7 @@
 						>
 							<option value="">Select an asset</option>
 							{#each assets as asset}
-								<option value={asset.id}>{asset.itemName} {asset.serialNumber ? `(${asset.serialNumber})` : ''}</option>
+								<option value={asset.id}>{asset.itemName} {asset.serialNumbers && asset.serialNumbers.length > 0 ? `(${asset.serialNumbers.map(s => s.serialNumber).join(', ')})` : ''}</option>
 							{/each}
 						</select>
 					</div>
@@ -253,7 +253,7 @@
 								<td class="px-6 py-4 whitespace-nowrap">
 									<div>
 										<div class="text-sm font-medium text-primary">{asset.itemName}</div>
-										<div class="text-sm text-primary">{asset.serialNumber || 'No Serial'}</div>
+										<div class="text-sm text-primary">{asset.serialNumbers && asset.serialNumbers.length > 0 ? asset.serialNumbers.map(s => s.serialNumber).join(', ') : 'No Serial'}</div>
 									</div>
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap text-sm text-primary">{asset.location}</td>
@@ -303,7 +303,7 @@
 								<td class="px-6 py-4 whitespace-nowrap">
 									<div>
 										<div class="text-sm font-medium text-primary">{movement.asset.itemName}</div>
-										<div class="text-sm text-primary">{movement.asset.serialNumber || 'No Serial'}</div>
+										<div class="text-sm text-primary">{movement.asset.serialNumbers && movement.asset.serialNumbers.length > 0 ? movement.asset.serialNumbers.map(s => s.serialNumber).join(', ') : 'No Serial'}</div>
 									</div>
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap text-sm text-primary">{movement.fromLocation}</td>

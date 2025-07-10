@@ -5,4 +5,6 @@
 	let { children } = $props<{ children: any }>();
 </script>
 
-{@render children()}
+<div class="bg-gradient-to-br from-primary via-secondary to-tertiary min-h-screen">
+	{@render children()}
+</div>

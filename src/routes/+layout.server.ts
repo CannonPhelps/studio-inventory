@@ -22,6 +22,21 @@ export const load = async (event: RequestEvent) => {
 	
 	const user = await optionalAuth(event);
 	
+	// If user is logged in, redirect based on role
+	if (user) {
+		const pathname = event.url.pathname;
+		
+		// Admin users should only access admin routes
+		if (user.role === 'admin' && !pathname.startsWith('/admin') && pathname !== '/login') {
+			throw redirect(302, '/admin');
+		}
+		
+		// Regular users should only access user routes
+		if (user.role === 'user' && pathname.startsWith('/admin')) {
+			throw redirect(302, '/');
+		}
+	}
+	
 	return {
 		user: user ? {
 			id: user.id,

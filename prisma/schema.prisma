@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "darwin-arm64"]
 }
 
 datasource db {
@@ -35,12 +36,12 @@ model CableEnd {
   gender           String
   description      String?
   color            String?
-  quantity         Int             @default(0)
-  purchasePrice    Decimal?        @db.Decimal(10, 2)
-  supplier         String?
-  purchaseDate     DateTime?
   location         String?
   notes            String?
+  purchaseDate     DateTime?
+  purchasePrice    Decimal?        @db.Decimal(10, 2)
+  quantity         Int             @default(0)
+  supplier         String?
   cableAssemblies  CableAssembly[] @relation("CableEndA")
   cableAssemblies2 CableAssembly[] @relation("CableEndB")
 
@@ -86,6 +87,7 @@ model Asset {
   modelBrand         String?
   serialNumber       String?
   location           String?
+  roomId             Int?
   status             String              @default("Available")
   purchaseDate       DateTime?
   purchasePrice      Decimal?            @db.Decimal(10, 2)
@@ -98,14 +100,46 @@ model Asset {
   cableLength        Float?
   cableTypeId        Int?
   isCable            Boolean             @default(false)
+  serialNumbers      AssetSerialNumber[]
   cableType          CableType?          @relation(fields: [cableTypeId], references: [id])
   category           Category            @relation(fields: [categoryId], references: [id])
+  room               Room?               @relation(fields: [roomId], references: [id])
   cableAssembly      CableAssembly?
   checkouts          Checkout[]
   maintenanceRecords MaintenanceRecord[]
   movements          Movement[]
+  financialRecords   FinancialRecord[]
+  projectAssets      ProjectAsset[]
+  kitAssets          KitAsset[]
+  cableSegments      CableSegment[] @relation("CableAsset")
 
   @@map("assets")
+}
+
+model FinancialRecord {
+  id          Int      @id @default(autoincrement())
+  assetId     Int?
+  type        String   // purchase, maintenance, repair, disposal, etc.
+  category    String?
+  amount      Decimal  @db.Decimal(12, 2)
+  date        DateTime @default(now())
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  asset       Asset?   @relation(fields: [assetId], references: [id])
+
+  @@map("financial_records")
+}
+
+model AssetSerialNumber {
+  id           Int     @id @default(autoincrement())
+  assetId      Int
+  serialNumber String
+  notes        String?
+  asset        Asset   @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@unique([assetId, serialNumber])
+  @@map("asset_serial_numbers")
 }
 
 model Checkout {
@@ -172,4 +206,186 @@ model UserSession {
   userId    String
   expiresAt DateTime
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id         Int      @id @default(autoincrement())
+  userId     String?
+  action     String
+  entityType String
+  entityId   String?
+  oldValues  Json?
+  newValues  Json?
+  ipAddress  String?
+  userAgent  String?
+  timestamp  DateTime @default(now())
+  details    String?
+  severity   String   @default("INFO")
+
+  @@map("audit_logs")
+}
+
+model Notification {
+  id        String    @id @default(uuid())
+  userId    String
+  type      String
+  title     String
+  message   String
+  category  String
+  read      Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  expiresAt DateTime?
+  actionUrl String?
+  metadata  Json?
+
+  @@map("notifications")
+}
+
+model Room {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  building    String?
+  floor       String?
+  capacity    Int?
+  type        String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  assets      Asset[]
+  fromSegments CableSegment[] @relation("SegmentFromRoom")
+  toSegments  CableSegment[] @relation("SegmentToRoom")
+
+  @@map("rooms")
+}
+
+model AutomatedTask {
+  id         Int      @id @default(autoincrement())
+  name       String
+  type       String   // cron, interval, event
+  schedule   String?  // cron expression or interval in ms for interval tasks
+  event      String?  // event name for event-based tasks
+  payload    Json?
+  lastRun    DateTime?
+  nextRun    DateTime?
+  status     String   @default("active") // active, paused, failed
+  lastResult String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  logs       AutomatedTaskLog[]
+
+  @@map("automated_tasks")
+}
+
+model AutomatedTaskLog {
+  id        Int      @id @default(autoincrement())
+  taskId    Int
+  executedAt DateTime @default(now())
+  success   Boolean
+  message   String?
+  task      AutomatedTask @relation(fields: [taskId], references: [id])
+
+  @@map("automated_task_logs")
+}
+
+model Project {
+  id          Int            @id @default(autoincrement())
+  name        String
+  description String?
+  status      String         @default("planning") // planning, active, completed, archived
+  startDate   DateTime?
+  endDate     DateTime?
+  budget      Decimal?       @db.Decimal(12, 2)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  assets      ProjectAsset[]
+  tasks       ProjectTask[]
+
+  @@map("projects")
+}
+
+model ProjectAsset {
+  id         Int      @id @default(autoincrement())
+  projectId  Int
+  assetId    Int
+  assignedAt DateTime @default(now())
+  releasedAt DateTime?
+  project    Project  @relation(fields: [projectId], references: [id])
+  asset      Asset    @relation(fields: [assetId], references: [id])
+
+  @@unique([projectId, assetId])
+  @@map("project_assets")
+}
+
+model ProjectTask {
+  id          Int      @id @default(autoincrement())
+  projectId   Int
+  name        String
+  description String?
+  assignedTo  String?
+  status      String   @default("pending") // pending, in_progress, completed
+  dueDate     DateTime?
+  completedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  project     Project  @relation(fields: [projectId], references: [id])
+
+  @@map("project_tasks")
+}
+
+model Kit {
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String?
+  status      String     @default("available") // available, reserved, checked_out, inactive
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  assets      KitAsset[]
+
+  @@map("kits")
+}
+
+model KitAsset {
+  id         Int      @id @default(autoincrement())
+  kitId      Int
+  assetId    Int
+  quantity   Int?
+  assignedAt DateTime @default(now())
+  releasedAt DateTime?
+  kit        Kit      @relation(fields: [kitId], references: [id])
+  asset      Asset    @relation(fields: [assetId], references: [id])
+
+  @@unique([kitId, assetId])
+  @@map("kit_assets")
+}
+
+model CableRoute {
+  id          Int            @id @default(autoincrement())
+  name        String
+  description String?
+  status      String         @default("active") // active, inactive
+  totalLength Float?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  segments    CableSegment[]
+
+  @@map("cable_routes")
+}
+
+model CableSegment {
+  id          Int      @id @default(autoincrement())
+  routeId     Int
+  order       Int
+  fromRoomId  Int
+  toRoomId    Int
+  cableAssetId Int?
+  length      Float?
+  notes       String?
+  route       CableRoute  @relation(fields: [routeId], references: [id])
+  fromRoom    Room        @relation("SegmentFromRoom", fields: [fromRoomId], references: [id])
+  toRoom      Room        @relation("SegmentToRoom", fields: [toRoomId], references: [id])
+  cable       Asset?      @relation("CableAsset", fields: [cableAssetId], references: [id])
+
+  @@map("cable_segments")
+  @@unique([routeId, order])
 }

@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { requireAuth } from '$lib/server/routeProtection';
 import { prisma } from '$lib/db';
+import { AuditService } from '$lib/server/audit';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async (event) => {
@@ -12,6 +13,7 @@ export const GET: RequestHandler = async (event) => {
 		const assets = await prisma.asset.findMany({
 			include: {
 				category: true,
+				serialNumbers: true,
 				checkouts: {
 					where: { returnedAt: null }
 				}
@@ -32,9 +34,15 @@ export const GET: RequestHandler = async (event) => {
 export const POST: RequestHandler = async (event) => {
 	try {
 		// Require authentication
-		await requireAuth(event);
+		const user = await requireAuth(event);
 		
 		const data = await event.request.json();
+		
+		// Handle serial numbers - can be a string or array
+		const serialNumbers = data.serialNumbers || [];
+		const serialNumbersData = Array.isArray(serialNumbers) 
+			? serialNumbers.filter(sn => sn && sn.trim())
+			: (data.serialNumber && data.serialNumber.trim() ? [data.serialNumber] : []);
 		
 		const asset = await prisma.asset.create({
 			data: {
@@ -42,7 +50,6 @@ export const POST: RequestHandler = async (event) => {
 				quantity: parseInt(data.quantity) || 1,
 				categoryId: parseInt(data.categoryId),
 				modelBrand: data.modelBrand,
-				serialNumber: data.serialNumber,
 				location: data.location,
 				status: data.status || 'Available',
 				purchaseDate: data.purchaseDate ? new Date(data.purchaseDate) : null,
@@ -55,12 +62,27 @@ export const POST: RequestHandler = async (event) => {
 				supplier: data.supplier,
 				isCable: data.isCable || false,
 				cableTypeId: data.cableTypeId ? parseInt(data.cableTypeId) : null,
-				cableLength: data.cableLength ? parseFloat(data.cableLength) : null
+				cableLength: data.cableLength ? parseFloat(data.cableLength) : null,
+				serialNumbers: {
+					create: serialNumbersData.map(sn => ({ serialNumber: sn }))
+				}
 			},
 			include: {
-				category: true
+				category: true,
+				serialNumbers: true
 			}
 		});
+
+		// Log the asset creation
+		await AuditService.logAssetAction(
+			'CREATE',
+			asset.id,
+			user.id,
+			undefined,
+			{ itemName: asset.itemName, categoryId: asset.categoryId, status: asset.status },
+			`Asset "${asset.itemName}" created`,
+			event
+		);
 
 		return json(asset);
 	} catch (error) {

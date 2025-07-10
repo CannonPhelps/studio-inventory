@@ -32,4 +32,12 @@ export async function optionalAuth(event: RequestEvent) {
 		return null;
 	}
 	return session.user;
+}
+
+export async function requireUser(event: RequestEvent) {
+	const user = await requireAuth(event);
+	if (user.role !== 'user') {
+		throw redirect(302, '/admin');
+	}
+	return user;
 } 

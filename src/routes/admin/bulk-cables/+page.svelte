@@ -773,8 +773,8 @@
 	<!-- Header -->
 	<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
 		<div>
-			<h1 class="text-3xl font-bold text-primary">Cable Management</h1>
-			<p class="mt-2 text-secondary">Manage bulk cables, cable types, and cable ends</p>
+			<h1 class="text-primary text-3xl font-bold">Cable Management</h1>
+			<p class="text-secondary mt-2">Manage bulk cables, cable types, and cable ends</p>
 		</div>
 	</div>
 
@@ -795,9 +795,11 @@
 		</nav>
 	</div>
 
-			{#if loading}
+	{#if loading}
 		<div class="flex items-center justify-center py-12">
-			<div class="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600 dark:border-blue-400"></div>
+			<div
+				class="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600 dark:border-blue-400"
+			></div>
 		</div>
 	{:else}
 		<!-- Tab Content -->
@@ -805,10 +807,10 @@
 			<!-- Bulk Cables Tab -->
 			<div class="space-y-6">
 				<div class="flex items-center justify-between">
-					<h2 class="text-xl font-semibold text-primary">Bulk Cables</h2>
+					<h2 class="text-primary text-xl font-semibold">Bulk Cables</h2>
 					<button
 						on:click={() => (showAddModal = true)}
-						class="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2  transition-colors hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+						class="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 transition-colors hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
 					>
 						<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path
@@ -834,13 +836,13 @@
 								/>
 							</svg>
 						</div>
-						<h3 class="mb-2 text-lg font-medium text-gray-900 dark:">No bulk cables yet</h3>
-						<p class="mb-4 text-secondary">
+						<h3 class="dark: mb-2 text-lg font-medium text-primary">No bulk cables yet</h3>
+						<p class="text-secondary mb-4">
 							Add your first bulk cable to start tracking cable inventory.
 						</p>
 						<button
 							on:click={() => (showAddModal = true)}
-							class="rounded-lg bg-blue-600 px-4 py-2  transition-colors hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+							class="rounded-lg bg-blue-600 px-4 py-2 transition-colors hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
 						>
 							Add Bulk Cable
 						</button>
@@ -855,7 +857,7 @@
 							)}
 							{@const usageColor = getUsageColor(usagePercentage)}
 							<div
-								class="rounded-xl border border-gray-200 dark:border-gray-700 bg-primary shadow-sm transition-shadow hover:shadow-md dark:shadow-gray-900/20"
+								class="bg-primary rounded-xl border border-gray-200 shadow-sm transition-shadow hover:shadow-md dark:border-gray-700 dark:shadow-gray-900/20"
 							>
 								<div class="p-6">
 									<div class="mb-4 flex items-start justify-between">
@@ -865,11 +867,11 @@
 													class="mr-2 h-3 w-3 rounded-full"
 													style="background-color: {getCableTypeColor(cable.cableTypeId)}"
 												></div>
-												<h3 class="text-lg font-semibold text-primary">
+												<h3 class="text-primary text-lg font-semibold">
 													{getCableTypeName(cable.cableTypeId)}
 												</h3>
 											</div>
-											<p class="text-sm text-tertiary">{cable.location || 'No location'}</p>
+											<p class="text-tertiary text-sm">{cable.location || 'No location'}</p>
 										</div>
 										<div class="flex items-center space-x-2">
 											<button
@@ -919,7 +921,7 @@
 
 									<!-- Usage Progress Bar -->
 									<div class="mb-4">
-										<div class="mb-1 flex justify-between text-sm text-secondary">
+										<div class="text-secondary mb-1 flex justify-between text-sm">
 											<span class="text-tertiary">Usage</span>
 											<span>{usagePercentage}%</span>
 										</div>
@@ -929,7 +931,7 @@
 												style="width: {usagePercentage}%"
 											></div>
 										</div>
-										<div class="mt-1 flex justify-between text-xs text-tertiary">
+										<div class="text-tertiary mt-1 flex justify-between text-xs">
 											<span
 												>{cable.remainingLength ? cable.remainingLength.toFixed(1) : '0'} ft remaining</span
 											>
@@ -941,19 +943,19 @@
 										{#if cable.supplier}
 											<div class="flex justify-between text-sm">
 												<span class="text-secondary">Supplier:</span>
-												<span class="font-medium text-gray-900 dark:">{cable.supplier}</span>
+												<span class="dark: font-medium text-primary">{cable.supplier}</span>
 											</div>
 										{/if}
 										{#if cable.purchasePrice}
 											<div class="flex justify-between text-sm">
 												<span class="text-secondary">Price:</span>
-												<span class="font-medium text-gray-900 dark:">${cable.purchasePrice}</span>
+												<span class="dark: font-medium text-primary">${cable.purchasePrice}</span>
 											</div>
 										{/if}
 										{#if cable.purchaseDate}
 											<div class="flex justify-between text-sm">
 												<span class="text-secondary">Purchased:</span>
-												<span class="font-medium text-gray-900 dark:"
+												<span class="dark: font-medium text-primary"
 													>{new Date(cable.purchaseDate).toLocaleDateString()}</span
 												>
 											</div>
@@ -961,13 +963,15 @@
 									</div>
 
 									{#if cable.notes}
-										<div class="mb-4 rounded-lg bg-gray-50 dark:bg-gray-800 p-3">
+										<div class="mb-4 rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
 											<p class="text-sm text-gray-700 dark:text-gray-300">{cable.notes}</p>
 										</div>
 									{/if}
 
-									<div class="flex items-center justify-between border-t border-gray-100 dark:border-gray-700 pt-4">
-										<div class="flex items-center text-sm text-secondary">
+									<div
+										class="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-gray-700"
+									>
+										<div class="text-secondary flex items-center text-sm">
 											<svg
 												class="mr-1 h-4 w-4"
 												fill="none"
@@ -995,10 +999,10 @@
 			<!-- Cable Types Tab -->
 			<div class="space-y-6">
 				<div class="flex items-center justify-between">
-					<h2 class="text-xl font-semibold text-primary">Cable Types</h2>
+					<h2 class="text-primary text-xl font-semibold">Cable Types</h2>
 					<button
 						on:click={() => (showAddCableTypeModal = true)}
-						class="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2  transition-colors hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+						class="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 transition-colors hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
 					>
 						<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path
@@ -1024,13 +1028,13 @@
 								/>
 							</svg>
 						</div>
-						<h3 class="mb-2 text-lg font-medium text-gray-900 dark:">No cable types yet</h3>
-						<p class="mb-4 text-secondary">
+						<h3 class="dark: mb-2 text-lg font-medium text-primary">No cable types yet</h3>
+						<p class="text-secondary mb-4">
 							Create your first cable type to start managing cable specifications.
 						</p>
 						<button
 							on:click={() => (showAddCableTypeModal = true)}
-							class="rounded-lg bg-blue-600 px-4 py-2  transition-colors hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+							class="rounded-lg bg-blue-600 px-4 py-2 transition-colors hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
 						>
 							Add Cable Type
 						</button>
@@ -1040,14 +1044,14 @@
 					<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
 						{#each cableTypes as cableType}
 							<div
-								class="rounded-xl border border-gray-200 dark:border-gray-700 bg-primary shadow-sm transition-shadow hover:shadow-md dark:shadow-gray-900/20"
+								class="bg-primary rounded-xl border border-gray-200 shadow-sm transition-shadow hover:shadow-md dark:border-gray-700 dark:shadow-gray-900/20"
 							>
 								<div class="p-6">
 									<div class="mb-4 flex items-start justify-between">
 										<div class="flex-1">
-											<h3 class="mb-1 text-lg font-semibold text-primary">{cableType.name}</h3>
+											<h3 class="text-primary mb-1 text-lg font-semibold">{cableType.name}</h3>
 											{#if cableType.color}
-												<div class="flex items-center text-sm text-secondary">
+												<div class="text-secondary flex items-center text-sm">
 													<div
 														class="mr-2 h-3 w-3 rounded-full"
 														style="background-color: {cableType.color}"
@@ -1087,32 +1091,34 @@
 									</div>
 
 									{#if cableType.description}
-										<p class="mb-4 text-sm text-secondary">{cableType.description}</p>
+										<p class="text-secondary mb-4 text-sm">{cableType.description}</p>
 									{/if}
 
 									<div class="space-y-2">
 										{#if cableType.gauge}
 											<div class="flex justify-between text-sm">
 												<span class="text-secondary">Gauge:</span>
-												<span class="font-medium text-gray-900 dark:">{cableType.gauge}</span>
+												<span class="dark: font-medium text-primary">{cableType.gauge}</span>
 											</div>
 										{/if}
 										{#if cableType.impedance}
 											<div class="flex justify-between text-sm">
 												<span class="text-secondary">Impedance:</span>
-												<span class="font-medium text-gray-900 dark:">{cableType.impedance}</span>
+												<span class="dark: font-medium text-primary">{cableType.impedance}</span>
 											</div>
 										{/if}
 										{#if cableType.maxLength}
 											<div class="flex justify-between text-sm">
 												<span class="text-secondary">Max Length:</span>
-												<span class="font-medium text-gray-900 dark:">{cableType.maxLength}ft</span>
+												<span class="dark: font-medium text-primary">{cableType.maxLength}ft</span>
 											</div>
 										{/if}
 									</div>
 
-									<div class="flex items-center justify-between border-t border-gray-100 dark:border-gray-700 pt-4">
-										<div class="flex items-center text-sm text-secondary">
+									<div
+										class="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-gray-700"
+									>
+										<div class="text-secondary flex items-center text-sm">
 											<svg
 												class="mr-1 h-4 w-4"
 												fill="none"
@@ -1140,10 +1146,10 @@
 			<!-- Cable Assets Tab -->
 			<div class="space-y-6">
 				<div class="flex items-center justify-between">
-					<h2 class="text-xl font-semibold text-primary">Cable Assets</h2>
+					<h2 class="text-primary text-xl font-semibold">Cable Assets</h2>
 					<button
 						on:click={() => (showAddCableAssetModal = true)}
-						class="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2  transition-colors hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+						class="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 transition-colors hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
 					>
 						<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path
@@ -1169,13 +1175,13 @@
 								/>
 							</svg>
 						</div>
-						<h3 class="mb-2 text-lg font-medium text-primary">No cable assets yet</h3>
-						<p class="mb-4 text-secondary">
+						<h3 class="text-primary mb-2 text-lg font-medium">No cable assets yet</h3>
+						<p class="text-secondary mb-4">
 							Create your first cable asset to start managing individual cables.
 						</p>
 						<button
 							on:click={() => (showAddCableAssetModal = true)}
-							class="rounded-lg bg-blue-600 px-4 py-2  transition-colors hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+							class="rounded-lg bg-blue-600 px-4 py-2 transition-colors hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
 						>
 							Add Cable Asset
 						</button>
@@ -1185,24 +1191,26 @@
 					<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
 						{#each cableAssets as asset}
 							<div
-								class="rounded-xl border border-gray-200 dark:border-gray-700 bg-primary shadow-sm transition-shadow hover:shadow-md dark:shadow-gray-900/20"
+								class="bg-primary rounded-xl border border-gray-200 shadow-sm transition-shadow hover:shadow-md dark:border-gray-700 dark:shadow-gray-900/20"
 							>
 								<div class="p-6">
 									<div class="mb-4 flex items-start justify-between">
 										<div class="flex-1">
-											<h3 class="mb-1 text-lg font-semibold text-primary">{asset.itemName}</h3>
-											<div class="mb-2 flex items-center text-sm text-secondary">
+											<h3 class="text-primary mb-1 text-lg font-semibold">{asset.itemName}</h3>
+											<div class="text-secondary mb-2 flex items-center text-sm">
 												<div
 													class="mr-2 h-3 w-3 rounded-full"
 													style="background-color: {getCableTypeColor(asset.cableTypeId)}"
 												></div>
 												{getCableTypeName(asset.cableTypeId)}
 											</div>
-											<p class="text-sm text-secondary">
+											<p class="text-secondary text-sm">
 												{asset.cableLength ? asset.cableLength.toFixed(1) : '0'}ft
 											</p>
 											{#if asset.category}
-												<p class="mt-1 text-xs text-gray-400 dark:text-gray-500">Category: {asset.category.name}</p>
+												<p class="mt-1 text-xs text-gray-400 dark:text-gray-500">
+													Category: {asset.category.name}
+												</p>
 											{/if}
 										</div>
 										<div class="flex items-center space-x-2">
@@ -1252,7 +1260,7 @@
 										{#if asset.purchasePrice}
 											<div class="flex justify-between text-sm">
 												<span class="text-secondary">Cost:</span>
-												<span class="font-medium text-gray-900 dark:"
+												<span class="dark: font-medium text-primary"
 													>${Number(asset.purchasePrice).toFixed(2)}</span
 												>
 											</div>
@@ -1260,13 +1268,13 @@
 										{#if asset.location}
 											<div class="flex justify-between text-sm">
 												<span class="text-secondary">Location:</span>
-												<span class="text-gray-900 dark:">{asset.location}</span>
+												<span class="dark: text-gray-900">{asset.location}</span>
 											</div>
 										{/if}
 										{#if asset.cableAssembly}
 											<div class="flex justify-between text-sm">
 												<span class="text-secondary">Ends:</span>
-												<span class="text-gray-900 dark:"
+												<span class="dark: text-gray-900"
 													>{asset.cableAssembly.endA.name} → {asset.cableAssembly.endB.name}</span
 												>
 											</div>
@@ -1274,13 +1282,15 @@
 									</div>
 
 									{#if asset.notes}
-										<div class="mb-4 rounded-lg bg-gray-50 dark:bg-gray-800 p-3">
+										<div class="mb-4 rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
 											<p class="text-sm text-gray-700 dark:text-gray-300">{asset.notes}</p>
 										</div>
 									{/if}
 
-									<div class="flex items-center justify-between border-t border-gray-100 dark:border-gray-700 pt-4">
-										<div class="flex items-center text-sm text-secondary">
+									<div
+										class="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-gray-700"
+									>
+										<div class="text-secondary flex items-center text-sm">
 											<svg
 												class="mr-1 h-4 w-4"
 												fill="none"
@@ -1308,10 +1318,10 @@
 			<!-- Cable Ends Tab -->
 			<div class="space-y-6">
 				<div class="flex items-center justify-between">
-					<h2 class="text-xl font-semibold text-primary">Cable Ends</h2>
+					<h2 class="text-primary text-xl font-semibold">Cable Ends</h2>
 					<button
 						on:click={() => (showAddCableEndModal = true)}
-						class="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2  transition-colors hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+						class="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 transition-colors hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
 					>
 						<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path
@@ -1337,13 +1347,13 @@
 								/>
 							</svg>
 						</div>
-						<h3 class="mb-2 text-lg font-medium text-gray-900 dark:">No cable ends yet</h3>
-						<p class="mb-4 text-secondary">
+						<h3 class="dark: mb-2 text-lg font-medium text-primary">No cable ends yet</h3>
+						<p class="text-secondary mb-4">
 							Add your first cable end to start building cable assemblies.
 						</p>
 						<button
 							on:click={() => (showAddCableEndModal = true)}
-							class="rounded-lg bg-blue-600 px-4 py-2  transition-colors hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+							class="rounded-lg bg-blue-600 px-4 py-2 transition-colors hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
 						>
 							Add Cable End
 						</button>
@@ -1353,7 +1363,7 @@
 					<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
 						{#each cableEnds as cableEnd}
 							<div
-								class="rounded-xl border bg-primary shadow-sm transition-shadow hover:shadow-md dark:shadow-gray-900/20"
+								class="bg-primary rounded-xl border shadow-sm transition-shadow hover:shadow-md dark:shadow-gray-900/20"
 							>
 								<div class="p-6">
 									<div class="mb-4 flex items-start justify-between">
@@ -1363,9 +1373,9 @@
 													class="mr-2 h-3 w-3 rounded-full"
 													style="background-color: {getTypeColor(cableEnd.type)}"
 												></div>
-												<h3 class="text-lg font-semibold text-primary">{cableEnd.name}</h3>
+												<h3 class="text-primary text-lg font-semibold">{cableEnd.name}</h3>
 											</div>
-											<p class="text-sm text-secondary">{cableEnd.type} • {cableEnd.gender}</p>
+											<p class="text-secondary text-sm">{cableEnd.type} • {cableEnd.gender}</p>
 											<div class="mt-2 flex items-center justify-between">
 												<span
 													class="text-sm font-medium {cableEnd.quantity > 0
@@ -1375,7 +1385,7 @@
 													{cableEnd.quantity} in stock
 												</span>
 												{#if cableEnd.purchasePrice}
-													<span class="text-sm text-secondary">
+													<span class="text-secondary text-sm">
 														${Number(cableEnd.purchasePrice).toFixed(2)} each
 													</span>
 												{/if}
@@ -1414,12 +1424,12 @@
 									</div>
 
 									{#if cableEnd.description}
-										<div class="mb-4 rounded-lg bg-gray-50 dark:bg-gray-800 p-3">
+										<div class="mb-4 rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
 											<p class="text-sm text-gray-700 dark:text-gray-300">{cableEnd.description}</p>
 										</div>
 									{/if}
 
-									<div class="flex items-center justify-between border-t border-secondary pt-4">
+									<div class="border-secondary flex items-center justify-between border-t pt-4">
 										<div class="flex items-center text-sm text-gray-500">
 											<svg
 												class="mr-1 h-4 w-4"
@@ -1451,16 +1461,20 @@
 <!-- Add Bulk Cable Modal -->
 {#if showAddModal}
 	<div class="fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-600/50 dark:bg-gray-900/50">
-		<div class="relative top-20 mx-auto w-96 rounded-md border border-gray-200 dark:border-gray-700 bg-primary p-5 shadow-lg">
+		<div
+			class="bg-primary relative top-20 mx-auto w-96 rounded-md border border-gray-200 p-5 shadow-lg dark:border-gray-700"
+		>
 			<div class="mt-3">
-				<h3 class="mb-4 text-lg font-medium text-gray-900 dark:">Add Bulk Cable</h3>
+				<h3 class="dark: mb-4 text-lg font-medium text-primary">Add Bulk Cable</h3>
 				<form on:submit|preventDefault={addBulkCable} class="space-y-4">
 					<div>
-						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Cable Type</label>
+						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+							>Cable Type</label
+						>
 						<select
 							bind:value={newBulkCable.cableTypeId}
 							required
-							class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-gray-900 dark: focus:ring-2 focus:ring-blue-500 focus:outline-none"
+							class="dark: w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
 						>
 							<option value="">Select Cable Type</option>
 							{#each cableTypes as type}
@@ -1469,19 +1483,22 @@
 						</select>
 					</div>
 					<div>
-						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Total Length (ft)</label>
+						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+							>Total Length (ft)</label
+						>
 						<input
 							type="number"
 							step="0.1"
 							min="0"
 							bind:value={newBulkCable.totalLength}
 							required
-							class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-gray-900 dark: focus:ring-2 focus:ring-blue-500 focus:outline-none"
+							class="dark: w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
 							placeholder="10.5"
 						/>
 					</div>
 					<div>
-						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Remaining Length (ft)</label
+						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+							>Remaining Length (ft)</label
 						>
 						<input
 							type="number"
@@ -1489,62 +1506,72 @@
 							min="0"
 							bind:value={newBulkCable.remainingLength}
 							required
-							class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-gray-900 dark: focus:ring-2 focus:ring-blue-500 focus:outline-none"
+							class="dark: w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
 							placeholder="10.5"
 						/>
 					</div>
 					<div>
-						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Location</label>
+						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+							>Location</label
+						>
 						<input
 							type="text"
 							bind:value={newBulkCable.location}
-							class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-gray-900 dark: focus:ring-2 focus:ring-blue-500 focus:outline-none"
+							class="dark: w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
 						/>
 					</div>
 					<div>
-						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Supplier</label>
+						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+							>Supplier</label
+						>
 						<input
 							type="text"
 							bind:value={newBulkCable.supplier}
-							class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-gray-900 dark: focus:ring-2 focus:ring-blue-500 focus:outline-none"
+							class="dark: w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
 						/>
 					</div>
 					<div>
-						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Purchase Date</label>
+						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+							>Purchase Date</label
+						>
 						<input
 							type="date"
 							bind:value={newBulkCable.purchaseDate}
-							class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-gray-900 dark: focus:ring-2 focus:ring-blue-500 focus:outline-none"
+							class="dark: w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
 						/>
 					</div>
 					<div>
-						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Purchase Price</label>
+						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+							>Purchase Price</label
+						>
 						<input
 							type="number"
 							step="0.01"
 							bind:value={newBulkCable.purchasePrice}
-							class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-gray-900 dark: focus:ring-2 focus:ring-blue-500 focus:outline-none"
+							class="dark: w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
 						/>
 					</div>
 					<div>
-						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Notes</label>
+						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+							>Notes</label
+						>
 						<textarea
 							bind:value={newBulkCable.notes}
 							rows="3"
-							class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-gray-900 dark: focus:ring-2 focus:ring-blue-500 focus:outline-none"
+							class="dark: w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
 						></textarea>
 					</div>
 					<div class="flex justify-end space-x-3">
 						<button
 							type="button"
 							on:click={() => (showAddModal = false)}
-							class="rounded-md bg-gray-200 dark:bg-gray-700 px-4 py-2 text-gray-700 dark:text-gray-300 transition-colors hover:bg-gray-300 dark:hover:bg-gray-600"
+							class="rounded-md bg-gray-200 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
 						>
 							Cancel
 						</button>
 						<button
 							type="submit"
-							class="rounded-md bg-blue-600 px-4 py-2  transition-colors hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+							class="rounded-md bg-blue-600 px-4 py-2 transition-colors hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
 						>
 							Add Cable
 						</button>
@@ -1558,16 +1585,20 @@
 <!-- Edit Bulk Cable Modal -->
 {#if editingCable}
 	<div class="fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-600/50 dark:bg-gray-900/50">
-		<div class="relative top-20 mx-auto w-96 rounded-md border border-gray-200 dark:border-gray-700 bg-primary p-5 shadow-lg">
+		<div
+			class="bg-primary relative top-20 mx-auto w-96 rounded-md border border-gray-200 p-5 shadow-lg dark:border-gray-700"
+		>
 			<div class="mt-3">
-				<h3 class="mb-4 text-lg font-medium text-gray-900 dark:">Edit Bulk Cable</h3>
+				<h3 class="dark: mb-4 text-lg font-medium text-primary">Edit Bulk Cable</h3>
 				<form on:submit|preventDefault={updateBulkCable} class="space-y-4">
 					<div>
-						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Cable Type</label>
+						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+							>Cable Type</label
+						>
 						<select
 							bind:value={editingCable.cableTypeId}
 							required
-							class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-gray-900 dark: focus:ring-2 focus:ring-blue-500 focus:outline-none"
+							class="dark: w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
 						>
 							<option value="">Select Cable Type</option>
 							{#each cableTypes as type}
@@ -1576,19 +1607,22 @@
 						</select>
 					</div>
 					<div>
-						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Total Length (ft)</label>
+						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+							>Total Length (ft)</label
+						>
 						<input
 							type="number"
 							step="0.1"
 							min="0"
 							bind:value={editingCable.totalLength}
 							required
-							class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-gray-900 dark: focus:ring-2 focus:ring-blue-500 focus:outline-none"
+							class="dark: w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
 							placeholder="10.5"
 						/>
 					</div>
 					<div>
-						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Remaining Length (ft)</label
+						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+							>Remaining Length (ft)</label
 						>
 						<input
 							type="number"
@@ -1596,62 +1630,72 @@
 							min="0"
 							bind:value={editingCable.remainingLength}
 							required
-							class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-gray-900 dark: focus:ring-2 focus:ring-blue-500 focus:outline-none"
+							class="dark: w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
 							placeholder="10.5"
 						/>
 					</div>
 					<div>
-						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Location</label>
+						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+							>Location</label
+						>
 						<input
 							type="text"
 							bind:value={editingCable.location}
-							class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-gray-900 dark: focus:ring-2 focus:ring-blue-500 focus:outline-none"
+							class="dark: w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
 						/>
 					</div>
 					<div>
-						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Supplier</label>
+						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+							>Supplier</label
+						>
 						<input
 							type="text"
 							bind:value={editingCable.supplier}
-							class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-gray-900 dark: focus:ring-2 focus:ring-blue-500 focus:outline-none"
+							class="dark: w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
 						/>
 					</div>
 					<div>
-						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Purchase Date</label>
+						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+							>Purchase Date</label
+						>
 						<input
 							type="date"
 							bind:value={editingCable.purchaseDate}
-							class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-gray-900 dark: focus:ring-2 focus:ring-blue-500 focus:outline-none"
+							class="dark: w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
 						/>
 					</div>
 					<div>
-						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Purchase Price</label>
+						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+							>Purchase Price</label
+						>
 						<input
 							type="number"
 							step="0.01"
 							bind:value={editingCable.purchasePrice}
-							class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-gray-900 dark: focus:ring-2 focus:ring-blue-500 focus:outline-none"
+							class="dark: w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
 						/>
 					</div>
 					<div>
-						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Notes</label>
+						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+							>Notes</label
+						>
 						<textarea
 							bind:value={editingCable.notes}
 							rows="3"
-							class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-gray-900 dark: focus:ring-2 focus:ring-blue-500 focus:outline-none"
+							class="dark: w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
 						></textarea>
 					</div>
 					<div class="flex justify-end space-x-3">
 						<button
 							type="button"
 							on:click={() => cancelEdit('bulk-cable')}
-							class="rounded-md bg-gray-200 dark:bg-gray-700 px-4 py-2 text-gray-700 dark:text-gray-300 transition-colors hover:bg-gray-300 dark:hover:bg-gray-600"
+							class="rounded-md bg-gray-200 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
 						>
 							Cancel
 						</button>
 						<button
 							type="submit"
-							class="rounded-md bg-blue-600 px-4 py-2  transition-colors hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+							class="rounded-md bg-blue-600 px-4 py-2 transition-colors hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
 						>
 							Update Cable
 						</button>
@@ -1664,11 +1708,13 @@
 
 <!-- Create Cable Modal -->
 {#if showCreateCableModal && selectedBulkCable}
-		<div class="fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-600/50 dark:bg-gray-900/50">
-		<div class="relative top-20 mx-auto w-96 rounded-md border border-gray-200 dark:border-gray-700 bg-primary p-5 shadow-lg">
+	<div class="fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-600/50 dark:bg-gray-900/50">
+		<div
+			class="bg-primary relative top-20 mx-auto w-96 rounded-md border border-gray-200 p-5 shadow-lg dark:border-gray-700"
+		>
 			<div class="mt-3">
-				<h3 class="mb-4 text-lg font-medium text-gray-900 dark:">Create Cable from Bulk</h3>
-				<p class="mb-4 text-sm text-secondary">
+				<h3 class="dark: mb-4 text-lg font-medium text-primary">Create Cable from Bulk</h3>
+				<p class="text-secondary mb-4 text-sm">
 					Creating cable from: {getCableTypeName(selectedBulkCable.cableTypeId)} ({selectedBulkCable.remainingLength
 						? selectedBulkCable.remainingLength.toFixed(1)
 						: '0'}ft remaining)
@@ -1686,7 +1732,9 @@
 					{@const endBCost = endB?.purchasePrice ? parseFloat(endB.purchasePrice.toString()) : 0}
 					{@const totalEstimatedCost = estimatedCableCost + endACost + endBCost}
 
-					<div class="mb-4 rounded-lg border border-blue-200 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/20 p-3">
+					<div
+						class="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-700 dark:bg-blue-900/20"
+					>
 						<p class="text-sm text-blue-800 dark:text-blue-200">
 							<strong>Cost Preview:</strong><br />
 							Bulk cable cost: ${selectedBulkCable.purchasePrice}<br />
@@ -1710,7 +1758,9 @@
 				{/if}
 				<form on:submit|preventDefault={createCableFromBulk} class="space-y-4">
 					<div>
-						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Length (ft)</label>
+						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+							>Length (ft)</label
+						>
 						<input
 							type="number"
 							step="0.1"
@@ -1718,7 +1768,7 @@
 							max={selectedBulkCable.remainingLength}
 							bind:value={newCable.length}
 							required
-							class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-gray-900 dark: focus:ring-2 focus:ring-blue-500 focus:outline-none"
+							class="dark: w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
 							placeholder="5.5"
 						/>
 					</div>
@@ -1729,15 +1779,17 @@
 						<input
 							type="text"
 							bind:value={newCable.customName}
-							class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-gray-900 dark: focus:ring-2 focus:ring-blue-500 focus:outline-none"
+							class="dark: w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
 						/>
 					</div>
 					<div>
-						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">End A</label>
+						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+							>End A</label
+						>
 						<select
 							bind:value={newCable.endAId}
 							required
-							class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-gray-900 dark: focus:ring-2 focus:ring-blue-500 focus:outline-none"
+							class="dark: w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
 						>
 							<option value="">Select End A</option>
 							{#each getCompatibleCableEnds() as end}
@@ -1746,11 +1798,13 @@
 						</select>
 					</div>
 					<div>
-						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">End B</label>
+						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+							>End B</label
+						>
 						<select
 							bind:value={newCable.endBId}
 							required
-							class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-gray-900 dark: focus:ring-2 focus:ring-blue-500 focus:outline-none"
+							class="dark: w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
 						>
 							<option value="">Select End B</option>
 							{#each getCompatibleCableEnds() as end}
@@ -1762,13 +1816,13 @@
 						<button
 							type="button"
 							on:click={() => (showCreateCableModal = false)}
-							class="rounded-md bg-gray-200 dark:bg-gray-700 px-4 py-2 text-gray-700 dark:text-gray-300 transition-colors hover:bg-gray-300 dark:hover:bg-gray-600"
+							class="rounded-md bg-gray-200 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
 						>
 							Cancel
 						</button>
 						<button
 							type="submit"
-							class="rounded-md bg-green-600 px-4 py-2  transition-colors hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600"
+							class="rounded-md bg-green-600 px-4 py-2 transition-colors hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600"
 						>
 							Create Cable
 						</button>
@@ -1782,9 +1836,9 @@
 <!-- Add Cable Type Modal -->
 {#if showAddCableTypeModal}
 	<div class="fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-600/50">
-		<div class="relative top-20 mx-auto w-96 rounded-md border bg-primary p-5 shadow-lg">
+		<div class="bg-primary relative top-20 mx-auto w-96 rounded-md border p-5 shadow-lg">
 			<div class="mt-3">
-				<h3 class="mb-4 text-lg font-medium bg-gray-900">Add Cable Type</h3>
+				<h3 class="text-primary mb-4 text-lg font-medium">Add Cable Type</h3>
 				<form on:submit|preventDefault={addCableType} class="space-y-4">
 					<div>
 						<label class="mb-1 block text-sm font-medium text-gray-700">Name</label>
@@ -1849,7 +1903,7 @@
 						</button>
 						<button
 							type="submit"
-							class="rounded-md bg-blue-600 px-4 py-2  transition-colors hover:bg-blue-700"
+							class="rounded-md bg-blue-600 px-4 py-2 transition-colors hover:bg-blue-700"
 						>
 							Add Cable Type
 						</button>
@@ -1863,9 +1917,9 @@
 <!-- Edit Cable Type Modal -->
 {#if editingCableType}
 	<div class="fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-600/50">
-		<div class="relative top-20 mx-auto w-96 rounded-md border bg-primary p-5 shadow-lg">
+		<div class="bg-primary relative top-20 mx-auto w-96 rounded-md border p-5 shadow-lg">
 			<div class="mt-3">
-				<h3 class="mb-4 text-lg font-medium bg-gray-900">Edit Cable Type</h3>
+				<h3 class="text-primary mb-4 text-lg font-medium">Edit Cable Type</h3>
 				<form on:submit|preventDefault={updateCableType} class="space-y-4">
 					<div>
 						<label class="mb-1 block text-sm font-medium text-gray-700">Name</label>
@@ -1930,7 +1984,7 @@
 						</button>
 						<button
 							type="submit"
-							class="rounded-md bg-blue-600 px-4 py-2  transition-colors hover:bg-blue-700"
+							class="rounded-md bg-blue-600 px-4 py-2 transition-colors hover:bg-blue-700"
 						>
 							Update Cable Type
 						</button>
@@ -1944,109 +1998,119 @@
 <!-- Add Cable End Modal -->
 {#if showAddCableEndModal}
 	<div class="fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-600/50">
-		<div class="relative top-20 mx-auto w-96 rounded-md border bg-primary p-5 shadow-lg">
+		<div class="bg-primary relative top-20 mx-auto w-2/3 rounded-md border p-5 shadow-lg">
 			<div class="mt-3">
-				<h3 class="mb-4 text-lg font-medium bg-gray-900">Add Cable End</h3>
+				<h3 class="text-primary mb-4 text-lg font-medium">Add Cable End</h3>
 				<form on:submit|preventDefault={addCableEnd} class="space-y-4">
-					<div>
-						<label class="mb-1 block text-sm font-medium text-gray-700">Name</label>
-						<input
-							type="text"
-							bind:value={newCableEnd.name}
-							required
-							class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-						/>
+					<div class="flex gap-4">
+						<div class="w-full">
+							<div>
+								<label class="mb-1 block text-sm font-medium text-gray-700">Name</label>
+								<input
+									type="text"
+									bind:value={newCableEnd.name}
+									required
+									class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+								/>
+							</div>
+							<div>
+								<label class="mb-1 block text-sm font-medium text-gray-700">Type</label>
+								<select
+									bind:value={newCableEnd.type}
+									required
+									class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+								>
+									<option value="">Select Type</option>
+									{#each connectorTypes as type}
+										<option value={type}>{type}</option>
+									{/each}
+								</select>
+							</div>
+							<div>
+								<label class="mb-1 block text-sm font-medium text-gray-700">Gender</label>
+								<select
+									bind:value={newCableEnd.gender}
+									required
+									class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+								>
+									<option value="">Select Gender</option>
+									{#each genderOptions as gender}
+										<option value={gender}>{gender}</option>
+									{/each}
+								</select>
+							</div>
+							<div>
+								<label class="mb-1 block text-sm font-medium text-gray-700">Description</label>
+								<textarea
+									bind:value={newCableEnd.description}
+									rows="3"
+									class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+								></textarea>
+							</div>
+							<div>
+								<label class="mb-1 block text-sm font-medium text-gray-700">Color</label>
+								<input
+									type="color"
+									bind:value={newCableEnd.color}
+									class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+								/>
+							</div>
+						</div>
+						<div class="w-full">
+							<div>
+								<label class="mb-1 block text-sm font-medium text-gray-700">Quantity in Stock</label
+								>
+								<input
+									type="number"
+									min="0"
+									bind:value={newCableEnd.quantity}
+									class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+									placeholder="0"
+								/>
+							</div>
+							<div>
+								<label class="mb-1 block text-sm font-medium text-gray-700"
+									>Purchase Price ($)</label
+								>
+								<input
+									type="number"
+									step="0.01"
+									min="0"
+									bind:value={newCableEnd.purchasePrice}
+									class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+									placeholder="0.00"
+								/>
+							</div>
+							<div>
+								<label class="mb-1 block text-sm font-medium text-gray-700">Supplier</label>
+								<input
+									type="text"
+									bind:value={newCableEnd.supplier}
+									class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+									placeholder="e.g., Amazon, DigiKey"
+								/>
+							</div>
+							<div>
+								<label class="mb-1 block text-sm font-medium text-gray-700">Purchase Date</label>
+								<input
+									type="date"
+									bind:value={newCableEnd.purchaseDate}
+									class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+								/>
+							</div>
+							<div>
+								<label class="mb-1 block text-sm font-medium text-gray-700">Location</label>
+								<input
+									type="text"
+									bind:value={newCableEnd.location}
+									class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+									placeholder="e.g., Storage Room A"
+								/>
+							</div>
+						</div>
 					</div>
-					<div>
-						<label class="mb-1 block text-sm font-medium text-gray-700">Type</label>
-						<select
-							bind:value={newCableEnd.type}
-							required
-							class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-						>
-							<option value="">Select Type</option>
-							{#each connectorTypes as type}
-								<option value={type}>{type}</option>
-							{/each}
-						</select>
-					</div>
-					<div>
-						<label class="mb-1 block text-sm font-medium text-gray-700">Gender</label>
-						<select
-							bind:value={newCableEnd.gender}
-							required
-							class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-						>
-							<option value="">Select Gender</option>
-							{#each genderOptions as gender}
-								<option value={gender}>{gender}</option>
-							{/each}
-						</select>
-					</div>
-					<div>
-						<label class="mb-1 block text-sm font-medium text-gray-700">Description</label>
-						<textarea
-							bind:value={newCableEnd.description}
-							rows="3"
-							class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-						></textarea>
-					</div>
-					<div>
-						<label class="mb-1 block text-sm font-medium text-gray-700">Color</label>
-						<input
-							type="color"
-							bind:value={newCableEnd.color}
-							class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-						/>
-					</div>
-					<div>
-						<label class="mb-1 block text-sm font-medium text-gray-700">Quantity in Stock</label>
-						<input
-							type="number"
-							min="0"
-							bind:value={newCableEnd.quantity}
-							class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-							placeholder="0"
-						/>
-					</div>
-					<div>
-						<label class="mb-1 block text-sm font-medium text-gray-700">Purchase Price ($)</label>
-						<input
-							type="number"
-							step="0.01"
-							min="0"
-							bind:value={newCableEnd.purchasePrice}
-							class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-							placeholder="0.00"
-						/>
-					</div>
-					<div>
-						<label class="mb-1 block text-sm font-medium text-gray-700">Supplier</label>
-						<input
-							type="text"
-							bind:value={newCableEnd.supplier}
-							class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-							placeholder="e.g., Amazon, DigiKey"
-						/>
-					</div>
-					<div>
-						<label class="mb-1 block text-sm font-medium text-gray-700">Purchase Date</label>
-						<input
-							type="date"
-							bind:value={newCableEnd.purchaseDate}
-							class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-						/>
-					</div>
-					<div>
-						<label class="mb-1 block text-sm font-medium text-gray-700">Location</label>
-						<input
-							type="text"
-							bind:value={newCableEnd.location}
-							class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-							placeholder="e.g., Storage Room A"
-						/>
-					</div>
-					<div>
+
+					<div class="">
 						<label class="mb-1 block text-sm font-medium text-gray-700">Notes</label>
 						<textarea
 							bind:value={newCableEnd.notes}
@@ -2065,7 +2129,7 @@
 						</button>
 						<button
 							type="submit"
-							class="rounded-md bg-blue-600 px-4 py-2  transition-colors hover:bg-blue-700"
+							class="rounded-md bg-blue-600 px-4 py-2 transition-colors hover:bg-blue-700"
 						>
 							Add Cable End
 						</button>
@@ -2079,125 +2143,126 @@
 <!-- Edit Cable End Modal -->
 {#if editingCableEnd}
 	<div class="fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-600/50">
-		<div class="relative top-20 mx-auto w-max rounded-md border bg-primary p-5 shadow-lg">
+		<div class="bg-primary relative top-20 mx-auto w-max rounded-md border p-5 shadow-lg">
 			<div class="mt-3">
-				<h3 class="mb-4 text-lg font-medium bg-gray-900">Edit Cable End</h3>
+				<h3 class="text-primary mb-4 text-lg font-medium">Edit Cable End</h3>
 				<form on:submit|preventDefault={updateCableEnd} class="  ">
-					<div class="flex gap-4">
-
-					<div class="">
-						<div>
-							<label class="mb-1 block text-sm font-medium text-gray-700">Name</label>
-							<input
-								type="text"
-								bind:value={editingCableEnd.name}
-								required
-								class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-							/>
+					<div class="flex gap-4 w-full">
+						<div class="">
+							<div>
+								<label class="mb-1 block text-sm font-medium text-gray-700">Name</label>
+								<input
+									type="text"
+									bind:value={editingCableEnd.name}
+									required
+									class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+								/>
+							</div>
+							<div>
+								<label class="mb-1 block text-sm font-medium text-gray-700">Type</label>
+								<select
+									bind:value={editingCableEnd.type}
+									required
+									class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+								>
+									<option value="">Select Type</option>
+									{#each connectorTypes as type}
+										<option value={type}>{type}</option>
+									{/each}
+								</select>
+							</div>
+							<div>
+								<label class="mb-1 block text-sm font-medium text-gray-700">Gender</label>
+								<select
+									bind:value={editingCableEnd.gender}
+									required
+									class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+								>
+									<option value="">Select Gender</option>
+									{#each genderOptions as gender}
+										<option value={gender}>{gender}</option>
+									{/each}
+								</select>
+							</div>
+							<div>
+								<label class="mb-1 block text-sm font-medium text-gray-700">Description</label>
+								<textarea
+									bind:value={editingCableEnd.description}
+									rows="3"
+									class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+								></textarea>
+							</div>
+							<div>
+								<label class="mb-1 block text-sm font-medium text-gray-700">Color</label>
+								<input
+									type="color"
+									bind:value={editingCableEnd.color}
+									class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+								/>
+							</div>
 						</div>
-						<div>
-							<label class="mb-1 block text-sm font-medium text-gray-700">Type</label>
-							<select
-								bind:value={editingCableEnd.type}
-								required
-								class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-							>
-								<option value="">Select Type</option>
-								{#each connectorTypes as type}
-									<option value={type}>{type}</option>
-								{/each}
-							</select>
-						</div>
-						<div>
-							<label class="mb-1 block text-sm font-medium text-gray-700">Gender</label>
-							<select
-								bind:value={editingCableEnd.gender}
-								required
-								class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-							>
-								<option value="">Select Gender</option>
-								{#each genderOptions as gender}
-									<option value={gender}>{gender}</option>
-								{/each}
-							</select>
-						</div>
-						<div>
-							<label class="mb-1 block text-sm font-medium text-gray-700">Description</label>
-							<textarea
-								bind:value={editingCableEnd.description}
-								rows="3"
-								class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-							></textarea>
-						</div>
-						<div>
-							<label class="mb-1 block text-sm font-medium text-gray-700">Color</label>
-							<input
-								type="color"
-								bind:value={editingCableEnd.color}
-								class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-							/>
+						<div class="flex flex-col gap-2">
+							<div>
+								<label class="mb-1 block text-sm font-medium text-gray-700">Quantity in Stock</label
+								>
+								<input
+									type="number"
+									min="0"
+									bind:value={editingCableEnd.quantity}
+									class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+									placeholder="0"
+								/>
+							</div>
+							<div>
+								<label class="mb-1 block text-sm font-medium text-gray-700"
+									>Purchase Price ($)</label
+								>
+								<input
+									type="number"
+									step="0.01"
+									min="0"
+									bind:value={editingCableEnd.purchasePrice}
+									class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+									placeholder="0.00"
+								/>
+							</div>
+							<div>
+								<label class="mb-1 block text-sm font-medium text-gray-700">Supplier</label>
+								<input
+									type="text"
+									bind:value={editingCableEnd.supplier}
+									class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+									placeholder="e.g., Amazon, DigiKey"
+								/>
+							</div>
+							<div>
+								<label class="mb-1 block text-sm font-medium text-gray-700">Purchase Date</label>
+								<input
+									type="date"
+									bind:value={editingCableEnd.purchaseDate}
+									class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+								/>
+							</div>
+							<div>
+								<label class="mb-1 block text-sm font-medium text-gray-700">Location</label>
+								<input
+									type="text"
+									bind:value={editingCableEnd.location}
+									class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+									placeholder="e.g., Storage Room A"
+								/>
+							</div>
 						</div>
 					</div>
-					<div class="flex flex-col gap-2">
-						<div>
-							<label class="mb-1 block text-sm font-medium text-gray-700">Quantity in Stock</label>
-							<input
-								type="number"
-								min="0"
-								bind:value={editingCableEnd.quantity}
-								class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-								placeholder="0"
-							/>
-						</div>
-						<div>
-							<label class="mb-1 block text-sm font-medium text-gray-700">Purchase Price ($)</label>
-							<input
-								type="number"
-								step="0.01"
-								min="0"
-								bind:value={editingCableEnd.purchasePrice}
-								class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-								placeholder="0.00"
-							/>
-						</div>
-						<div>
-							<label class="mb-1 block text-sm font-medium text-gray-700">Supplier</label>
-							<input
-								type="text"
-								bind:value={editingCableEnd.supplier}
-								class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-								placeholder="e.g., Amazon, DigiKey"
-							/>
-						</div>
-						<div>
-							<label class="mb-1 block text-sm font-medium text-gray-700">Purchase Date</label>
-							<input
-								type="date"
-								bind:value={editingCableEnd.purchaseDate}
-								class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-							/>
-						</div>
-						<div>
-							<label class="mb-1 block text-sm font-medium text-gray-700">Location</label>
-							<input
-								type="text"
-								bind:value={editingCableEnd.location}
-								class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-								placeholder="e.g., Storage Room A"
-							/>
-						</div>
-						
+					<div>
+						<label class="mb-1 block text-sm font-medium text-gray-700">Notes</label>
+						<textarea
+							bind:value={editingCableEnd.notes}
+							rows="2"
+							class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+							placeholder="Additional notes"
+						></textarea>
 					</div>
-				</div>
-				<div>
-					<label class="mb-1 block text-sm font-medium text-gray-700">Notes</label>
-					<textarea
-						bind:value={editingCableEnd.notes}
-						rows="2"
-						class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-						placeholder="Additional notes"
-					></textarea>
-				</div>
 
 					<div class="flex justify-end space-x-3">
 						<button
@@ -2209,7 +2274,7 @@
 						</button>
 						<button
 							type="submit"
-							class="rounded-md bg-blue-600 px-4 py-2  transition-colors hover:bg-blue-700"
+							class="rounded-md bg-blue-600 px-4 py-2 transition-colors hover:bg-blue-700"
 						>
 							Update Cable End
 						</button>
@@ -2223,9 +2288,9 @@
 <!-- Add Cable Asset Modal -->
 {#if showAddCableAssetModal}
 	<div class="fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-600/50">
-		<div class="relative top-20 mx-auto w-96 rounded-md border bg-primary p-5 shadow-lg">
+		<div class="bg-primary relative top-20 mx-auto w-96 rounded-md border p-5 shadow-lg">
 			<div class="mt-3">
-				<h3 class="mb-4 text-lg font-medium bg-gray-900">Add Cable Asset</h3>
+				<h3 class="text-primary mb-4 text-lg font-medium">Add Cable Asset</h3>
 				<form on:submit|preventDefault={addCableAsset} class="space-y-4">
 					<div>
 						<label class="mb-1 block text-sm font-medium text-gray-700">Name *</label>
@@ -2325,7 +2390,7 @@
 						</button>
 						<button
 							type="submit"
-							class="rounded-md bg-blue-600 px-4 py-2  transition-colors hover:bg-blue-700"
+							class="rounded-md bg-blue-600 px-4 py-2 transition-colors hover:bg-blue-700"
 						>
 							Add Cable Asset
 						</button>
@@ -2339,9 +2404,9 @@
 <!-- Edit Cable Asset Modal -->
 {#if editingCableAsset}
 	<div class="fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-600/50">
-		<div class="relative top-20 mx-auto w-96 rounded-md border bg-primary p-5 shadow-lg">
+		<div class="bg-primary relative top-20 mx-auto w-96 rounded-md border p-5 shadow-lg">
 			<div class="mt-3">
-				<h3 class="mb-4 text-lg font-medium bg-gray-900">Edit Cable Asset</h3>
+				<h3 class="text-primary mb-4 text-lg font-medium">Edit Cable Asset</h3>
 				<form on:submit|preventDefault={updateCableAsset} class="space-y-4">
 					<div>
 						<label class="mb-1 block text-sm font-medium text-gray-700">Name *</label>
@@ -2403,7 +2468,7 @@
 						</button>
 						<button
 							type="submit"
-							class="rounded-md bg-blue-600 px-4 py-2  transition-colors hover:bg-blue-700"
+							class="rounded-md bg-blue-600 px-4 py-2 transition-colors hover:bg-blue-700"
 						>
 							Update Cable Asset
 						</button>

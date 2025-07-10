@@ -122,7 +122,7 @@
 							required
 							bind:value={email}
 							on:keypress={handleKeyPress}
-							class="appearance-none relative block w-full px-3 py-3 border border-border placeholder:text-muted-foreground text-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 text-base transition-all duration-200 bg-background"
+							class="appearance-none relative block w-full px-3 py-3 border border-input placeholder:text-tertiary text-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-base transition-all duration-200 bg-input"
 							placeholder="Enter your email"
 						/>
 					</div>
@@ -139,13 +139,13 @@
 								required
 								bind:value={password}
 								on:keypress={handleKeyPress}
-								class="appearance-none relative block w-full px-3 py-3 pr-10 border border-border placeholder:text-muted-foreground text-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 text-base transition-all duration-200 bg-background"
+								class="appearance-none relative block w-full px-3 py-3 pr-10 border border-input placeholder:text-tertiary text-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-base transition-all duration-200 bg-input"
 								placeholder="Enter your password"
 							/>
 							<button
 								type="button"
 								on:click={() => showPassword = !showPassword}
-								class="absolute inset-y-0 right-0 pr-3 flex items-center text-muted-foreground hover:text-primary transition-colors duration-200 touch-manipulation"
+								class="absolute inset-y-0 right-0 pr-3 flex items-center text-tertiary hover:text-primary transition-colors duration-200 touch-manipulation"
 							>
 								{#if showPassword}
 									<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -163,15 +163,15 @@
 				</div>
 
 				{#if error}
-					<div class="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4">
+					<div class="rounded-lg bg-error-light border border-accent-error p-4">
 						<div class="flex">
 							<div class="flex-shrink-0">
-								<svg class="h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<svg class="h-5 w-5 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
 								</svg>
 							</div>
 							<div class="ml-3">
-								<p class="text-sm text-red-800 dark:text-red-200">{error}</p>
+								<p class="text-sm text-error">{error}</p>
 							</div>
 						</div>
 					</div>
@@ -181,7 +181,7 @@
 					<button
 						type="submit"
 						disabled={loading}
-						class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gray-600 hover:bg-gray-700 dark:bg-gray-500 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl touch-manipulation"
+						class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-accent hover:bg-accent-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-custom hover:shadow-custom-lg touch-manipulation"
 					>
 						{#if loading}
 							<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">

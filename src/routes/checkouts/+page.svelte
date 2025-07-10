@@ -120,7 +120,7 @@
 		{:else if filteredCheckouts.length === 0}
 			<div class="text-center py-12">
 				<div class="text-6xl mb-4">📤</div>
-				<h3 class="text-lg font-medium text-gray-900 mb-2">No checkouts found</h3>
+				<h3 class="text-lg font-medium text-primary mb-2">No checkouts found</h3>
 				<p class="text-gray-500 mb-4">Start by checking out an asset</p>
 				<button
 					on:click={() => showCheckoutModal = true}
@@ -146,7 +146,7 @@
 							<tr class="hover:bg-gray-50">
 								<td class="px-6 py-4 whitespace-nowrap">
 									<div>
-										<div class="text-sm font-medium text-gray-900">{checkout.asset?.name}</div>
+										<div class="text-sm font-medium text-primary">{checkout.asset?.name}</div>
 										<div class="text-sm text-gray-500">{checkout.asset?.category?.name}</div>
 									</div>
 								</td>

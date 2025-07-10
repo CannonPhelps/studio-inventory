@@ -4,7 +4,7 @@
 	interface Asset {
 		id: number;
 		itemName: string;
-		serialNumber?: string;
+		serialNumbers?: Array<{ serialNumber: string }>;
 		status: string;
 	}
 
@@ -151,7 +151,7 @@
 					>
 						<option value="">Select an asset</option>
 						{#each assets.filter(a => a.status === 'Available') as asset}
-							<option value={asset.id}>{asset.itemName} - {asset.serialNumber || 'No Serial'}</option>
+							<option value={asset.id}>{asset.itemName} - {asset.serialNumbers?.[0]?.serialNumber || 'No Serial'}</option>
 						{/each}
 					</select>
 				</div>
@@ -238,7 +238,7 @@
 								<td class="px-6 py-4 whitespace-nowrap">
 									<div>
 										<div class="text-sm font-medium text-primary">{checkout.asset.itemName}</div>
-										<div class="text-sm text-secondary">{checkout.asset.serialNumber || 'No Serial'}</div>
+										<div class="text-sm text-secondary">{checkout.asset.serialNumbers?.[0]?.serialNumber || 'No Serial'}</div>
 									</div>
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap text-sm text-primary">{checkout.user}</td>

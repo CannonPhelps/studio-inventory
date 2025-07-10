@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import SectionHeader from '$lib/components/SectionHeader.svelte';
+	import Card from '$lib/components/Card.svelte';
 
 	let stats = {
 		totalAssets: 0,
@@ -79,16 +81,15 @@
 </script>
 
 <svelte:head>
-	<title>Dashboard - Studio Inventory</title>
+	<title>Overview - Studio Inventory</title>
 </svelte:head>
 
 <div class="space-y-6">
-	<!-- Page Header -->
-	<div class="flex items-center justify-between">
-		<div>
-			<h1 class="text-3xl font-bold text-primary">Dashboard</h1>
-			<p class="text-secondary mt-1">System overview and administrative controls</p>
-		</div>
+	<!-- Header -->
+	<SectionHeader 
+		title="Overview" 
+		subtitle="System overview and administrative controls" 
+		gradient="from-accent to-accent-secondary">
 		<div class="flex items-center space-x-4">
 			<div class="text-center">
 				<div class="text-2xl font-bold text-primary">{stats.totalUsers || 0}</div>
@@ -99,11 +100,11 @@
 				<div class="text-tertiary text-sm">Active Checkouts</div>
 			</div>
 		</div>
-	</div>
+	</SectionHeader>
 
 	<!-- Stats Grid -->
 	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-		<div class="rounded-xl p-6 shadow-sm border border-card bg-card">
+		<Card gradient="from-accent to-accent-secondary">
 			<div class="flex items-center justify-between">
 				<div>
 					<p class="text-sm font-medium text-secondary">Total Assets</p>
@@ -119,9 +120,9 @@
 					<span class="text-tertiary ml-2">total items</span>
 				</div>
 			</div>
-		</div>
+		</Card>
 
-		<div class="rounded-xl p-6 shadow-sm border border-card bg-card">
+		<Card gradient="from-accent-success to-green-500">
 			<div class="flex items-center justify-between">
 				<div>
 					<p class="text-sm font-medium text-secondary">Available</p>
@@ -137,9 +138,9 @@
 					<span class="text-tertiary ml-2">availability rate</span>
 				</div>
 			</div>
-		</div>
+		</Card>
 
-		<div class="rounded-xl p-6 shadow-sm border border-card bg-card">
+		<Card gradient="from-accent-warning to-orange-500">
 			<div class="flex items-center justify-between">
 				<div>
 					<p class="text-sm font-medium text-secondary">Checked Out</p>
@@ -155,9 +156,9 @@
 					<span class="text-tertiary ml-2">in use</span>
 				</div>
 			</div>
-		</div>
+		</Card>
 
-		<div class="rounded-xl p-6 shadow-sm border border-card bg-card">
+		<Card gradient="from-accent-error to-red-500">
 			<div class="flex items-center justify-between">
 				<div>
 					<p class="text-sm font-medium text-secondary">Maintenance</p>
@@ -173,14 +174,14 @@
 					<span class="text-tertiary ml-2">need attention</span>
 				</div>
 			</div>
-		</div>
+		</Card>
 	</div>
 
 	<!-- Quick Actions and System Health -->
 	<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 		<!-- Quick Actions -->
 		<div class="lg:col-span-2">
-			<div class="rounded-xl shadow-sm border border-card bg-card">
+			<Card gradient="from-secondary/20 to-secondary/10">
 				<div class="p-6 border-b border-card">
 					<h2 class="text-xl font-semibold text-primary">Quick Actions</h2>
 					<p class="text-secondary mt-1">Common administrative tasks</p>
@@ -203,12 +204,12 @@
 						{/each}
 					</div>
 				</div>
-			</div>
+			</Card>
 		</div>
 
 		<!-- System Health -->
 		<div>
-			<div class="rounded-xl shadow-sm border border-card bg-card">
+			<Card gradient="from-accent-info to-cyan-500">
 				<div class="p-6 border-b border-card">
 					<h2 class="text-xl font-semibold text-primary">System Health</h2>
 					<p class="text-secondary mt-1">Current system status</p>
@@ -231,14 +232,14 @@
 						<span class="text-primary">{systemHealth.activeUsers}</span>
 					</div>
 				</div>
-			</div>
+			</Card>
 		</div>
 	</div>
 
 	<!-- Recent Activity -->
-	<div class="rounded-xl shadow-sm border border-card bg-card mb-8">
+	<Card gradient="from-accent-warning to-yellow-500">
 		<div class="p-6 border-b border-card">
-			<h2 class="text-xl font-semibold text-primary ">Recent Activity</h2>
+			<h2 class="text-xl font-semibold text-primary">Recent Activity</h2>
 			<p class="text-secondary mt-1">Latest system events</p>
 		</div>
 		<div class="p-6">
@@ -266,5 +267,5 @@
 				</div>
 			{/if}
 		</div>
-	</div>
+	</Card>
 </div> 

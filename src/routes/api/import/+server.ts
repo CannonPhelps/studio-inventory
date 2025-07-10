@@ -86,32 +86,21 @@ export const POST: RequestHandler = async (event) => {
 			return { headers, rows };
 		}
 		
-		let headers: string[];
-		let dataRows: string[][];
+		const { headers, rows } = parseCSV(csvText);
 		
-		try {
-			const parsed = parseCSV(csvText);
-			headers = parsed.headers;
-			dataRows = parsed.rows;
+		console.log('Import - Headers:', headers);
+		console.log('Import - First few rows:', rows.slice(0, 3));
 
-			// Debug logging
-			console.log('Headers:', headers);
-			console.log('First few data rows:', dataRows.slice(0, 3));
-		} catch (error) {
-			return json({ error: `CSV parsing error: ${error instanceof Error ? error.message : 'Unknown error'}` }, { status: 400 });
-		}
-
-		let results: { imported: number; errors: string[] } = { imported: 0, errors: [] };
-
+		let results;
 		switch (importType) {
 			case 'cableTypes':
-				results = await importCableTypes(headers, dataRows);
+				results = await importCableTypes(headers, rows);
 				break;
 			case 'bulkCables':
-				results = await importBulkCables(headers, dataRows);
+				results = await importBulkCables(headers, rows);
 				break;
 			case 'assets':
-				results = await importAssets(headers, dataRows);
+				results = await importAssets(headers, rows);
 				break;
 			default:
 				return json({ error: 'Invalid import type' }, { status: 400 });
@@ -233,7 +222,8 @@ async function importAssets(headers: string[], dataRows: string[][]) {
 			const quantity = rowData.Quanty || rowData.quantity || '1';
 			const categoryName = rowData.Category || rowData.category || '';
 			const modelBrand = rowData['Model/Brand'] || rowData.modelBrand || '';
-			const serialNumber = rowData['Serial Number'] || rowData.serialNumber || '';
+			// Accept Serial Number, serialNumber, or Serial Numbers as the column
+			const serialNumberField = rowData['Serial Number'] || rowData['serialNumber'] || rowData['Serial Numbers'] || '';
 			const location = rowData.Location || rowData.location || '';
 			const status = rowData.Status || rowData.status || 'Available';
 			const purchaseDate = rowData['Purchase Date'] || rowData.purchaseDate || '';
@@ -285,30 +275,71 @@ async function importAssets(headers: string[], dataRows: string[][]) {
 				}
 			}
 
-			await prisma.asset.create({
-				data: {
-					itemName: itemName,
-					quantity: quantity ? parseInt(quantity) : 1,
-					categoryId: category.id,
-					modelBrand: modelBrand || null,
-					serialNumber: serialNumber || null,
-					location: location || null,
-					status: status || 'Available',
-					purchaseDate: purchaseDate ? new Date(purchaseDate) : null,
-					purchasePrice: purchasePrice ? parseFloat(purchasePrice.replace(/[$,]/g, '')) : null,
-					lastMaintenance: lastMaintenance ? new Date(lastMaintenance) : null,
-					warrantyExpiration: warrantyExpiration ? new Date(warrantyExpiration) : null,
-					notes: notes || null,
-					assigned: assigned || null,
-					assetNumber: assetNumber || null,
-					supplier: supplier || null,
-					isCable: isCable,
-					cableTypeId: cableTypeId,
-					cableLength: cableLength
-				}
-			});
+			// Parse serial numbers - support multiple serial numbers separated by comma, space, or line break
+			const serialNumbersData = [];
+			if (serialNumberField && serialNumberField.trim()) {
+				const serialNumbers = serialNumberField
+					.split(/[,\s\n\r]+/)
+					.map(sn => sn.trim())
+					.filter(sn => sn.length > 0);
+				serialNumbersData.push(...serialNumbers.map(sn => ({ serialNumber: sn })));
+			}
+			
+			// Debug logging for serial numbers
+			if (i < 3) {
+				console.log(`Row ${i + 2} - Serial Number Field: "${serialNumberField}" -> serialNumbersData:`, serialNumbersData);
+			}
 
-			results.imported++;
+			const assetData = {
+				itemName: itemName,
+				quantity: quantity ? parseInt(quantity) : 1,
+				categoryId: category.id,
+				modelBrand: modelBrand || null,
+				location: location || null,
+				status: status || 'Available',
+				purchaseDate: purchaseDate ? new Date(purchaseDate) : null,
+				purchasePrice: purchasePrice ? parseFloat(purchasePrice.replace(/[$,]/g, '')) : null,
+				lastMaintenance: lastMaintenance ? new Date(lastMaintenance) : null,
+				warrantyExpiration: warrantyExpiration ? new Date(warrantyExpiration) : null,
+				notes: notes || null,
+				assigned: assigned || null,
+				assetNumber: assetNumber || null,
+				supplier: supplier || null,
+				isCable: isCable,
+				cableTypeId: cableTypeId,
+				cableLength: cableLength,
+				serialNumbers: {
+					create: serialNumbersData
+				}
+			};
+
+			// Debug logging for asset data
+			if (i < 3) {
+				console.log(`Row ${i + 2} - Asset data:`, JSON.stringify(assetData, null, 2));
+			}
+
+			try {
+				const createdAsset = await prisma.asset.create({
+					data: assetData,
+					include: {
+						serialNumbers: true
+					}
+				});
+
+				// Debug logging for created asset
+				if (i < 3) {
+					console.log(`Row ${i + 2} - Created asset:`, {
+						id: createdAsset.id,
+						itemName: createdAsset.itemName,
+						serialNumbers: createdAsset.serialNumbers
+					});
+				}
+
+				results.imported++;
+			} catch (createError) {
+				console.error(`Row ${i + 2} - Error creating asset:`, createError);
+				results.errors.push(`Row ${i + 2}: Failed to create asset - ${createError instanceof Error ? createError.message : 'Unknown error'}`);
+			}
 		} catch (error) {
 			results.errors.push(`Row ${i + 2}: ${error instanceof Error ? error.message : 'Unknown error'}`);
 		}

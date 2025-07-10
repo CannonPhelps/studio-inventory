@@ -169,8 +169,8 @@
 											
 											<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 text-sm">
 												<div>
-													<span class="text-secondary text-xs md:text-sm">Serial Number:</span>
-													<p class="font-mono text-primary text-xs md:text-sm truncate">{checkout.serialNumber}</p>
+													<span class="text-secondary text-xs md:text-sm">Serial Numbers:</span>
+													<p class="font-mono text-primary text-xs md:text-sm truncate">{checkout.serialNumbers && checkout.serialNumbers.length > 0 ? checkout.serialNumbers.map(sn => sn.serialNumber).join(', ') : 'N/A'}</p>
 												</div>
 												<div>
 													<span class="text-secondary text-xs md:text-sm">Location:</span>
@@ -303,7 +303,7 @@
 						<label class="block text-sm font-medium text-secondary mb-2">Equipment</label>
 						<div class="p-3 bg-secondary border border-card rounded-lg">
 							<div class="font-medium text-primary">{selectedCheckout.assetName}</div>
-							<div class="text-sm text-secondary">Serial: {selectedCheckout.serialNumber}</div>
+							<div class="text-sm text-secondary">Serial: {selectedCheckout.serialNumbers && selectedCheckout.serialNumbers.length > 0 ? selectedCheckout.serialNumbers.map(sn => sn.serialNumber).join(', ') : 'N/A'}</div>
 						</div>
 					</div>
 					
