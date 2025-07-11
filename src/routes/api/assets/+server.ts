@@ -27,7 +27,10 @@ export const GET: RequestHandler = async (event) => {
 		return json(assets);
 	} catch (error) {
 		console.error('Error fetching assets:', error);
-		return json({ error: 'Failed to fetch assets' }, { status: 500 });
+		return json(
+			{ error: error instanceof Error ? error.message : String(error) },
+			{ status: 500 }
+		);
 	}
 };
 
@@ -87,6 +90,9 @@ export const POST: RequestHandler = async (event) => {
 		return json(asset);
 	} catch (error) {
 		console.error('Error creating asset:', error);
-		return json({ error: 'Failed to create asset' }, { status: 500 });
+		return json(
+			{ error: error instanceof Error ? error.message : String(error) },
+			{ status: 500 }
+		);
 	}
-}; 
+};

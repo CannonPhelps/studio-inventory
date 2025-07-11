@@ -7,7 +7,7 @@ export const GET: RequestHandler = async (event) => {
 	try {
 		// Require authentication
 		await requireAuth(event);
-		
+
 		const categories = await prisma.category.findMany({
 			include: {
 				assets: true
@@ -15,7 +15,7 @@ export const GET: RequestHandler = async (event) => {
 		});
 
 		// Add asset count to each category
-		const categoriesWithCount = categories.map(category => ({
+		const categoriesWithCount = categories.map((category) => ({
 			...category,
 			assetCount: category.assets.length
 		}));
@@ -23,7 +23,10 @@ export const GET: RequestHandler = async (event) => {
 		return json(categoriesWithCount);
 	} catch (error) {
 		console.error('Error fetching categories:', error);
-		return json({ error: 'Failed to fetch categories' }, { status: 500 });
+		return json(
+			{ error: error instanceof Error ? error.message : String(error) },
+			{ status: 500 }
+		);
 	}
 };
 
@@ -31,9 +34,9 @@ export const POST: RequestHandler = async (event) => {
 	try {
 		// Require authentication
 		await requireAuth(event);
-		
+
 		const data = await event.request.json();
-		
+
 		const category = await prisma.category.create({
 			data: {
 				name: data.name
@@ -43,6 +46,9 @@ export const POST: RequestHandler = async (event) => {
 		return json(category);
 	} catch (error) {
 		console.error('Error creating category:', error);
-		return json({ error: 'Failed to create category' }, { status: 500 });
+		return json(
+			{ error: error instanceof Error ? error.message : String(error) },
+			{ status: 500 }
+		);
 	}
-}; 
+};
