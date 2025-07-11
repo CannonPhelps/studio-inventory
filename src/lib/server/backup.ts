@@ -386,4 +386,49 @@ export class BackupService {
       throw new Error('Failed to get backup statistics');
     }
   }
+
+  static async createSnapshot() {
+    // Produce an in-memory object equivalent to the plain JSON backup
+    const tables = Object.keys(this.tableNameMap);
+    const backupData: Record<string, unknown[]> = {};
+    let totalRecords = 0;
+    const legacySerials: { assetId: number; serialNumber: string }[] = [];
+
+    for (const table of tables) {
+      const dbTable = this.tableNameMap[table as keyof typeof this.tableNameMap];
+      try {
+        // Use unsafe query – table names are hard-coded, not user input
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const records = await prisma.$queryRawUnsafe<unknown[]>(`SELECT * FROM ${dbTable}`);
+
+        // Capture legacy serials
+        if (table === 'Asset') {
+          for (const rec of records as Record<string, unknown>[]) {
+            const sn = rec['serialNumber'] ?? rec['serial_number'];
+            const id = rec['id'];
+            if (sn && id !== undefined) {
+              legacySerials.push({ assetId: Number(id), serialNumber: String(sn) });
+            }
+          }
+        }
+
+        backupData[table] = records;
+        totalRecords += records.length;
+      } catch (err) {
+        console.error(`Snapshot error reading ${dbTable}:`, err);
+      }
+    }
+
+    if (legacySerials.length) {
+      if (!backupData.AssetSerialNumber) backupData.AssetSerialNumber = [];
+      (backupData.AssetSerialNumber as unknown[]).push(...legacySerials);
+      totalRecords += legacySerials.length;
+    }
+
+    return {
+      generatedAt: new Date().toISOString(),
+      recordCount: totalRecords,
+      data: backupData
+    };
+  }
 } 
