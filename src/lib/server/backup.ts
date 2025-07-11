@@ -113,7 +113,7 @@ export class BackupService {
           // If we're processing Asset rows, capture legacy serialNumber column
           if (table === 'Asset') {
             for (const rec of records as Record<string, unknown>[]) {
-              const sn = (rec as Record<string, unknown>)['serialNumber'];
+              const sn = (rec as Record<string, unknown>)['serialNumber'] ?? (rec as Record<string, unknown>)['serial_number'];
               const id = (rec as Record<string, unknown>)['id'];
               if (sn) {
                 legacySerials.push({ assetId: id as number, serialNumber: sn as string });
