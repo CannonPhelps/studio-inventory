@@ -8,6 +8,7 @@ node_modules
 .wrangler
 /.svelte-kit
 /build
+/csv-output
 
 # OS
 .DS_Store
@@ -24,3 +25,6 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
 /../generated/prisma
+scripts/backup-to-csv.mjs
+static/backup-7c1d925b-df5e-4b17-b8c2-4c04c1c9907d-plain (2).json
+static/Studio Inventory 21ba5444289e80b99d39e5377ea75482_all.csv
