@@ -101,6 +101,8 @@ export class BackupService {
       const tables = Object.keys(this.tableNameMap);
 
       const backupData: Record<string, unknown[]> = {};
+      // Temporary collector for legacy serial numbers
+      const legacySerials: { assetId: number; serialNumber: string }[] = [];
       let totalRecords = 0;
 
       // Backup each table
@@ -108,6 +110,17 @@ export class BackupService {
         try {
           const tableName = this.tableNameMap[table] || table;
           const records = await prisma.$queryRawUnsafe(`SELECT * FROM ${tableName}`);
+          // If we're processing Asset rows, capture legacy serialNumber column
+          if (table === 'Asset') {
+            for (const rec of records as Record<string, unknown>[]) {
+              const sn = (rec as Record<string, unknown>)['serialNumber'];
+              const id = (rec as Record<string, unknown>)['id'];
+              if (sn) {
+                legacySerials.push({ assetId: id as number, serialNumber: sn as string });
+              }
+            }
+          }
+
           backupData[table] = records as unknown[];
           totalRecords += (records as unknown[]).length;
         } catch (error) {
@@ -128,6 +141,17 @@ export class BackupService {
         encrypted: true,
         description
       };
+
+      // Include legacy serials if present and AssetSerialNumber already selected
+      if (legacySerials.length > 0) {
+        if (!backupData['AssetSerialNumber']) {
+          backupData['AssetSerialNumber'] = [];
+        }
+        backupData['AssetSerialNumber'] = [
+          ...backupData['AssetSerialNumber'] as unknown[],
+          ...legacySerials
+        ];
+      }
 
       // Create backup object
       const backup: BackupData = {
