@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { requireAuth } from '$lib/server/routeProtection';
 import type { RequestHandler } from './$types';
-import { db } from '$lib/db';
+import { prisma } from '$lib/db';
 
 export const GET: RequestHandler = async (event) => {
 	try {
@@ -30,7 +30,7 @@ export const GET: RequestHandler = async (event) => {
 			if (toDate) where.movedAt.lte = new Date(toDate);
 		}
 		
-		const movements = await db.movement.findMany({
+		const movements = await prisma.movement.findMany({
 			where,
 			include: {
 				asset: {
@@ -60,7 +60,7 @@ export const POST: RequestHandler = async (event) => {
 			return json({ error: 'Asset ID, from location, and to location are required' }, { status: 400 });
 		}
 		
-		const movement = await db.movement.create({
+		const movement = await prisma.movement.create({
 			data: {
 				assetId: parseInt(assetId),
 				fromLocation,
@@ -78,7 +78,7 @@ export const POST: RequestHandler = async (event) => {
 		});
 		
 		// Update asset location
-		await db.asset.update({
+		await prisma.asset.update({
 			where: { id: parseInt(assetId) },
 			data: { location: toLocation }
 		});

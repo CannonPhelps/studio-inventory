@@ -7,10 +7,9 @@ export const GET: RequestHandler = async ({ params }) => {
   return new Response(JSON.stringify(assets), { headers: { 'Content-Type': 'application/json' } });
 };
 
-export const POST: RequestHandler = async ({ params, request, locals }) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await requireAdmin({ locals } as any);
-  const body = await request.json(); // { assetId, quantity }
-  const ka = await KitService.addAsset(Number(params.id), body.assetId, body.quantity);
+export const POST: RequestHandler = async (event) => {
+  await requireAdmin(event);
+  const body = await event.request.json(); // { assetId, quantity }
+  const ka = await KitService.addAsset(Number(event.params.id), body.assetId, body.quantity);
   return new Response(JSON.stringify(ka), { status: 201, headers: { 'Content-Type': 'application/json' } });
 }; 

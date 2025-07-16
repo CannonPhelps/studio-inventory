@@ -56,19 +56,19 @@
 
   function getHealthColor(health: string) {
     switch (health) {
-      case 'healthy': return 'text-accent-success bg-success-light';
-      case 'warning': return 'text-accent-warning bg-warning-light';
-      case 'critical': return 'text-accent-error bg-error-light';
-      default: return 'text-secondary-600 bg-secondary-100';
+      case 'healthy': return 'text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30';
+      case 'warning': return 'text-yellow-600 dark:text-yellow-400 bg-yellow-100 dark:bg-yellow-900/30';
+      case 'critical': return 'text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30';
+      default: return 'text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800';
     }
   }
 
   function getSeverityColor(severity: string) {
     switch (severity) {
-      case 'success': return 'text-accent-success bg-success-light';
-      case 'warning': return 'text-accent-warning bg-warning-light';
-      case 'error': return 'text-accent-error bg-error-light';
-      default: return 'text-accent-info bg-info-light';
+      case 'success': return 'text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30';
+      case 'warning': return 'text-yellow-600 dark:text-yellow-400 bg-yellow-100 dark:bg-yellow-900/30';
+      case 'error': return 'text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30';
+      default: return 'text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30';
     }
   }
 
@@ -129,8 +129,8 @@
               </div>
             </div>
             <div class="ml-4">
-              <p class="text-sm font-medium text-accent-error">Overdue Items</p>
-              <p class="text-3xl font-bold text-accent-error">{alerts.overdue}</p>
+              <p class="text-sm font-medium text-white">Overdue Items</p>
+              <p class="text-3xl font-bold text-white">{alerts.overdue}</p>
             </div>
           </div>
         </Card>
@@ -145,8 +145,8 @@
               </div>
             </div>
             <div class="ml-4">
-              <p class="text-sm font-medium text-accent-warning">Low Stock</p>
-              <p class="text-3xl font-bold text-accent-warning">{alerts.lowStock}</p>
+              <p class="text-sm font-medium text-white">Low Stock</p>
+              <p class="text-3xl font-bold text-white">{alerts.lowStock}</p>
             </div>
           </div>
         </Card>
@@ -162,8 +162,8 @@
               </div>
             </div>
             <div class="ml-4">
-              <p class="text-sm font-medium text-accent-warning">Maintenance Due</p>
-              <p class="text-3xl font-bold text-accent-warning">{alerts.maintenance}</p>
+              <p class="text-sm font-medium text-white">Maintenance Due</p>
+              <p class="text-3xl font-bold text-white">{alerts.maintenance}</p>
             </div>
           </div>
         </Card>
@@ -178,8 +178,8 @@
               </div>
             </div>
             <div class="ml-4">
-              <p class="text-sm font-medium text-accent-info">Security Alerts</p>
-              <p class="text-3xl font-bold text-accent-info">{alerts.security}</p>
+              <p class="text-sm font-medium text-white">Security Alerts</p>
+              <p class="text-3xl font-bold text-white">{alerts.security}</p>
             </div>
           </div>
         </Card>
@@ -191,7 +191,7 @@
       <!-- Assets Overview -->
       <Card gradient="from-accent to-accent-secondary">
         <div class="flex items-center justify-between mb-6">
-          <h3 class="text-xl font-semibold text-primary">Assets Overview</h3>
+          <h3 class="text-xl font-semibold text-white">Assets Overview</h3>
           <div class="p-3 bg-gradient-to-br from-accent to-accent-secondary rounded-lg">
             <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
@@ -199,21 +199,21 @@
           </div>
         </div>
         <div class="space-y-4">
-          <div class="flex justify-between items-center p-3 bg-gradient-to-r from-secondary/50 to-secondary/30 rounded-lg">
-            <span class="text-secondary-600 font-medium">Total Assets</span>
-            <span class="font-bold text-2xl text-primary">{stats.assets.total}</span>
+          <div class="flex justify-between items-center p-3 bg-gradient-to-r from-white/20 to-white/10 rounded-lg">
+            <span class="text-white/90 font-medium">Total Assets</span>
+            <span class="font-bold text-2xl text-white">{stats.assets.total}</span>
           </div>
           <div class="flex justify-between items-center p-3 bg-gradient-to-r from-accent-success/20 to-accent-success/10 rounded-lg">
-            <span class="text-secondary-600 font-medium">Available</span>
-            <span class="font-bold text-2xl text-accent-success">{stats.assets.available}</span>
+            <span class="text-white/90 font-medium">Available</span>
+            <span class="font-bold text-2xl text-green-300">{stats.assets.available}</span>
           </div>
-          <div class="flex justify-between items-center p-3 bg-gradient-to-r from-accent/20 to-accent/10 rounded-lg">
-            <span class="text-secondary-600 font-medium">Checked Out</span>
-            <span class="font-bold text-2xl text-accent">{stats.assets.checkedOut}</span>
+          <div class="flex justify-between items-center p-3 bg-gradient-to-r from-white/20 to-white/10 rounded-lg">
+            <span class="text-white/90 font-medium">Checked Out</span>
+            <span class="font-bold text-2xl text-white">{stats.assets.checkedOut}</span>
           </div>
           <div class="flex justify-between items-center p-3 bg-gradient-to-r from-accent-info/20 to-accent-info/10 rounded-lg">
-            <span class="text-secondary-600 font-medium">Total Value</span>
-            <span class="font-bold text-2xl text-accent-info">${stats.assets.totalValue.toLocaleString()}</span>
+            <span class="text-white/90 font-medium">Total Value</span>
+            <span class="font-bold text-2xl text-green-300">${stats.assets.totalValue.toLocaleString()}</span>
           </div>
         </div>
       </Card>
@@ -221,7 +221,7 @@
       <!-- User Activity -->
       <Card gradient="from-accent-success to-green-500">
         <div class="flex items-center justify-between mb-6">
-          <h3 class="text-xl font-semibold text-primary">User Activity</h3>
+          <h3 class="text-xl font-semibold text-white">User Activity</h3>
           <div class="p-3 bg-gradient-to-br from-accent-success to-green-500 rounded-lg">
             <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
@@ -229,20 +229,20 @@
           </div>
         </div>
         <div class="space-y-4">
-          <div class="flex justify-between items-center p-3 bg-gradient-to-r from-secondary/50 to-secondary/30 rounded-lg">
-            <span class="text-secondary-600 font-medium">Total Users</span>
-            <span class="font-bold text-2xl text-primary">{stats.users.total}</span>
+          <div class="flex justify-between items-center p-3 bg-gradient-to-r from-white/20 to-white/10 rounded-lg">
+            <span class="text-white/90 font-medium">Total Users</span>
+            <span class="font-bold text-2xl text-white">{stats.users.total}</span>
           </div>
           <div class="flex justify-between items-center p-3 bg-gradient-to-r from-accent-success/20 to-accent-success/10 rounded-lg">
-            <span class="text-secondary-600 font-medium">Active Users</span>
-            <span class="font-bold text-2xl text-accent-success">{stats.users.active}</span>
+            <span class="text-white/90 font-medium">Active Users</span>
+            <span class="font-bold text-2xl text-white">{stats.users.active}</span>
           </div>
           <div class="flex justify-between items-center p-3 bg-gradient-to-r from-accent-info/20 to-accent-info/10 rounded-lg">
-            <span class="text-secondary-600 font-medium">Administrators</span>
-            <span class="font-bold text-2xl text-accent-info">{stats.users.admins}</span>
+            <span class="text-white/90 font-medium">Administrators</span>
+            <span class="font-bold text-2xl text-white">{stats.users.admins}</span>
           </div>
           <div class="flex justify-between items-center p-3 bg-gradient-to-r from-accent-warning/20 to-accent-warning/10 rounded-lg">
-            <span class="text-secondary-600 font-medium">System Health</span>
+            <span class="text-white/90 font-medium">System Health</span>
             <span class="px-3 py-1 text-sm font-medium rounded-full {getHealthColor(stats.system.systemHealth)}">
               {stats.system.systemHealth}
             </span>
@@ -253,7 +253,7 @@
       <!-- Checkout Activity -->
       <Card gradient="from-accent-info to-cyan-500">
         <div class="flex items-center justify-between mb-6">
-          <h3 class="text-xl font-semibold text-primary">Checkout Activity</h3>
+          <h3 class="text-xl font-semibold text-white">Checkout Activity</h3>
           <div class="p-3 bg-gradient-to-br from-accent-info to-cyan-500 rounded-lg">
             <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -261,21 +261,21 @@
           </div>
         </div>
         <div class="space-y-4">
-          <div class="flex justify-between items-center p-3 bg-gradient-to-r from-secondary/50 to-secondary/30 rounded-lg">
-            <span class="text-secondary-600 font-medium">Total Checkouts</span>
-            <span class="font-bold text-2xl text-primary">{stats.checkouts.total}</span>
+          <div class="flex justify-between items-center p-3 bg-gradient-to-r from-white/20 to-white/10 rounded-lg">
+            <span class="text-white/90 font-medium">Total Checkouts</span>
+            <span class="font-bold text-2xl text-white">{stats.checkouts.total}</span>
           </div>
-          <div class="flex justify-between items-center p-3 bg-gradient-to-r from-accent/20 to-accent/10 rounded-lg">
-            <span class="text-secondary-600 font-medium">Active Checkouts</span>
-            <span class="font-bold text-2xl text-accent">{stats.checkouts.active}</span>
+          <div class="flex justify-between items-center p-3 bg-gradient-to-r from-white/20 to-white/10 rounded-lg">
+            <span class="text-white/90 font-medium">Active Checkouts</span>
+            <span class="font-bold text-2xl text-white">{stats.checkouts.active}</span>
           </div>
           <div class="flex justify-between items-center p-3 bg-gradient-to-r from-accent-success/20 to-accent-success/10 rounded-lg">
-            <span class="text-secondary-600 font-medium">This Month</span>
-            <span class="font-bold text-2xl text-accent-success">{stats.checkouts.thisMonth}</span>
+            <span class="text-white/90 font-medium">This Month</span>
+            <span class="font-bold text-2xl text-white">{stats.checkouts.thisMonth}</span>
           </div>
-          <div class="flex justify-between items-center p-3 bg-gradient-to-r from-secondary/30 to-secondary/20 rounded-lg">
-            <span class="text-secondary-600 font-medium">Last Month</span>
-            <span class="font-bold text-2xl text-secondary-600">{stats.checkouts.lastMonth}</span>
+          <div class="flex justify-between items-center p-3 bg-gradient-to-r from-white/10 to-white/5 rounded-lg">
+            <span class="text-white/70 font-medium">Last Month</span>
+            <span class="font-bold text-2xl text-white/70">{stats.checkouts.lastMonth}</span>
           </div>
         </div>
       </Card>
@@ -290,37 +290,37 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
             </svg>
           </div>
-          <h3 class="text-2xl font-semibold text-primary">Analytics</h3>
+          <h3 class="text-2xl font-semibold text-white">Analytics</h3>
         </div>
         <select 
           bind:value={selectedChart}
-          class="border border-input rounded-lg px-4 py-3 text-sm bg-input text-input focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all duration-200"
+          class="border border-white/20 rounded-lg px-4 py-3 text-sm bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50 transition-all duration-200 backdrop-blur-sm dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
         >
           {#each chartTypes as type}
-            <option value={type.value}>{type.label}</option>
+            <option value={type.value} class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">{type.label}</option>
           {/each}
         </select>
       </div>
 
       {#if chartData}
-        <div class="h-80 flex items-center justify-center bg-gradient-to-br from-secondary/20 to-secondary/10 rounded-xl border border-secondary/20">
+        <div class="h-80 flex items-center justify-center bg-gradient-to-br from-white/10 to-white/5 rounded-xl border border-white/20 backdrop-blur-sm dark:from-gray-800/50 dark:to-gray-900/50 dark:border-gray-700">
           <div class="text-center">
-            <div class="p-6 bg-gradient-to-br from-accent/20 to-accent/10 rounded-full mb-4 inline-block">
-              <svg class="h-12 w-12 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="p-6 bg-gradient-to-br from-white/20 to-white/10 rounded-full mb-4 inline-block dark:from-gray-700/50 dark:to-gray-800/50">
+              <svg class="h-12 w-12 text-white dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
             </div>
-            <p class="text-primary text-lg font-medium mb-2">Chart visualization would be implemented here</p>
-            <p class="text-sm text-secondary-600">
+            <p class="text-white dark:text-gray-300 text-lg font-medium mb-2">Chart visualization would be implemented here</p>
+            <p class="text-sm text-white/70 dark:text-gray-400">
               Data: {chartData.labels.length} data points for {selectedChart}
             </p>
           </div>
         </div>
       {:else}
-        <div class="h-80 flex items-center justify-center bg-gradient-to-br from-secondary/20 to-secondary/10 rounded-xl border border-secondary/20">
+        <div class="h-80 flex items-center justify-center bg-gradient-to-br from-white/10 to-white/5 rounded-xl border border-white/20 backdrop-blur-sm dark:from-gray-800/50 dark:to-gray-900/50 dark:border-gray-700">
           <div class="relative">
-            <div class="animate-spin rounded-full h-12 w-12 border-4 border-accent/20 border-t-accent"></div>
-            <div class="absolute inset-0 animate-ping rounded-full h-12 w-12 border-2 border-accent/30"></div>
+            <div class="animate-spin rounded-full h-12 w-12 border-4 border-white/20 border-t-white dark:border-gray-600 dark:border-t-gray-300"></div>
+            <div class="absolute inset-0 animate-ping rounded-full h-12 w-12 border-2 border-white/30 dark:border-gray-500"></div>
           </div>
         </div>
       {/if}
@@ -334,12 +334,12 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
           </svg>
         </div>
-        <h3 class="text-2xl font-semibold text-primary">Recent Activity</h3>
+        <h3 class="text-2xl font-semibold text-white">Recent Activity</h3>
       </div>
       {#if activity.length > 0}
         <div class="space-y-4">
           {#each activity as item, index}
-            <div class="flex items-start space-x-4 p-4 rounded-xl hover:bg-gradient-to-r hover:from-secondary/30 hover:to-secondary/20 transition-all duration-300 group/item">
+            <div class="flex items-start space-x-4 p-4 rounded-xl hover:bg-gradient-to-r hover:from-white/20 hover:to-white/10 transition-all duration-300 group/item">
               <div class="flex-shrink-0">
                 <div class="w-12 h-12 rounded-xl flex items-center justify-center {getSeverityColor(item.severity)} shadow-lg">
                   {#if item.type === 'checkout'}
@@ -363,9 +363,9 @@
                 </div>
               </div>
               <div class="flex-1 min-w-0">
-                <p class="text-lg font-semibold text-primary group-hover/item:text-accent transition-colors">{item.title}</p>
-                <p class="text-secondary-600 mt-1">{item.description}</p>
-                <div class="flex items-center mt-2 text-sm text-secondary-600">
+                <p class="text-lg font-semibold text-white group-hover/item:text-yellow-200 transition-colors">{item.title}</p>
+                <p class="text-white/80 mt-1">{item.description}</p>
+                <div class="flex items-center mt-2 text-sm text-white/60">
                   <span class="font-medium">{item.user}</span>
                   <span class="mx-2">•</span>
                   <span>{format(new Date(item.timestamp), 'MMM dd, HH:mm')}</span>
@@ -376,12 +376,12 @@
         </div>
       {:else}
         <div class="text-center py-12">
-          <div class="p-6 bg-gradient-to-br from-secondary/20 to-secondary/10 rounded-full mb-4 inline-block">
-            <svg class="h-12 w-12 text-secondary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div class="p-6 bg-gradient-to-br from-white/20 to-white/10 rounded-full mb-4 inline-block dark:from-gray-700/50 dark:to-gray-800/50">
+            <svg class="h-12 w-12 text-white/60 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
           </div>
-          <p class="text-secondary-600 text-lg">No recent activity</p>
+          <p class="text-white/60 dark:text-gray-400 text-lg">No recent activity</p>
         </div>
       {/if}
     </Card>

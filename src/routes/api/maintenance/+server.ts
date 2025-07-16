@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { requireAuth } from '$lib/server/routeProtection';
 import type { RequestHandler } from './$types';
-import { db } from '$lib/db';
+import { prisma } from '$lib/db';
 
 export const GET: RequestHandler = async (event) => {
 	try {
@@ -18,7 +18,7 @@ export const GET: RequestHandler = async (event) => {
 			where.assetId = parseInt(assetId);
 		}
 		
-		const maintenanceRecords = await db.maintenanceRecord.findMany({
+		const maintenanceRecords = await prisma.maintenanceRecord.findMany({
 			where,
 			include: {
 				asset: {
@@ -48,7 +48,7 @@ export const POST: RequestHandler = async (event) => {
 			return json({ error: 'Asset ID is required' }, { status: 400 });
 		}
 		
-		const maintenance = await db.maintenanceRecord.create({
+		const maintenance = await prisma.maintenanceRecord.create({
 			data: {
 				assetId: parseInt(assetId),
 				notes: notes || null,

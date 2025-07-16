@@ -109,7 +109,6 @@ model Asset {
   maintenanceRecords MaintenanceRecord[]
   movements          Movement[]
   financialRecords   FinancialRecord[]
-  projectAssets      ProjectAsset[]
   kitAssets          KitAsset[]
   cableSegments      CableSegment[] @relation("CableAsset")
 
@@ -288,50 +287,7 @@ model AutomatedTaskLog {
   @@map("automated_task_logs")
 }
 
-model Project {
-  id          Int            @id @default(autoincrement())
-  name        String
-  description String?
-  status      String         @default("planning") // planning, active, completed, archived
-  startDate   DateTime?
-  endDate     DateTime?
-  budget      Decimal?       @db.Decimal(12, 2)
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-  assets      ProjectAsset[]
-  tasks       ProjectTask[]
 
-  @@map("projects")
-}
-
-model ProjectAsset {
-  id         Int      @id @default(autoincrement())
-  projectId  Int
-  assetId    Int
-  assignedAt DateTime @default(now())
-  releasedAt DateTime?
-  project    Project  @relation(fields: [projectId], references: [id])
-  asset      Asset    @relation(fields: [assetId], references: [id])
-
-  @@unique([projectId, assetId])
-  @@map("project_assets")
-}
-
-model ProjectTask {
-  id          Int      @id @default(autoincrement())
-  projectId   Int
-  name        String
-  description String?
-  assignedTo  String?
-  status      String   @default("pending") // pending, in_progress, completed
-  dueDate     DateTime?
-  completedAt DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  project     Project  @relation(fields: [projectId], references: [id])
-
-  @@map("project_tasks")
-}
 
 model Kit {
   id          Int        @id @default(autoincrement())

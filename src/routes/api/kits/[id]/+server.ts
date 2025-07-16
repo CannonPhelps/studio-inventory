@@ -8,17 +8,15 @@ export const GET: RequestHandler = async ({ params }) => {
   return new Response(JSON.stringify(kit), { headers: { 'Content-Type': 'application/json' } });
 };
 
-export const PUT: RequestHandler = async ({ params, request, locals }) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await requireAdmin({ locals } as any);
-  const body = await request.json();
-  const updated = await KitService.update(Number(params.id), body);
+export const PUT: RequestHandler = async (event) => {
+  await requireAdmin(event);
+  const body = await event.request.json();
+  const updated = await KitService.update(Number(event.params.id), body);
   return new Response(JSON.stringify(updated), { headers: { 'Content-Type': 'application/json' } });
 };
 
-export const DELETE: RequestHandler = async ({ params, locals }) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await requireAdmin({ locals } as any);
-  await KitService.delete(Number(params.id));
+export const DELETE: RequestHandler = async (event) => {
+  await requireAdmin(event);
+  await KitService.delete(Number(event.params.id));
   return new Response(null, { status: 204 });
 }; 

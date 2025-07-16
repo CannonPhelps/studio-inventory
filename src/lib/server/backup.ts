@@ -55,10 +55,7 @@ export class BackupService {
     // Automation
     AutomatedTask: 'automated_tasks',
     AutomatedTaskLog: 'automated_task_logs',
-    // Projects & kits
-    Project: 'projects',
-    ProjectAsset: 'project_assets',
-    ProjectTask: 'project_tasks',
+    // Kits
     Kit: 'kits',
     KitAsset: 'kit_assets'
   };

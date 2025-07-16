@@ -86,6 +86,9 @@
 		editingCategory = null;
 	}
 
+	// Import unified UI components
+	import Button from '$lib/components/ui/Button.svelte';
+	import Input from '$lib/components/ui/Input.svelte';
 
 </script>
 
@@ -100,15 +103,15 @@
 			<h1 class="text-3xl font-bold text-primary">Categories</h1>
 			<p class="mt-2 text-secondary">Organize your inventory with categories</p>
 		</div>
-		<button
+		<Button
+			className="mt-4 sm:mt-0 flex items-center gap-2"
 			on:click={() => (showAddModal = true)}
-			class="mt-4 sm:mt-0 bg-accent hover:bg-accent-secondary text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
 		>
 			<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
 			</svg>
 			Add Category
-		</button>
+		</Button>
 	</div>
 
 	{#if loading}
@@ -120,12 +123,7 @@
 			<div class="text-tertiary text-4xl mb-4">🏷️</div>
 			<h3 class="text-lg font-medium text-primary mb-2">No categories yet</h3>
 			<p class="text-secondary mb-4">Create your first category to start organizing your inventory.</p>
-			<button
-				on:click={() => (showAddModal = true)}
-				class="bg-accent hover:bg-accent-secondary text-white px-4 py-2 rounded-lg transition-colors"
-			>
-				Add Category
-			</button>
+			<Button on:click={() => (showAddModal = true)}>Add Category</Button>
 		</div>
 	{:else}
 		<!-- Categories Grid -->
@@ -138,22 +136,26 @@
 								<h3 class="text-lg font-semibold text-primary">{category.name}</h3>
 							</div>
 							<div class="flex items-center space-x-2">
-								<button
+								<Button
+									variant="ghost"
+									size="sm"
+									className="text-accent hover:text-accent-secondary p-1"
 									on:click={() => startEdit(category)}
-									class="text-accent hover:text-accent-secondary p-1 rounded transition-colors"
 								>
 									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
 									</svg>
-								</button>
-								<button
+								</Button>
+								<Button
+									variant="danger"
+									size="sm"
+									className="p-1"
 									on:click={() => deleteCategory(category.id)}
-									class="text-error hover:text-red-700 p-1 rounded transition-colors"
 								>
 									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
 									</svg>
-								</button>
+								</Button>
 							</div>
 						</div>
 
@@ -181,29 +183,11 @@
 			<form on:submit|preventDefault={addCategory} class="space-y-4">
 				<div>
 					<label for="name" class="block text-sm font-medium text-secondary mb-1">Name *</label>
-					<input
-						id="name"
-						type="text"
-						bind:value={newCategory.name}
-						class="w-full px-3 py-2 border border-card bg-input text-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
-						placeholder="Enter category name"
-						required
-					/>
+					<Input id="name" bind:value={newCategory.name} placeholder="Enter category name" required />
 				</div>
 				<div class="flex space-x-3 pt-4">
-					<button
-						type="submit"
-						class="flex-1 bg-accent hover:bg-accent-secondary text-white py-2 px-4 rounded-lg transition-colors"
-					>
-						Add Category
-					</button>
-					<button
-						type="button"
-						on:click={() => (showAddModal = false)}
-						class="flex-1 bg-tertiary hover:bg-secondary text-primary py-2 px-4 rounded-lg transition-colors"
-					>
-						Cancel
-					</button>
+					<Button type="submit" className="flex-1">Add Category</Button>
+					<Button variant="secondary" type="button" className="flex-1" on:click={() => (showAddModal = false)}>Cancel</Button>
 				</div>
 			</form>
 		</div>
@@ -218,29 +202,11 @@
 			<form on:submit|preventDefault={updateCategory} class="space-y-4">
 				<div>
 					<label for="edit-name" class="block text-sm font-medium text-secondary mb-1">Name *</label>
-					<input
-						id="edit-name"
-						type="text"
-						bind:value={editingCategory.name}
-						class="w-full px-3 py-2 border border-card bg-input text-input rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
-						placeholder="Enter category name"
-						required
-					/>
+					<Input id="edit-name" bind:value={editingCategory.name} placeholder="Enter category name" required />
 				</div>
 				<div class="flex space-x-3 pt-4">
-					<button
-						type="submit"
-						class="flex-1 bg-accent hover:bg-accent-secondary text-white py-2 px-4 rounded-lg transition-colors"
-					>
-						Update Category
-					</button>
-					<button
-						type="button"
-						on:click={cancelEdit}
-						class="flex-1 bg-tertiary hover:bg-secondary text-primary py-2 px-4 rounded-lg transition-colors"
-					>
-						Cancel
-					</button>
+					<Button type="submit" className="flex-1">Update Category</Button>
+					<Button variant="secondary" type="button" className="flex-1" on:click={cancelEdit}>Cancel</Button>
 				</div>
 			</form>
 		</div>

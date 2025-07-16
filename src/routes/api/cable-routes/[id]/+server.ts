@@ -2,23 +2,22 @@ import type { RequestHandler } from '@sveltejs/kit';
 import { CableRouteService } from '$lib/server/cableRoute';
 import { requireAdmin } from '$lib/server/routeProtection';
 
-export const GET: RequestHandler = async ({ params }) => {
-  const route = await CableRouteService.get(Number(params.id));
+export const GET: RequestHandler = async (event) => {
+  await requireAdmin(event);
+  const route = await CableRouteService.get(Number(event.params.id));
   if (!route) return new Response('Not Found', { status: 404 });
   return new Response(JSON.stringify(route), { headers: { 'Content-Type': 'application/json' } });
 };
 
-export const PUT: RequestHandler = async ({ params, request, locals }) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await requireAdmin({ locals } as any);
-  const body = await request.json();
-  const updated = await CableRouteService.update(Number(params.id), body);
+export const PUT: RequestHandler = async (event) => {
+  await requireAdmin(event);
+  const body = await event.request.json();
+  const updated = await CableRouteService.update(Number(event.params.id), body);
   return new Response(JSON.stringify(updated), { headers: { 'Content-Type': 'application/json' } });
 };
 
-export const DELETE: RequestHandler = async ({ params, locals }) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await requireAdmin({ locals } as any);
-  await CableRouteService.delete(Number(params.id));
+export const DELETE: RequestHandler = async (event) => {
+  await requireAdmin(event);
+  await CableRouteService.delete(Number(event.params.id));
   return new Response(null, { status: 204 });
 }; 

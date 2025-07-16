@@ -7,6 +7,12 @@ export const GET: RequestHandler = async ({ url }) => {
   try {
     const action = url.searchParams.get('action');
 
+    // Handle default GET request (no action parameter)
+    if (!action) {
+      // Return empty array for now - can be replaced with real DB query later
+      return json([]);
+    }
+
     switch (action) {
       case 'templates': {
         const templates = CommunicationService.getEmailTemplates();

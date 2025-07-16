@@ -2,6 +2,11 @@
 	import { onMount } from 'svelte';
 	import Card from '$lib/components/Card.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
+	import Button from '$lib/components/ui/Button.svelte';
+	import Input from '$lib/components/ui/Input.svelte';
+	import TextArea from '$lib/components/ui/TextArea.svelte';
+	import Select from '$lib/components/ui/Select.svelte';
+	import Checkbox from '$lib/components/ui/Checkbox.svelte';
 
 	let assets: any[] = [];
 	let categories: any[] = [];
@@ -270,25 +275,24 @@
 	    title="Assets" 
 	    subtitle="Manage your studio equipment and inventory" 
 	    gradient="from-accent to-accent-secondary">
-    <button
-        onclick={() => (showAddModal = true)}
-        class="flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-white transition-colors hover:bg-accent-secondary"
-    >
-        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
-        Add Asset
-    </button>
-    <button
-        onclick={migrateSerials}
-        class="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-white transition-colors hover:bg-indigo-700 disabled:opacity-50"
-        disabled={migratingSerials}
-      >
-        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7" />
-        </svg>
-        {migratingSerials ? 'Migrating...' : 'Migrate Serials'}
-      </button>
+    <div class="flex space-x-3">
+        <Button on:click={() => (showAddModal = true)}>
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Add Asset
+        </Button>
+        <Button 
+            variant="secondary" 
+            on:click={migrateSerials}
+            disabled={migratingSerials}
+        >
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7" />
+            </svg>
+            {migratingSerials ? 'Migrating...' : 'Migrate Serials'}
+        </Button>
+    </div>
 </SectionHeader>
 
 <Card gradient="from-secondary/20 to-secondary/10" padding="p-6" className="">
@@ -414,12 +418,9 @@
 			</div>
 			<h3 class="mb-2 text-lg font-medium text-primary">No assets found</h3>
 			<p class="mb-4 text-secondary">Try adjusting your search or filters.</p>
-			<button
-				onclick={() => (showAddModal = true)}
-				class="rounded-lg bg-accent px-4 py-2 text-white transition-colors hover:bg-accent-secondary"
-			>
+			<Button on:click={() => (showAddModal = true)}>
 				Add Asset
-			</button>
+			</Button>
 		</div>
 	{:else if viewMode === 'cards'}
 		<!-- Card View -->
@@ -807,19 +808,20 @@
 				</div>
 
 				<div class="flex space-x-3 pt-4">
-					<button
+					<Button
 						type="button"
-						onclick={() => (showAddModal = false)}
-						class="flex-1 bg-tertiary hover:bg-secondary text-primary py-2 px-4 rounded-lg transition-colors"
+						variant="secondary"
+						className="flex-1"
+						on:click={() => (showAddModal = false)}
 					>
 						Cancel
-					</button>
-					<button
+					</Button>
+					<Button
 						type="submit"
-						class="flex-1 bg-accent hover:bg-accent-secondary text-white py-2 px-4 rounded-lg transition-colors"
+						className="flex-1"
 					>
 						Add Asset
-					</button>
+					</Button>
 				</div>
 			</form>
 		</div>
@@ -1020,19 +1022,20 @@
 				</div>
 
 				<div class="flex space-x-3 pt-4">
-					<button
+					<Button
 						type="button"
-						onclick={() => (showEditModal = false)}
-						class="flex-1 bg-tertiary hover:bg-secondary text-primary py-2 px-4 rounded-lg transition-colors"
+						variant="secondary"
+						className="flex-1"
+						on:click={() => (showEditModal = false)}
 					>
 						Cancel
-					</button>
-					<button
+					</Button>
+					<Button
 						type="submit"
-						class="flex-1 bg-accent hover:bg-accent-secondary text-white py-2 px-4 rounded-lg transition-colors"
+						className="flex-1"
 					>
 						Update Asset
-					</button>
+					</Button>
 				</div>
 			</form>
 		</div>
@@ -1049,18 +1052,20 @@
 				cannot be undone.
 			</p>
 			<div class="flex space-x-3">
-				<button
-					onclick={() => (showDeleteModal = false)}
-					class="flex-1 bg-tertiary hover:bg-secondary text-primary py-2 px-4 rounded-lg transition-colors"
+				<Button
+					variant="secondary"
+					className="flex-1"
+					on:click={() => (showDeleteModal = false)}
 				>
 					Cancel
-				</button>
-				<button
-					onclick={handleDeleteAsset}
-					class="flex-1 bg-error hover:text-red-700 text-white py-2 px-4 rounded-lg transition-colors"
+				</Button>
+				<Button
+					variant="danger"
+					className="flex-1"
+					on:click={handleDeleteAsset}
 				>
 					Delete Asset
-				</button>
+				</Button>
 			</div>
 		</div>
 	</div>
