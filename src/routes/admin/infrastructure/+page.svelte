@@ -55,6 +55,7 @@
   // Assets data
   let assets: any[] = [];
   let showAddAssetModal = false;
+  let showEditAssetModal = false;
   let editingAsset: any = null;
   let newAsset = {
     itemName: '',
@@ -329,20 +330,65 @@
     }
   }
 
+  // Edit Asset functions
+  function openEditAssetModal(asset: any) {
+    editingAsset = {
+      ...asset,
+      serialNumbers: asset.serialNumbers?.map((sn: any) => sn.serialNumber || sn) || []
+    };
+    showEditAssetModal = true;
+  }
+
+  function addEditSerialNumber() {
+    if (newSerialNumber.trim()) {
+      editingAsset.serialNumbers = [...editingAsset.serialNumbers, newSerialNumber.trim()];
+      newSerialNumber = '';
+    }
+  }
+
+  function removeEditSerialNumber(index: number) {
+    editingAsset.serialNumbers = editingAsset.serialNumbers.filter((_: string, i: number) => i !== index);
+  }
+
+  async function updateAsset() {
+    try {
+      const response = await fetch(`/api/assets/${editingAsset.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editingAsset)
+      });
+
+      if (!response.ok) throw new Error('Failed to update asset');
+      
+      showEditAssetModal = false;
+      editingAsset = null;
+      await loadAllData();
+    } catch (e) {
+      console.error('Error updating asset:', e);
+      error = e instanceof Error ? e.message : 'Failed to update asset';
+    }
+  }
+
+  function cancelEdit() {
+    showEditAssetModal = false;
+    editingAsset = null;
+    newSerialNumber = '';
+  }
+
   function getStatusColor(status: string) {
     switch (status.toLowerCase()) {
       case 'active':
       case 'available':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
       case 'inactive':
       case 'in use':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
       case 'maintenance':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
       case 'planned':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
     }
   }
 
@@ -405,8 +451,8 @@
           <div class="space-y-6">
             <div class="flex justify-between items-center">
               <div>
-                <h2 class="text-xl font-semibold text-gray-900">Rooms ({rooms.length})</h2>
-                <p class="text-gray-600">Manage building locations and spaces</p>
+                <h2 class="text-xl font-semibold text-primary">Rooms ({rooms.length})</h2>
+                <p class="text-secondary">Manage building locations and spaces</p>
               </div>
               <button
                 on:click={openAddRoomModal}
@@ -421,32 +467,32 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {#each rooms as room}
-                <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow">
                   <div class="flex items-center justify-between mb-3">
-                    <h3 class="font-semibold text-lg">{room.name}</h3>
+                    <h3 class="font-semibold text-lg text-gray-900 dark:text-white">{room.name}</h3>
                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {getStatusColor(room.isActive ? 'active' : 'inactive')}">
                       {room.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </div>
-                  <div class="space-y-2 text-sm text-gray-600">
+                  <div class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
                     <p>{room.description}</p>
                     <div class="flex justify-between">
                       <span>Building:</span>
-                      <span class="font-medium">{room.building || 'N/A'}</span>
+                      <span class="font-medium text-gray-900 dark:text-gray-100">{room.building || 'N/A'}</span>
                     </div>
                     <div class="flex justify-between">
                       <span>Floor:</span>
-                      <span class="font-medium">{room.floor || 'N/A'}</span>
+                      <span class="font-medium text-gray-900 dark:text-gray-100">{room.floor || 'N/A'}</span>
                     </div>
                     <div class="flex justify-between">
                       <span>Type:</span>
-                      <span class="font-medium">{room.type || 'N/A'}</span>
+                      <span class="font-medium text-gray-900 dark:text-gray-100">{room.type || 'N/A'}</span>
                     </div>
                   </div>
                   <div class="mt-4 flex justify-end">
                     <button
                       on:click={() => deleteRoom(room.id)}
-                      class="text-red-600 hover:text-red-800 text-sm font-medium"
+                      class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 text-sm font-medium"
                     >
                       Delete
                     </button>
@@ -461,8 +507,8 @@
           <div class="space-y-6">
             <div class="flex justify-between items-center">
               <div>
-                <h2 class="text-xl font-semibold text-gray-900">Cable Routes ({cableRoutes.length})</h2>
-                <p class="text-gray-600">Manage cable infrastructure paths</p>
+                <h2 class="text-xl font-semibold text-primary">Cable Routes ({cableRoutes.length})</h2>
+                <p class="text-secondary">Manage cable infrastructure paths</p>
               </div>
               <button
                 on:click={openAddRouteModal}
@@ -477,34 +523,34 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {#each cableRoutes as route}
-                <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow">
                   <div class="flex items-center justify-between mb-3">
-                    <h3 class="font-semibold text-lg">{route.name}</h3>
+                    <h3 class="font-semibold text-lg text-gray-900 dark:text-white">{route.name}</h3>
                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {getStatusColor(route.status)}">
                       {route.status}
                     </span>
                   </div>
-                  <div class="space-y-2 text-sm text-gray-600">
+                  <div class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
                     <p>{route.description}</p>
                     <div class="flex justify-between">
                       <span>Segments:</span>
-                      <span class="font-medium">{route.segments?.length || 0}</span>
+                      <span class="font-medium text-gray-900 dark:text-gray-100">{route.segments?.length || 0}</span>
                     </div>
                     <div class="flex justify-between">
                       <span>Created:</span>
-                      <span class="font-medium">{formatDate(route.createdAt)}</span>
+                      <span class="font-medium text-gray-900 dark:text-gray-100">{formatDate(route.createdAt)}</span>
                     </div>
                   </div>
                   <div class="mt-4 flex justify-end space-x-2">
                     <a
                       href="/admin/cable-routes/{route.id}"
-                      class="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                      class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium"
                     >
                       View
                     </a>
                     <button
                       on:click={() => deleteRoute(route.id)}
-                      class="text-red-600 hover:text-red-800 text-sm font-medium"
+                      class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 text-sm font-medium"
                     >
                       Delete
                     </button>
@@ -519,8 +565,8 @@
           <div class="space-y-6">
             <div class="flex justify-between items-center">
               <div>
-                <h2 class="text-xl font-semibold text-gray-900">Categories ({categories.length})</h2>
-                <p class="text-gray-600">Organize equipment classifications</p>
+                <h2 class="text-xl font-semibold text-primary">Categories ({categories.length})</h2>
+                <p class="text-secondary">Organize equipment classifications</p>
               </div>
               <button
                 on:click={openAddCategoryModal}
@@ -535,21 +581,21 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {#each categories as category}
-                <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow">
                   <div class="flex items-center justify-between mb-3">
                     <div class="flex items-center space-x-2">
                       <div class="w-4 h-4 rounded-full" style="background-color: {category.color}"></div>
-                      <h3 class="font-semibold text-lg">{category.name}</h3>
+                      <h3 class="font-semibold text-lg text-gray-900 dark:text-white">{category.name}</h3>
                     </div>
-                    <span class="text-sm text-gray-500">{category.assetCount || 0} assets</span>
+                    <span class="text-sm text-gray-500 dark:text-gray-400">{category.assetCount || 0} assets</span>
                   </div>
-                  <div class="space-y-2 text-sm text-gray-600">
+                  <div class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
                     <p>{category.description}</p>
                   </div>
                   <div class="mt-4 flex justify-end">
                     <button
                       on:click={() => deleteCategory(category.id)}
-                      class="text-red-600 hover:text-red-800 text-sm font-medium"
+                      class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 text-sm font-medium"
                     >
                       Delete
                     </button>
@@ -564,8 +610,8 @@
            <div class="space-y-6">
              <div class="flex justify-between items-center">
                <div>
-                 <h2 class="text-xl font-semibold text-gray-900">Assets ({assets.length})</h2>
-                 <p class="text-gray-600">Manage equipment and inventory items</p>
+                 <h2 class="text-xl font-semibold text-primary">Assets ({assets.length})</h2>
+                 <p class="text-secondary">Manage equipment and inventory items</p>
                </div>
                <button
                  on:click={openAddAssetModal}
@@ -580,36 +626,83 @@
 
              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                {#each assets as asset}
-                 <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                   <div class="flex items-center justify-between mb-3">
-                     <h3 class="font-semibold text-lg">{asset.itemName}</h3>
-                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {getStatusColor(asset.status)}">
-                       {asset.status}
-                     </span>
-                   </div>
-                   <div class="space-y-2 text-sm text-gray-600">
-                     <div class="flex justify-between">
-                       <span>Category:</span>
-                       <span class="font-medium">{asset.category?.name || 'N/A'}</span>
-                     </div>
-                     <div class="flex justify-between">
-                       <span>Location:</span>
-                       <span class="font-medium">{asset.location || 'N/A'}</span>
-                     </div>
-                     <div class="flex justify-between">
-                       <span>Quantity:</span>
-                       <span class="font-medium">{asset.quantity}</span>
-                     </div>
-                     <div class="flex justify-between">
-                       <span>Serial:</span>
-                       <span class="font-medium">{asset.serialNumbers?.length > 0 ? asset.serialNumbers[0].serialNumber : 'N/A'}</span>
+                 <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden">
+                   <!-- Header -->
+                   <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
+                     <div class="flex items-start justify-between">
+                       <div class="flex-1 min-w-0">
+                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white truncate mb-1">{asset.itemName}</h3>
+                         <p class="text-sm text-gray-500 dark:text-gray-400">{asset.category?.name || 'Uncategorized'}</p>
+                       </div>
+                       <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {getStatusColor(asset.status)} ml-3 flex-shrink-0">
+                         {asset.status}
+                       </span>
                      </div>
                    </div>
-                   <div class="mt-4 flex justify-end">
+
+                   <!-- Content -->
+                   <div class="px-6 py-4 space-y-3">
+                     <div class="grid grid-cols-2 gap-4 text-sm">
+                       <div>
+                         <span class="text-gray-500 dark:text-gray-400 font-medium">Location:</span>
+                         <p class="text-gray-900 dark:text-gray-100 mt-1">{asset.location || 'Not specified'}</p>
+                       </div>
+                       <div>
+                         <span class="text-gray-500 dark:text-gray-400 font-medium">Quantity:</span>
+                         <p class="text-gray-900 dark:text-gray-100 mt-1">{asset.quantity}</p>
+                       </div>
+                       <div>
+                         <span class="text-gray-500 dark:text-gray-400 font-medium">Serial Number:</span>
+                         <p class="text-gray-900 dark:text-gray-100 mt-1">{asset.serialNumbers?.length > 0 ? (asset.serialNumbers[0].serialNumber || asset.serialNumbers[0]) : 'Not specified'}</p>
+                       </div>
+                       <div>
+                         <span class="text-gray-500 dark:text-gray-400 font-medium">Asset #:</span>
+                         <p class="text-gray-900 dark:text-gray-100 mt-1">{asset.assetNumber || 'Not specified'}</p>
+                       </div>
+                       <div>
+                         <span class="text-gray-500 dark:text-gray-400 font-medium">Model/Brand:</span>
+                         <p class="text-gray-900 dark:text-gray-100 mt-1">{asset.modelBrand || 'Not specified'}</p>
+                       </div>
+                       <div>
+                         <span class="text-gray-500 dark:text-gray-400 font-medium">Supplier:</span>
+                         <p class="text-gray-900 dark:text-gray-100 mt-1">{asset.supplier || 'Not specified'}</p>
+                       </div>
+                       <div>
+                         <span class="text-gray-500 dark:text-gray-400 font-medium">Purchase Date:</span>
+                         <p class="text-gray-900 dark:text-gray-100 mt-1">{asset.purchaseDate ? formatDate(asset.purchaseDate) : 'Not specified'}</p>
+                       </div>
+                       <div>
+                         <span class="text-gray-500 dark:text-gray-400 font-medium">Assigned To:</span>
+                         <p class="text-gray-900 dark:text-gray-100 mt-1">{asset.assigned || 'Not assigned'}</p>
+                       </div>
+                     </div>
+
+                     {#if asset.notes}
+                       <div class="pt-3 border-t border-gray-100 dark:border-gray-700">
+                         <span class="text-gray-500 dark:text-gray-400 font-medium text-sm">Notes:</span>
+                         <p class="text-gray-700 dark:text-gray-300 text-sm mt-1">{asset.notes}</p>
+                       </div>
+                     {/if}
+                   </div>
+
+                   <!-- Actions -->
+                   <div class="px-6 py-3 bg-gray-50 dark:bg-gray-700 border-t border-gray-100 dark:border-gray-600 flex justify-end space-x-2">
+                     <button
+                       on:click={() => openEditAssetModal(asset)}
+                       class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors"
+                     >
+                       <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                       </svg>
+                       Edit
+                     </button>
                      <button
                        on:click={() => deleteAsset(asset.id)}
-                       class="text-red-600 hover:text-red-800 text-sm font-medium"
+                       class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
                      >
+                       <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                       </svg>
                        Delete
                      </button>
                    </div>
@@ -623,8 +716,8 @@
            <div class="space-y-6">
              <div class="flex justify-between items-center">
                <div>
-                 <h2 class="text-xl font-semibold text-gray-900">Financial Records ({financialRecords.length})</h2>
-                 <p class="text-gray-600">Track financial transactions and budgets</p>
+                 <h2 class="text-xl font-semibold text-primary">Financial Records ({financialRecords.length})</h2>
+                 <p class="text-secondary">Track financial transactions and budgets</p>
                </div>
                <button
                  on:click={() => showAddFinancialModal = true}
@@ -639,22 +732,22 @@
 
              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                {#each financialRecords as record}
-                 <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                 <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow">
                    <div class="flex items-center justify-between mb-3">
-                     <h3 class="font-semibold text-lg">{record.type}</h3>
-                     <span class="text-lg font-bold {record.amount > 0 ? 'text-green-600' : 'text-red-600'}">
+                     <h3 class="font-semibold text-lg text-gray-900 dark:text-white">{record.type}</h3>
+                     <span class="text-lg font-bold {record.amount > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}">
                        ${Math.abs(record.amount)}
                      </span>
                    </div>
-                   <div class="space-y-2 text-sm text-gray-600">
+                   <div class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
                      <p>{record.description}</p>
                      <div class="flex justify-between">
                        <span>Date:</span>
-                       <span class="font-medium">{formatDate(record.date)}</span>
+                       <span class="font-medium text-gray-900 dark:text-gray-100">{formatDate(record.date)}</span>
                      </div>
                      <div class="flex justify-between">
                        <span>Category:</span>
-                       <span class="font-medium">{record.category}</span>
+                       <span class="font-medium text-gray-900 dark:text-gray-100">{record.category}</span>
                      </div>
                    </div>
                  </div>

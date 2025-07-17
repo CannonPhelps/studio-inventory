@@ -52,12 +52,11 @@
 	});
 
 	const quickActions = [
-		{ name: 'Add New Asset', href: '/admin/assets/new', icon: '➕', color: 'blue' },
+		{ name: 'Add New Asset', href: '/admin/infrastructure', icon: '➕', color: 'blue' },
 		{ name: 'Import Data', href: '/admin/import', icon: '📥', color: 'green' },
-		{ name: 'User Management', href: '/admin/users', icon: '👥', color: 'purple' },
-		{ name: 'Generate Report', href: '/admin/reports', icon: '📊', color: 'orange' },
-		{ name: 'System Settings', href: '/admin/settings', icon: '⚙️', color: 'gray' },
-		{ name: 'Backup System', href: '#', icon: '💾', color: 'indigo' }
+		{ name: 'Backup System', href: '/admin/backups', icon: '💾', color: 'indigo' },
+		{ name: 'Audit Logs', href: '/admin/audit-logs', icon: '📋', color: 'orange' },
+		{ name: 'System Settings', href: '/admin/system', icon: '⚙️', color: 'gray' }
 	];
 
 	function getStatusColor(status: string) {

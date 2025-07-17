@@ -11,6 +11,7 @@
     { id: 'users', name: 'Users', icon: '👥', description: 'Manage user accounts and permissions' },
     { id: 'audit-logs', name: 'Audit Logs', icon: '📋', description: 'System activity and security logs' },
     { id: 'backups', name: 'Backups', icon: '💾', description: 'Data backup and recovery' },
+    { id: 'import', name: 'Import', icon: '📥', description: 'Data import and migration tools' },
     { id: 'communications', name: 'Communications', icon: '📧', description: 'System notifications and messaging' },
     { id: 'automated-tasks', name: 'Automated Tasks', icon: '⏰', description: 'Scheduled tasks and automation' }
   ];
@@ -23,6 +24,7 @@
     users: '',
     auditLogs: '',
     backups: '',
+    import: '',
     communications: '',
     automatedTasks: ''
   };
@@ -75,9 +77,24 @@
     enabled: true
   };
 
+  // Import data
+  let importHistory: any[] = [];
+  let showImportModal = false;
+  let newImport = {
+    type: 'csv',
+    file: null as File | null,
+    description: '',
+    options: {
+      skipHeader: true,
+      updateExisting: false,
+      validateData: true
+    }
+  };
+
   const backupTypes = ['full', 'incremental', 'differential'];
   const communicationTypes = ['email', 'sms', 'notification'];
   const taskActions = ['backup', 'maintenance', 'cleanup', 'report', 'notification'];
+  const importTypes = ['csv', 'json', 'excel'];
 
   onMount(async () => {
     await loadAllData();
@@ -92,16 +109,18 @@
       users: '',
       auditLogs: '',
       backups: '',
+      import: '',
       communications: '',
       automatedTasks: ''
     };
     
     try {
-      const [settingsRes, usersRes, auditRes, backupsRes, communicationsRes, tasksRes] = await Promise.allSettled([
+      const [settingsRes, usersRes, auditRes, backupsRes, importRes, communicationsRes, tasksRes] = await Promise.allSettled([
         fetch('/api/admin/settings'),
         fetch('/api/admin/users'),
         fetch('/api/admin/audit-logs'),
         fetch('/api/admin/backups'),
+        fetch('/api/admin/import'),
         fetch('/api/admin/communications'),
         fetch('/api/admin/automated-tasks')
       ]);
@@ -142,6 +161,15 @@
       } else {
         errors.backups = 'Failed to load backups';
         backups = [];
+      }
+
+      // Handle import history
+      if (importRes.status === 'fulfilled' && importRes.value.ok) {
+        const importData = await importRes.value.json();
+        importHistory = importData.history || importData || [];
+      } else {
+        errors.import = 'Failed to load import history';
+        importHistory = [];
       }
 
       // Handle communications
@@ -304,6 +332,56 @@
     } catch (e) {
       console.error('Error creating task:', e);
       error = e instanceof Error ? e.message : 'Failed to create task';
+    }
+  }
+
+  // Import functions
+  function openImportModal() {
+    newImport = {
+      type: 'csv',
+      file: null,
+      description: '',
+      options: {
+        skipHeader: true,
+        updateExisting: false,
+        validateData: true
+      }
+    };
+    showImportModal = true;
+  }
+
+  function handleFileSelect(event: Event) {
+    const target = event.target as HTMLInputElement;
+    if (target.files && target.files[0]) {
+      newImport.file = target.files[0];
+    }
+  }
+
+  async function executeImport() {
+    if (!newImport.file) {
+      error = 'Please select a file to import';
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append('file', newImport.file);
+      formData.append('type', newImport.type);
+      formData.append('description', newImport.description);
+      formData.append('options', JSON.stringify(newImport.options));
+
+      const response = await fetch('/api/admin/import', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) throw new Error('Failed to execute import');
+      
+      showImportModal = false;
+      await loadAllData();
+    } catch (e) {
+      console.error('Error executing import:', e);
+      error = e instanceof Error ? e.message : 'Failed to execute import';
     }
   }
 
@@ -772,6 +850,66 @@
               {/each}
             </div>
           </div>
+
+        <!-- Import Tab -->
+        {:else if activeTab === 'import'}
+          <div class="space-y-6">
+            {#if errors.import}
+              <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                <p class="text-red-800">{errors.import}</p>
+                <button 
+                  on:click={loadAllData}
+                  class="mt-2 text-red-800 hover:text-red-600 underline transition-colors"
+                >
+                  Try again
+                </button>
+              </div>
+            {/if}
+            <div class="flex justify-between items-center">
+              <div>
+                <h2 class="text-xl font-semibold text-primary">Data Import ({importHistory.length})</h2>
+                <p class="text-secondary">Import data from external sources</p>
+              </div>
+              <button
+                on:click={openImportModal}
+                class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors duration-200"
+              >
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Import Data
+              </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {#each importHistory as importRecord}
+                <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow">
+                  <div class="flex items-center justify-between mb-3">
+                    <h3 class="font-semibold text-lg text-gray-900 dark:text-white">{importRecord.type.toUpperCase()} Import</h3>
+                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {getStatusColor(importRecord.status)}">
+                      {importRecord.status}
+                    </span>
+                  </div>
+                  <div class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                    <p>{importRecord.description}</p>
+                    <div class="flex justify-between">
+                      <span>Records:</span>
+                      <span class="font-medium text-gray-900 dark:text-gray-100">{importRecord.recordsProcessed || 0}</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span>Date:</span>
+                      <span class="font-medium text-gray-900 dark:text-gray-100">{formatDateTime(importRecord.createdAt)}</span>
+                    </div>
+                    {#if importRecord.error}
+                      <div class="text-red-600 dark:text-red-400 text-xs">
+                        Error: {importRecord.error}
+                      </div>
+                    {/if}
+                  </div>
+                </div>
+              {/each}
+            </div>
+          </div>
         {/if}
       {/if}
     </div>
@@ -1196,4 +1334,103 @@
       </div>
     </div>
   </div>
-{/if} 
+{/if}
+
+<!-- Import Data Modal -->
+{#if showImportModal}
+  <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-900">Import Data</h3>
+        <button 
+          on:click={() => showImportModal = false}
+          class="text-gray-400 hover:text-gray-600 transition-colors duration-150"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Import Type</label>
+          <select 
+            bind:value={newImport.type}
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          >
+            {#each importTypes as type}
+              <option value={type}>{type.toUpperCase()}</option>
+            {/each}
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">File</label>
+          <input 
+            type="file" 
+            accept=".csv,.json,.xlsx,.xls"
+            on:change={handleFileSelect}
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+          <textarea 
+            bind:value={newImport.description}
+            rows="3"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            placeholder="Import description"
+          ></textarea>
+        </div>
+
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">Import Options</label>
+          <div class="flex items-center space-x-2">
+            <input 
+              type="checkbox" 
+              id="skip-header" 
+              bind:checked={newImport.options.skipHeader}
+              class="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+            >
+            <label for="skip-header" class="text-sm text-gray-700">Skip Header Row</label>
+          </div>
+          <div class="flex items-center space-x-2">
+            <input 
+              type="checkbox" 
+              id="update-existing" 
+              bind:checked={newImport.options.updateExisting}
+              class="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+            >
+            <label for="update-existing" class="text-sm text-gray-700">Update Existing Records</label>
+          </div>
+          <div class="flex items-center space-x-2">
+            <input 
+              type="checkbox" 
+              id="validate-data" 
+              bind:checked={newImport.options.validateData}
+              class="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+            >
+            <label for="validate-data" class="text-sm text-gray-700">Validate Data</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-3 mt-6">
+        <button 
+          on:click={() => showImportModal = false}
+          class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors duration-150"
+        >
+          Cancel
+        </button>
+        <button 
+          on:click={executeImport}
+          class="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md transition-colors duration-150"
+        >
+          Import Data
+        </button>
+      </div>
+    </div>
+  </div>
+{/if}
