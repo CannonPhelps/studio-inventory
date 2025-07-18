@@ -161,9 +161,27 @@ model MaintenanceRecord {
   notes       String?
   performedBy String?
   cost        Decimal? @db.Decimal(10, 2)
+  status      String   @default("SCHEDULED") // SCHEDULED, IN_PROGRESS, COMPLETED, CANCELLED
+  maintenanceType String? // REPAIR, PREVENTIVE, INSPECTION, CALIBRATION, UPGRADE, CLEANING
+  scheduledDate DateTime?
+  completedDate DateTime?
+  priority    String   @default("MEDIUM") // LOW, MEDIUM, HIGH, CRITICAL
   asset       Asset    @relation(fields: [assetId], references: [id])
+  updates     MaintenanceUpdate[]
 
   @@map("maintenance_records")
+}
+
+model MaintenanceUpdate {
+  id                Int      @id @default(autoincrement())
+  maintenanceId     Int
+  status            String   // SCHEDULED, IN_PROGRESS, COMPLETED, CANCELLED
+  notes             String?
+  updatedBy         String?
+  updatedAt         DateTime @default(now())
+  maintenance       MaintenanceRecord @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
+
+  @@map("maintenance_updates")
 }
 
 model Movement {

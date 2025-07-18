@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { writable } from 'svelte/store';
-  import SectionHeader from '$lib/components/SectionHeader.svelte';
+
   import Card from '$lib/components/Card.svelte';
 
   type Kit = {
@@ -162,21 +162,33 @@
 
 <div class="space-y-6">
   <!-- Header -->
-  <SectionHeader 
-    title="Kits" 
-    subtitle="Manage equipment kits and their components" 
-    gradient="from-accent to-accent-secondary">
-    <button 
-      type="button" 
-      on:click={createKit}
-      class="flex items-center gap-2 px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent-secondary transition-colors"
-    >
-      <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-      </svg>
-      New Kit
-    </button>
-  </SectionHeader>
+
+  <div class="bg-gradient-to-r from-emerald-700 to-teal-800 rounded-xl p-6 text-white">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold">Kits</h1>
+        <p class="text-white/80 mt-2 text-lg">Manage equipment kits and their components</p>
+      </div>
+      <div class="text-right flex space-x-4">
+        <div class="text-center">
+          <div class="text-2xl font-bold text-white">{$kits.length}</div>
+          <div class="text-white/90 text-sm">Total Kits</div>
+        </div>
+        <div class="text-center">
+          <button 
+            type="button" 
+            on:click={createKit}
+            class="flex items-center gap-2 px-4 py-2 bg-white text-emerald-700 rounded-lg hover:bg-white/90 transition-colors"
+          >
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            New Kit
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   {#if $loading}
     <div class="flex items-center justify-center py-12">

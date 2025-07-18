@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { writable } from 'svelte/store';
   import Card from '$lib/components/Card.svelte';
-  import SectionHeader from '$lib/components/SectionHeader.svelte';
+
 
   // Tab management
   let activeTab = 'assets';
@@ -334,7 +334,8 @@
   function openEditAssetModal(asset: any) {
     editingAsset = {
       ...asset,
-      serialNumbers: asset.serialNumbers?.map((sn: any) => sn.serialNumber || sn) || []
+      serialNumbers: asset.serialNumbers?.map((sn: any) => sn.serialNumber || sn) || [],
+      purchaseDate: asset.purchaseDate ? new Date(asset.purchaseDate).toISOString().split('T')[0] : ''
     };
     showEditAssetModal = true;
   }
@@ -404,15 +405,30 @@
 
 <div class="space-y-6">
   <!-- Header -->
-  <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-6 text-white">
+
+  <div class="bg-gradient-to-r from-violet-700 to-purple-800 rounded-xl p-6 text-white">
     <div class="flex items-center justify-between">
       <div>
         <h1 class="text-3xl font-bold">Infrastructure Management</h1>
         <p class="text-white/80 mt-2 text-lg">Manage rooms, cable routes, categories, and assets</p>
       </div>
-      <div class="text-right">
-        <div class="text-2xl font-bold">{rooms.length + cableRoutes.length + categories.length + assets.length}</div>
-        <div class="text-white/80 text-sm">Total Items</div>
+      <div class="text-right flex space-x-4">
+        <div class="text-center">
+          <div class="text-2xl font-bold text-white">{rooms.length}</div>
+          <div class="text-white/90 text-sm">Rooms</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-white">{cableRoutes.length}</div>
+          <div class="text-white/90 text-sm">Cable Routes</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-white">{categories.length}</div>
+          <div class="text-white/90 text-sm">Categories</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-white">{assets.length}</div>
+          <div class="text-white/90 text-sm">Assets</div>
+        </div>
       </div>
     </div>
   </div>
@@ -635,10 +651,10 @@
                          <p class="text-sm text-gray-500 dark:text-gray-400">{asset.category?.name || 'Uncategorized'}</p>
                        </div>
                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {getStatusColor(asset.status)} ml-3 flex-shrink-0">
-                         {asset.status}
-                       </span>
-                     </div>
+                       {asset.status}
+                     </span>
                    </div>
+                     </div>
 
                    <!-- Content -->
                    <div class="px-6 py-4 space-y-3">
@@ -646,19 +662,19 @@
                        <div>
                          <span class="text-gray-500 dark:text-gray-400 font-medium">Location:</span>
                          <p class="text-gray-900 dark:text-gray-100 mt-1">{asset.location || 'Not specified'}</p>
-                       </div>
+                     </div>
                        <div>
                          <span class="text-gray-500 dark:text-gray-400 font-medium">Quantity:</span>
                          <p class="text-gray-900 dark:text-gray-100 mt-1">{asset.quantity}</p>
-                       </div>
+                     </div>
                        <div>
                          <span class="text-gray-500 dark:text-gray-400 font-medium">Serial Number:</span>
                          <p class="text-gray-900 dark:text-gray-100 mt-1">{asset.serialNumbers?.length > 0 ? (asset.serialNumbers[0].serialNumber || asset.serialNumbers[0]) : 'Not specified'}</p>
-                       </div>
+                     </div>
                        <div>
                          <span class="text-gray-500 dark:text-gray-400 font-medium">Asset #:</span>
                          <p class="text-gray-900 dark:text-gray-100 mt-1">{asset.assetNumber || 'Not specified'}</p>
-                       </div>
+                   </div>
                        <div>
                          <span class="text-gray-500 dark:text-gray-400 font-medium">Model/Brand:</span>
                          <p class="text-gray-900 dark:text-gray-100 mt-1">{asset.modelBrand || 'Not specified'}</p>
@@ -1189,4 +1205,199 @@
       </div>
     </div>
   </div>
-{/if} 
+{/if}
+
+<!-- Edit Asset Modal -->
+{#if showEditAssetModal}
+  <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-900">Edit Asset</h3>
+        <button 
+          on:click={cancelEdit}
+          class="text-gray-400 hover:text-gray-600 transition-colors duration-150"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Item Name *</label>
+          <input 
+            type="text" 
+            bind:value={editingAsset.itemName}
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Enter item name"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Category *</label>
+          <select 
+            bind:value={editingAsset.categoryId}
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="">Select category</option>
+            {#each categories as category}
+              <option value={category.id}>{category.name}</option>
+            {/each}
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Model/Brand</label>
+          <input 
+            type="text" 
+            bind:value={editingAsset.modelBrand}
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Model or brand"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+          <input 
+            type="number" 
+            bind:value={editingAsset.quantity}
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            min="1"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+          <input 
+            type="text" 
+            bind:value={editingAsset.location}
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Storage location"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+          <select 
+            bind:value={editingAsset.status}
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            {#each assetStatuses as status}
+              <option value={status}>{status}</option>
+            {/each}
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Purchase Date</label>
+          <input 
+            type="date" 
+            bind:value={editingAsset.purchaseDate}
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Purchase Price</label>
+          <input 
+            type="number" 
+            bind:value={editingAsset.purchasePrice}
+            step="0.01"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="0.00"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Asset Number</label>
+          <input 
+            type="text" 
+            bind:value={editingAsset.assetNumber}
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Asset number"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Supplier</label>
+          <input 
+            type="text" 
+            bind:value={editingAsset.supplier}
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Supplier name"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Assigned To</label>
+          <input 
+            type="text" 
+            bind:value={editingAsset.assigned}
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Assigned person"
+          />
+        </div>
+      </div>
+
+      <div class="mt-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Serial Numbers</label>
+        <div class="flex space-x-2 mb-2">
+          <input 
+            type="text" 
+            bind:value={newSerialNumber}
+            class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Enter serial number"
+            on:keydown={(e) => e.key === 'Enter' && addEditSerialNumber()}
+          />
+          <button
+            on:click={addEditSerialNumber}
+            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          >
+            Add
+          </button>
+        </div>
+        {#if editingAsset.serialNumbers.length > 0}
+          <div class="space-y-1">
+            {#each editingAsset.serialNumbers as serial, index}
+              <div class="flex items-center justify-between bg-gray-50 px-3 py-2 rounded">
+                <span class="text-sm">{serial}</span>
+                <button
+                  on:click={() => removeEditSerialNumber(index)}
+                  class="text-red-600 hover:text-red-800"
+                >
+                  Remove
+                </button>
+              </div>
+            {/each}
+          </div>
+        {/if}
+      </div>
+
+      <div class="mt-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+        <textarea 
+          bind:value={editingAsset.notes}
+          rows="3"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          placeholder="Additional notes"
+        ></textarea>
+      </div>
+
+      <div class="flex justify-end gap-3 mt-6">
+        <button 
+          on:click={cancelEdit}
+          class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors duration-150"
+        >
+          Cancel
+        </button>
+        <button 
+          on:click={updateAsset}
+          class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors duration-150"
+        >
+          Update Asset
+        </button>
+      </div>
+    </div>
+  </div>
+{/if}

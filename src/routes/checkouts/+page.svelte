@@ -81,18 +81,29 @@
 
 <div class="space-y-6">
 	<!-- Header -->
-	<div class="flex items-center justify-between">
-		<div>
-			<h1 class="text-3xl font-bold text-gray-900">Checkouts</h1>
-			<p class="mt-2 text-gray-600">Track asset checkouts and returns</p>
+
+	<div class="bg-gradient-to-r from-violet-600 to-purple-600 rounded-xl p-6 text-white">
+		<div class="flex items-center justify-between">
+		  <div>
+			<h1 class="text-3xl font-bold">Checkouts</h1>
+			<p class="text-white/80 mt-2 text-lg">Track asset checkouts and returns</p>
+		  </div>
+		  <div class="text-right flex space-x-4">
+			<div class="text-center">
+				<div class="text-2xl font-bold text-white">{checkouts.length}</div>
+				<div class="text-white/90 text-sm">Total Checkouts</div>
+			</div>
+			<div class="text-center">
+				<button
+					on:click={() => showCheckoutModal = true}
+					class="bg-white text-violet-600 px-4 py-2 rounded-lg hover:bg-white/90 transition-colors font-medium"
+				>
+					Checkout Asset
+				</button>
+			</div>
+		  </div>
 		</div>
-		<button
-			on:click={() => showCheckoutModal = true}
-			class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-		>
-			Checkout Asset
-		</button>
-	</div>
+	  </div>
 
 	<!-- Filters -->
 	<div class="bg-white rounded-lg shadow p-6">

@@ -42,7 +42,15 @@ export const POST: RequestHandler = async (event) => {
 		// Require authentication
 		await requireAuth(event);
 		
-		const { assetId, notes, performedBy } = await event.request.json();
+		const { 
+			assetId, 
+			notes, 
+			performedBy, 
+			cost, 
+			maintenanceType, 
+			scheduledDate, 
+			priority 
+		} = await event.request.json();
 		
 		if (!assetId) {
 			return json({ error: 'Asset ID is required' }, { status: 400 });
@@ -52,14 +60,32 @@ export const POST: RequestHandler = async (event) => {
 			data: {
 				assetId: parseInt(assetId),
 				notes: notes || null,
-				performedBy: performedBy || null
+				performedBy: performedBy || null,
+				cost: cost ? parseFloat(cost) : null,
+				maintenanceType: maintenanceType || null,
+				scheduledDate: scheduledDate ? new Date(scheduledDate) : null,
+				priority: priority || 'MEDIUM',
+				status: 'SCHEDULED'
 			},
 			include: {
 				asset: {
 					include: {
 						category: true
 					}
+				},
+				updates: {
+					orderBy: { updatedAt: 'desc' }
 				}
+			}
+		});
+		
+		// Create initial status update
+		await prisma.maintenanceUpdate.create({
+			data: {
+				maintenanceId: maintenance.id,
+				status: 'SCHEDULED',
+				notes: 'Maintenance scheduled',
+				updatedBy: performedBy || 'System'
 			}
 		});
 		

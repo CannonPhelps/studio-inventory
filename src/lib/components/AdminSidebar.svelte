@@ -23,6 +23,7 @@
 		{ name: 'Inventory', href: '/admin/infrastructure', icon: '📦', current: false },
 		{ name: 'Cable Management', href: '/admin/bulk-cables', icon: '🔌', current: false },
 		{ name: 'Equipment', href: '/admin/kits', icon: '🎒', current: false },
+		{ name: 'Damage Management', href: '/admin/damage-management', icon: '🔧', current: false },
 		{ name: 'Operations', href: '/admin/operations', icon: '📤', current: false },
 		{ name: 'System', href: '/admin/system', icon: '⚙️', current: false }
 	];

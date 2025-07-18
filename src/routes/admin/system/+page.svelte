@@ -62,8 +62,10 @@
   let newUser = {
     name: '',
     email: '',
+    password: '',
     role: 'user',
-    department: ''
+    department: '',
+    phone: ''
   };
 
   // Automated tasks data
@@ -135,8 +137,23 @@
 
       // Handle users
       if (usersRes.status === 'fulfilled' && usersRes.value.ok) {
-        users = await usersRes.value.json();
+        try {
+          const contentType = usersRes.value.headers.get('content-type');
+          if (!contentType || !contentType.includes('application/json')) {
+            const text = await usersRes.value.text();
+            console.error('Non-JSON response from users endpoint:', text);
+            errors.users = 'Failed to load users - server returned non-JSON response';
+            users = [];
+          } else {
+            users = await usersRes.value.json();
+          }
+        } catch (e) {
+          console.error('Error parsing users response:', e);
+          errors.users = 'Failed to parse users response';
+          users = [];
+        }
       } else {
+        console.error('Users request failed:', usersRes);
         errors.users = 'Failed to load users';
         users = [];
       }
@@ -281,23 +298,64 @@
     newUser = {
       name: '',
       email: '',
+      password: '',
       role: 'user',
-      department: ''
+      department: '',
+      phone: ''
     };
     showAddUserModal = true;
   }
 
   async function saveUser() {
+    // Client-side validation
+    if (!newUser.name || !newUser.email || !newUser.password) {
+      error = 'Name, email, and password are required';
+      return;
+    }
+
+    if (newUser.password.length < 8) {
+      error = 'Password must be at least 8 characters long';
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(newUser.email)) {
+      error = 'Please enter a valid email address';
+      return;
+    }
+
     try {
+      console.log('Sending user creation request:', { ...newUser, password: '[HIDDEN]' });
+      
       const response = await fetch('/api/admin/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newUser)
       });
 
-      if (!response.ok) throw new Error('Failed to create user');
+      console.log('Response status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
+      // Check if response is JSON
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('Non-JSON response:', text);
+        error = 'Server returned non-JSON response. Please check the console for details.';
+        return;
+      }
+
+      const data = await response.json();
+      console.log('Response data:', data);
+
+      if (!response.ok) {
+        error = data.error || 'Failed to create user';
+        return;
+      }
       
       showAddUserModal = false;
+      error = '';
       await loadAllData();
     } catch (e) {
       console.error('Error creating user:', e);
@@ -933,6 +991,11 @@
       </div>
 
       <div class="space-y-4">
+        {#if error}
+          <div class="bg-red-50 border border-red-200 rounded-lg p-3">
+            <p class="text-red-800 text-sm">{error}</p>
+          </div>
+        {/if}
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Name *</label>
           <input 
@@ -954,6 +1017,18 @@
         </div>
 
         <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Password *</label>
+          <input 
+            type="password" 
+            bind:value={newUser.password}
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            placeholder="Enter password (min 8 characters)"
+            minlength="8"
+          />
+          <p class="mt-1 text-xs text-gray-500">Password must be at least 8 characters long</p>
+        </div>
+
+        <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
           <select 
             bind:value={newUser.role}
@@ -972,6 +1047,16 @@
             bind:value={newUser.department}
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             placeholder="Enter department"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+          <input 
+            type="tel" 
+            bind:value={newUser.phone}
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            placeholder="Enter phone number"
           />
         </div>
       </div>

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
-	import AppLayout from '$lib/components/AppLayout.svelte';
 
 	let { data } = $props<{ data: PageData }>();
 
@@ -121,27 +120,28 @@
 	<title>My Checkouts - Studio Inventory</title>
 </svelte:head>
 
-<AppLayout user={data.user}>
+
 	<div class="space-y-6">
 		<!-- Header -->
-		<div class="bg-gradient-to-r from-accent to-accent-secondary rounded-2xl p-4 md:p-6 text-white">
-			<div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
-				<div>
-					<h1 class="text-2xl md:text-3xl font-bold">My Checkouts</h1>
-					<p class="text-white/80 mt-2">Manage your checked out equipment</p>
+
+		<div class="bg-gradient-to-r from-amber-600 to-orange-600 rounded-xl p-6 text-white">
+			<div class="flex items-center justify-between">
+			  <div>
+				<h1 class="text-3xl font-bold">My Checkouts</h1>
+				<p class="text-white/80 mt-2 text-lg">Manage your checked out equipment</p>
+			  </div>
+			  <div class="text-right flex space-x-4">
+				<div class="text-center">
+					<div class="text-2xl font-bold text-white">{activeCheckouts.length}</div>
+					<div class="text-white/90 text-sm">Active Checkouts</div>
 				</div>
-				<div class="hidden md:flex items-center space-x-4">
-					<div class="text-center">
-						<div class="text-2xl font-bold">{activeCheckouts.length}</div>
-						<div class="text-white/80 text-sm">Active Checkouts</div>
-					</div>
-					<div class="text-center">
-						<div class="text-2xl font-bold">{pastCheckouts.length}</div>
-						<div class="text-white/80 text-sm">Past Checkouts</div>
-					</div>
+				<div class="text-center">
+					<div class="text-2xl font-bold text-white">{pastCheckouts.length}</div>
+					<div class="text-white/90 text-sm">Past Checkouts</div>
 				</div>
+			  </div>
 			</div>
-		</div>
+		  </div>
 
 		<!-- Active Checkouts -->
 		{#if activeCheckouts.length > 0}
@@ -347,5 +347,4 @@
 				</div>
 			</div>
 		</div>
-	{/if}
-</AppLayout> 
+	{/if} 

@@ -771,12 +771,29 @@
 
 <div class="space-y-6">
 	<!-- Header -->
-	<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-		<div>
-			<h1 class="text-primary text-3xl font-bold">Cable Management</h1>
-			<p class="text-secondary mt-2">Manage bulk cables, cable types, and cable ends</p>
+
+	<div class="bg-gradient-to-r from-amber-700 to-orange-800 rounded-xl p-6 text-white">
+		<div class="flex items-center justify-between">
+		  <div>
+			<h1 class="text-3xl font-bold">Cable Management</h1>
+			<p class="text-white/80 mt-2 text-lg">Manage bulk cables, cable types, and cable ends</p>
+		  </div>
+		  <div class="text-right flex space-x-4">
+			<div class="text-center">
+				<div class="text-2xl font-bold text-white">{bulkCables.length}</div>
+				<div class="text-white/90 text-sm">Bulk Cables</div>
+			</div>
+			<div class="text-center">
+				<div class="text-2xl font-bold text-white">{cableTypes.length}</div>
+				<div class="text-white/90 text-sm">Cable Types</div>
+			</div>
+			<div class="text-center">
+				<div class="text-2xl font-bold text-white">{cableEnds.length}</div>
+				<div class="text-white/90 text-sm">Cable Ends</div>
+			</div>
+		  </div>
 		</div>
-	</div>
+	  </div>
 
 	<!-- Tabs -->
 	<div class="border-b border-gray-200 dark:border-gray-700">

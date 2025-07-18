@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
-	import AppLayout from '$lib/components/AppLayout.svelte';
 
 	let { data } = $props<{ data: PageData }>();
 
@@ -158,13 +157,24 @@
 	<title>Settings - Studio Inventory</title>
 </svelte:head>
 
-<AppLayout user={data.user}>
+
 	<div class="space-y-6">
 		<!-- Header -->
-		<div>
-			<h1 class="text-3xl font-bold text-primary">Settings</h1>
-			<p class="mt-2 text-secondary text-base">Manage your account settings and preferences</p>
-		</div>
+
+		<div class="bg-gradient-to-r from-slate-600 to-gray-600 rounded-xl p-6 text-white">
+			<div class="flex items-center justify-between">
+			  <div>
+				<h1 class="text-3xl font-bold">Settings</h1>
+				<p class="text-white/80 mt-2 text-lg">Manage your account settings and preferences</p>
+			  </div>
+			  <div class="text-right flex space-x-4">
+				<div class="text-center">
+					<div class="text-2xl font-bold text-white">{user ? 'Active' : 'Loading'}</div>
+					<div class="text-white/90 text-sm">Account Status</div>
+				</div>
+			  </div>
+			</div>
+		  </div>
 
 		{#if message}
 			<div class="p-4 rounded-lg {messageType === 'success' ? 'bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200 border border-green-200 dark:border-green-800' : 'bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800'}">
@@ -352,5 +362,4 @@
 				<p class="text-gray-500">You need to be logged in to access settings.</p>
 			</div>
 		{/if}
-	</div>
-</AppLayout> 
+	</div> 

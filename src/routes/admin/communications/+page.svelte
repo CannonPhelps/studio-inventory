@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { writable } from 'svelte/store';
-  import SectionHeader from '$lib/components/SectionHeader.svelte';
+
   import Card from '$lib/components/Card.svelte';
   import Button from '$lib/components/ui/Button.svelte';
 
@@ -77,17 +77,29 @@
 
 <div class="space-y-6">
   <!-- Header -->
-  <SectionHeader 
-    title="Communications" 
-    subtitle="Manage system notifications and user communications" 
-    gradient="from-accent to-accent-secondary">
-    <Button on:click={createCommunication} className="flex items-center gap-2">
-      <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-      </svg>
-      New Communication
-    </Button>
-  </SectionHeader>
+
+  <div class="bg-gradient-to-r from-cyan-700 to-blue-800 rounded-xl p-6 text-white">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold">Communications</h1>
+        <p class="text-white/80 mt-2 text-lg">Manage system notifications and user communications</p>
+      </div>
+      <div class="text-right flex space-x-4">
+        <div class="text-center">
+          <div class="text-2xl font-bold text-white">{$communications.length}</div>
+          <div class="text-white/90 text-sm">Total Messages</div>
+        </div>
+        <div class="text-center">
+                      <Button on:click={createCommunication} className="flex items-center gap-2 bg-white text-cyan-700 hover:bg-white/90">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            New Communication
+          </Button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   {#if $loading}
     <div class="flex items-center justify-center py-12">

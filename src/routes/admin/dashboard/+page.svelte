@@ -3,7 +3,7 @@
   import { format } from 'date-fns';
   import type { DashboardStats, ChartData, RecentActivity } from '$lib/server/dashboard';
   import NotificationBell from '$lib/components/NotificationBell.svelte';
-  import SectionHeader from '$lib/components/SectionHeader.svelte';
+
   import Card from '$lib/components/Card.svelte';
 
   let stats: DashboardStats | null = null;
@@ -83,14 +83,20 @@
 
 <div class="space-y-6">
   <!-- Header -->
-  <SectionHeader 
-    title="Analytics" 
-    subtitle="Comprehensive analytics and insights for your studio inventory" 
-    gradient="from-accent to-accent-secondary">
-    <div class="flex items-center space-x-4">
-      <NotificationBell />
+
+  <div class="bg-gradient-to-r from-blue-700 to-indigo-800 rounded-xl p-6 text-white">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold">Analytics</h1>
+        <p class="text-white/80 mt-2 text-lg">Comprehensive analytics and insights for your studio inventory</p>
+      </div>
+      <div class="text-right flex space-x-4">
+        <div class="text-center">
+          <NotificationBell />
+        </div>
+      </div>
     </div>
-  </SectionHeader>
+  </div>
 
   {#if loading}
     <div class="flex items-center justify-center py-12">

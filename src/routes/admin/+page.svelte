@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import SectionHeader from '$lib/components/SectionHeader.svelte';
+
 	import Card from '$lib/components/Card.svelte';
 
 	let stats = {
@@ -8,6 +8,7 @@
 		availableAssets: 0,
 		checkedOutAssets: 0,
 		maintenanceNeeded: 0,
+		damagedAssets: 0,
 		totalUsers: 0,
 		activeCheckouts: 0,
 		categories: 0,
@@ -32,6 +33,7 @@
 					availableAssets: data.availableAssets,
 					checkedOutAssets: data.checkedOutAssets,
 					maintenanceNeeded: data.maintenanceNeeded,
+					damagedAssets: data.damagedAssets,
 					totalUsers: data.totalUsers,
 					activeCheckouts: data.activeCheckouts,
 					categories: data.categories,
@@ -54,6 +56,7 @@
 	const quickActions = [
 		{ name: 'Add New Asset', href: '/admin/infrastructure', icon: '➕', color: 'blue' },
 		{ name: 'Import Data', href: '/admin/import', icon: '📥', color: 'green' },
+		{ name: 'Damage Management', href: '/admin/damage-management', icon: '⚠️', color: 'red' },
 		{ name: 'Backup System', href: '/admin/backups', icon: '💾', color: 'indigo' },
 		{ name: 'Audit Logs', href: '/admin/audit-logs', icon: '📋', color: 'orange' },
 		{ name: 'System Settings', href: '/admin/system', icon: '⚙️', color: 'gray' }
@@ -63,6 +66,7 @@
 		switch (status) {
 			case 'completed': return 'text-green-600 bg-green-50';
 			case 'pending': return 'text-yellow-600 bg-yellow-50';
+			case 'reported': return 'text-red-600 bg-red-50';
 			case 'failed': return 'text-red-600 bg-red-50';
 			default: return 'text-gray-600 bg-gray-50';
 		}
@@ -72,6 +76,7 @@
 		switch (type) {
 			case 'checkout': return '📤';
 			case 'return': return '📥';
+			case 'damage': return '⚠️';
 			case 'maintenance': return '🔧';
 			case 'import': return '📥';
 			default: return '📋';
@@ -85,21 +90,29 @@
 
 <div class="space-y-6">
 	<!-- Header -->
-	<SectionHeader 
-		title="Overview" 
-		subtitle="System overview and administrative controls" 
-		gradient="from-accent to-accent-secondary">
-		<div class="flex items-center space-x-4">
+
+	<div class="bg-gradient-to-r from-slate-700 to-gray-800 rounded-xl p-6 text-white">
+		<div class="flex items-center justify-between">
+		  <div>
+			<h1 class="text-3xl font-bold">Overview</h1>
+			<p class="text-white/80 mt-2 text-lg">System overview and administrative controls</p>
+		  </div>
+		  <div class="text-right flex space-x-4">
 			<div class="text-center">
-				<div class="text-2xl font-bold text-primary">{stats.totalUsers || 0}</div>
-				<div class="text-tertiary text-sm">Total Users</div>
+				<div class="text-2xl font-bold text-white">{stats.totalUsers || 0}</div>
+				<div class="text-white/90 text-sm">Total Users</div>
 			</div>
 			<div class="text-center">
-				<div class="text-2xl font-bold text-primary">{stats.activeCheckouts || 0}</div>
-				<div class="text-tertiary text-sm">Active Checkouts</div>
+				<div class="text-2xl font-bold text-white">{stats.activeCheckouts || 0}</div>
+				<div class="text-white/90 text-sm">Active Checkouts</div>
 			</div>
+			<div class="text-center">
+				<div class="text-2xl font-bold text-white">{stats.damagedAssets || 0}</div>
+				<div class="text-white/90 text-sm">Damaged Assets</div>
+			</div>
+		  </div>
 		</div>
-	</SectionHeader>
+	  </div>
 
 	<!-- Stats Grid -->
 	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -160,7 +173,7 @@
 		<Card gradient="from-accent-error to-red-500">
 			<div class="flex items-center justify-between">
 				<div>
-					<p class="text-sm font-medium text-secondary">Maintenance</p>
+					<p class="text-sm font-medium text-secondary">Needs Attention</p>
 					<p class="text-3xl font-bold text-red-600">{stats.maintenanceNeeded}</p>
 				</div>
 				<div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
@@ -169,8 +182,8 @@
 			</div>
 			<div class="mt-4">
 				<div class="flex items-center text-sm">
-					<span class="text-red-600 font-medium">{stats.maintenanceNeeded} items</span>
-					<span class="text-tertiary ml-2">need attention</span>
+					<span class="text-red-600 font-medium">{stats.damagedAssets} damaged</span>
+					<span class="text-tertiary ml-2">+ {stats.maintenanceNeeded - stats.damagedAssets} maintenance</span>
 				</div>
 			</div>
 		</Card>
@@ -229,6 +242,10 @@
 					<div class="flex items-center justify-between">
 						<span class="text-secondary">Active Users</span>
 						<span class="text-primary">{systemHealth.activeUsers}</span>
+					</div>
+					<div class="flex items-center justify-between">
+						<span class="text-secondary">Damaged Assets</span>
+						<span class="text-red-600 font-semibold">{stats.damagedAssets}</span>
 					</div>
 				</div>
 			</Card>

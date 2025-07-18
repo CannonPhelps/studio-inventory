@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
-	import AppLayout from '$lib/components/AppLayout.svelte';
 
 	let { data } = $props<{ data: PageData }>();
 
@@ -83,23 +82,32 @@
 	<title>Returns - Studio Inventory</title>
 </svelte:head>
 
-<AppLayout user={data.user}>
+
 	<div class="space-y-6">
 		<!-- Header -->
-		<div class="bg-gradient-to-r from-accent to-accent-secondary rounded-2xl p-4 md:p-6 text-white">
-			<div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
-				<div>
-					<h1 class="text-2xl md:text-3xl font-bold">Returns</h1>
-					<p class="text-white/80 mt-2">Process asset returns and track conditions</p>
+
+		<div class="bg-gradient-to-r from-rose-600 to-pink-600 rounded-xl p-6 text-white">
+			<div class="flex items-center justify-between">
+			  <div>
+				<h1 class="text-3xl font-bold">Returns</h1>
+				<p class="text-white/80 mt-2 text-lg">Process asset returns and track conditions</p>
+			  </div>
+			  <div class="text-right flex space-x-4">
+				<div class="text-center">
+					<div class="text-2xl font-bold text-white">{returns.length}</div>
+					<div class="text-white/90 text-sm">Total Returns</div>
 				</div>
-				<button
-					on:click={() => showReturnModal = true}
-					class="bg-white text-accent px-4 py-2 rounded-lg hover:bg-white/90 transition-colors font-medium"
-				>
-					Return Asset
-				</button>
+				<div class="text-center">
+					<button
+						on:click={() => showReturnModal = true}
+						class="bg-white text-rose-600 px-4 py-2 rounded-lg hover:bg-white/90 transition-colors font-medium"
+					>
+						Return Asset
+					</button>
+				</div>
+			  </div>
 			</div>
-		</div>
+		  </div>
 
 		<!-- Returns Table -->
 		<div class="bg-card rounded-xl shadow-custom border border-card overflow-hidden">
@@ -232,5 +240,4 @@
 				</div>
 			</div>
 		</div>
-	{/if}
-</AppLayout> 
+	{/if} 
