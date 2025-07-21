@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 	import type { PageData } from './$types';
 
 	import Card from '$lib/components/Card.svelte';
@@ -65,43 +66,18 @@
 	let myCheckouts = $state<Checkout[]>([]);
 
 	onMount(async () => {
-		try {
-			// Load assets
-			const assetsResponse = await fetch('/api/assets');
-			if (assetsResponse.ok) {
-				assets = await assetsResponse.json();
-			}
-
-			// Load categories
-			const categoriesResponse = await fetch('/api/categories');
-			if (categoriesResponse.ok) {
-				const categoryData = await categoriesResponse.json();
-				categories = [
-					{ id: 'all', name: 'All Categories', count: assets.length },
-					...categoryData.map((cat: any) => ({
-						id: cat.name.toLowerCase(),
-						name: cat.name,
-						count: cat.count
-					}))
-				];
-			}
-
-			// Load user's checkouts (using a mock user ID for now)
-			const checkoutsResponse = await fetch('/api/checkouts?user=current-user&active=true');
-			if (checkoutsResponse.ok) {
-				myCheckouts = await checkoutsResponse.json();
-			}
-
-			filterAssets();
-		} catch (error) {
-			console.error('Error loading data:', error);
-		}
+		// Redirect to admin dashboard checkout management
+		goto('/admin/dashboard?checkout=true');
 	});
 
 	function filterAssets() {
 		filteredAssets = assets.filter((asset: Asset) => {
-			const matchesSearch = asset.itemName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-								 (asset.serialNumbers && asset.serialNumbers.some(sn => sn.serialNumber.toLowerCase().includes(searchQuery.toLowerCase())));
+			const searchLower = searchQuery.toLowerCase();
+			const matchesSearch = 
+				asset.itemName.toLowerCase().includes(searchLower) ||
+				(asset.serialNumbers && asset.serialNumbers.some(sn => sn.serialNumber.toLowerCase().includes(searchLower))) ||
+				(asset.category?.name && asset.category.name.toLowerCase().includes(searchLower)) ||
+				(asset.location && asset.location.toLowerCase().includes(searchLower));
 			const matchesCategory = selectedCategory === 'all' || asset.category?.name.toLowerCase() === selectedCategory;
 			return matchesSearch && matchesCategory;
 		});

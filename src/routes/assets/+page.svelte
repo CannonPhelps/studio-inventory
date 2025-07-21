@@ -10,9 +10,11 @@
 	let selectedCategory = $state('all');
 	let selectedStatus = $state('all');
 	let viewMode = $state('grid'); // 'grid' or 'list'
+	let activeTab = $state('inventory'); // 'inventory', 'checkouts', 'returns'
 	let assets = $state<any[]>([]);
 	let categories = $state<any[]>([]);
 	let filteredAssets = $state<any[]>([]);
+	let user: any = null;
 	
 	// Damage report modal
 	let showDamageModal = $state(false);
@@ -26,6 +28,13 @@
 
 	onMount(async () => {
 		try {
+			// Load user data
+			const userResponse = await fetch('/api/auth/me');
+			if (userResponse.ok) {
+				const userData = await userResponse.json();
+				user = userData.user;
+			}
+
 			// Load assets
 			const assetsResponse = await fetch('/api/assets');
 			if (assetsResponse.ok) {
@@ -155,13 +164,40 @@
 				<div class="text-2xl font-bold text-white">{assets.filter(a => ['Damaged', 'Broken'].includes(a.status)).length}</div>
 				<div class="text-white/90 text-sm">Damaged</div>
 			</div>
-
 		  </div>
 		</div>
+		
+		<!-- Tabs for admin users -->
+		{#if user?.role === 'admin'}
+			<div class="mt-6">
+				<div class="flex space-x-1 bg-white/10 backdrop-blur-sm rounded-lg p-1">
+					<button
+						on:click={() => activeTab = 'inventory'}
+						class="flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 {activeTab === 'inventory' ? 'bg-white text-blue-600 shadow-sm' : 'text-white/80 hover:text-white hover:bg-white/10'}"
+					>
+						📦 Inventory
+					</button>
+					<button
+						on:click={() => activeTab = 'checkouts'}
+						class="flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 {activeTab === 'checkouts' ? 'bg-white text-blue-600 shadow-sm' : 'text-white/80 hover:text-white hover:bg-white/10'}"
+					>
+						📤 Admin Checkouts
+					</button>
+					<button
+						on:click={() => activeTab = 'returns'}
+						class="flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 {activeTab === 'returns' ? 'bg-white text-blue-600 shadow-sm' : 'text-white/80 hover:text-white hover:bg-white/10'}"
+					>
+						📥 Admin Returns
+					</button>
+				</div>
+			</div>
+		{/if}
 	  </div>
 
-	<!-- Search and Filters -->
-	<Card>
+	<!-- Tab Content -->
+	{#if activeTab === 'inventory'}
+		<!-- Search and Filters -->
+		<Card>
 		<div class="flex flex-col space-y-4">
 			<!-- Search -->
 			<div class="w-full">
@@ -346,6 +382,51 @@
 			{/if}
 		</div>
 	</Card>
+	{:else if activeTab === 'checkouts'}
+		<!-- Admin Checkouts Tab -->
+		<div class="space-y-6">
+			<Card>
+				<div class="flex items-center space-x-4 mb-6">
+					<div class="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg">
+						<svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+						</svg>
+					</div>
+					<h3 class="text-2xl font-semibold text-gray-900">Admin Checkouts</h3>
+				</div>
+				<div class="text-center py-12">
+					<div class="text-6xl mb-4">📤</div>
+					<h3 class="text-lg font-medium text-primary mb-2">Admin Checkout Management</h3>
+					<p class="text-secondary mb-4">Use the dedicated admin checkout page for full functionality</p>
+					<a href="/admin/checkouts" class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+						Go to Admin Checkouts →
+					</a>
+				</div>
+			</Card>
+		</div>
+	{:else if activeTab === 'returns'}
+		<!-- Admin Returns Tab -->
+		<div class="space-y-6">
+			<Card>
+				<div class="flex items-center space-x-4 mb-6">
+					<div class="p-3 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg">
+						<svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+						</svg>
+					</div>
+					<h3 class="text-2xl font-semibold text-gray-900">Admin Returns</h3>
+				</div>
+				<div class="text-center py-12">
+					<div class="text-6xl mb-4">📥</div>
+					<h3 class="text-lg font-medium text-primary mb-2">Admin Return Management</h3>
+					<p class="text-secondary mb-4">Use the dedicated admin returns page for full functionality</p>
+					<a href="/admin/returns" class="inline-flex items-center px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors">
+						Go to Admin Returns →
+					</a>
+				</div>
+			</Card>
+		</div>
+	{/if}
 </div>
 
 <!-- Damage Report Modal -->

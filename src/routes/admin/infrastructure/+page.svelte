@@ -54,6 +54,10 @@
 
   // Assets data
   let assets: any[] = [];
+  let filteredAssets: any[] = [];
+  let assetSearchQuery = '';
+  let assetStatusFilter = 'all';
+  let assetCategoryFilter = 'all';
   let showAddAssetModal = false;
   let showEditAssetModal = false;
   let editingAsset: any = null;
@@ -128,6 +132,7 @@
       cableRoutes = await routesRes.json();
       categories = await categoriesRes.json();
       assets = await assetsRes.json();
+      filteredAssets = assets; // Initialize filtered assets
       financialRecords = await financesRes.json();
     } catch (e) {
       console.error('Error loading data:', e);
@@ -397,6 +402,28 @@
     if (!dateString) return 'N/A';
     return new Date(dateString).toLocaleDateString();
   }
+
+  // Asset filtering function
+  function filterAssets() {
+    filteredAssets = assets.filter(asset => {
+      const searchLower = assetSearchQuery.toLowerCase();
+      const matchesSearch = 
+        asset.itemName.toLowerCase().includes(searchLower) ||
+        (asset.serialNumbers && asset.serialNumbers.some((sn: any) => 
+          (sn.serialNumber || sn).toLowerCase().includes(searchLower)
+        )) ||
+        (asset.category?.name && asset.category.name.toLowerCase().includes(searchLower)) ||
+        (asset.location && asset.location.toLowerCase().includes(searchLower)) ||
+        (asset.modelBrand && asset.modelBrand.toLowerCase().includes(searchLower)) ||
+        (asset.assetNumber && asset.assetNumber.toLowerCase().includes(searchLower)) ||
+        (asset.supplier && asset.supplier.toLowerCase().includes(searchLower));
+      
+      const matchesStatus = assetStatusFilter === 'all' || asset.status.toLowerCase() === assetStatusFilter.toLowerCase();
+      const matchesCategory = assetCategoryFilter === 'all' || asset.category?.name.toLowerCase() === assetCategoryFilter.toLowerCase();
+      
+      return matchesSearch && matchesStatus && matchesCategory;
+    });
+  }
 </script>
 
 <svelte:head>
@@ -626,7 +653,7 @@
            <div class="space-y-6">
              <div class="flex justify-between items-center">
                <div>
-                 <h2 class="text-xl font-semibold text-primary">Assets ({assets.length})</h2>
+                 <h2 class="text-xl font-semibold text-primary">Assets ({filteredAssets.length} of {assets.length})</h2>
                  <p class="text-secondary">Manage equipment and inventory items</p>
                </div>
                <button
@@ -640,8 +667,54 @@
                </button>
              </div>
 
+             <!-- Search and Filters -->
+             <Card>
+               <div class="flex flex-col space-y-4">
+                 <!-- Search -->
+                 <div class="w-full">
+                   <div class="relative">
+                     <input
+                       type="text"
+                       bind:value={assetSearchQuery}
+                       on:input={filterAssets}
+                       placeholder="Search by name, serial number, category, location, model, asset number, or supplier..."
+                       class="w-full pl-10 pr-4 py-3 border border-gray-300 bg-white text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-base"
+                     />
+                     <svg class="absolute left-3 top-3.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                     </svg>
+                   </div>
+                 </div>
+
+                 <!-- Filters -->
+                 <div class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+                   <select
+                     bind:value={assetStatusFilter}
+                     on:change={filterAssets}
+                     class="flex-1 px-4 py-3 border border-gray-300 bg-white text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-base"
+                   >
+                     <option value="all">All Status</option>
+                     {#each assetStatuses as status}
+                       <option value={status}>{status}</option>
+                     {/each}
+                   </select>
+
+                   <select
+                     bind:value={assetCategoryFilter}
+                     on:change={filterAssets}
+                     class="flex-1 px-4 py-3 border border-gray-300 bg-white text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-base"
+                   >
+                     <option value="all">All Categories</option>
+                     {#each categories as category}
+                       <option value={category.name}>{category.name}</option>
+                     {/each}
+                   </select>
+                 </div>
+               </div>
+             </Card>
+
              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-               {#each assets as asset}
+               {#each filteredAssets as asset}
                  <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden">
                    <!-- Header -->
                    <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
@@ -725,6 +798,25 @@
                  </div>
                {/each}
              </div>
+
+             {#if filteredAssets.length === 0 && assets.length > 0}
+               <div class="text-center py-12">
+                 <div class="text-6xl mb-4">🔍</div>
+                 <h3 class="text-lg font-medium text-gray-900 mb-2">No assets found</h3>
+                 <p class="text-gray-500 mb-4">Try adjusting your search or filters</p>
+                 <button
+                   on:click={() => {
+                     assetSearchQuery = '';
+                     assetStatusFilter = 'all';
+                     assetCategoryFilter = 'all';
+                     filterAssets();
+                   }}
+                   class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                 >
+                   Clear Filters
+                 </button>
+               </div>
+             {/if}
            </div>
 
          <!-- Finances Tab -->

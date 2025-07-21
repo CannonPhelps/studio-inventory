@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { format } from 'date-fns';
+  import { page } from '$app/stores';
   import type { DashboardStats, ChartData, RecentActivity } from '$lib/server/dashboard';
   import NotificationBell from '$lib/components/NotificationBell.svelte';
 
@@ -13,6 +14,27 @@
   let error = '';
   let selectedChart = 'checkouts';
   let chartData: ChartData | null = null;
+  let showCheckoutSection = false;
+  let checkoutSearchQuery = '';
+  let checkoutStatusFilter = 'all';
+  let checkoutUserFilter = 'all';
+  let checkouts: any[] = [];
+  let filteredCheckouts: any[] = [];
+  let users: any[] = [];
+  let assets: any[] = [];
+  let showCheckoutModal = false;
+  let showReturnModal = false;
+  let selectedCheckout: any = null;
+  let checkoutForm = {
+    assetId: '',
+    userId: '',
+    expectedReturnDate: '',
+    notes: ''
+  };
+  let returnForm = {
+    condition: 'good',
+    notes: ''
+  };
 
   const chartTypes = [
     { value: 'checkouts', label: 'Checkout Trends' },
@@ -24,6 +46,12 @@
   onMount(async () => {
     await loadDashboardData();
     await loadChartData();
+    
+    // Check if checkout parameter is present to auto-show checkout section
+    if ($page.url.searchParams.get('checkout') === 'true') {
+      showCheckoutSection = true;
+      await loadCheckoutData();
+    }
   });
 
   async function loadDashboardData() {
@@ -75,6 +103,112 @@
   $: if (selectedChart) {
     loadChartData();
   }
+
+  // Checkout functions
+  async function loadCheckoutData() {
+    try {
+      const [checkoutsRes, usersRes, assetsRes] = await Promise.all([
+        fetch('/api/checkouts'),
+        fetch('/api/admin/users'),
+        fetch('/api/assets')
+      ]);
+
+      if (checkoutsRes.ok) checkouts = await checkoutsRes.json();
+      if (usersRes.ok) users = await usersRes.json();
+      if (assetsRes.ok) assets = await assetsRes.json();
+
+      filteredCheckouts = checkouts;
+    } catch (error) {
+      console.error('Error loading checkout data:', error);
+    }
+  }
+
+  function filterCheckouts() {
+    filteredCheckouts = checkouts.filter(checkout => {
+      const searchLower = checkoutSearchQuery.toLowerCase();
+      const matchesSearch = 
+        (checkout.asset?.itemName && checkout.asset.itemName.toLowerCase().includes(searchLower)) ||
+        (checkout.user?.name && checkout.user.name.toLowerCase().includes(searchLower)) ||
+        (checkout.asset?.serialNumbers && checkout.asset.serialNumbers.some((sn: any) => 
+          (sn.serialNumber || sn).toLowerCase().includes(searchLower)
+        ));
+      
+      const matchesStatus = checkoutStatusFilter === 'all' || checkout.status.toLowerCase() === checkoutStatusFilter.toLowerCase();
+      const matchesUser = checkoutUserFilter === 'all' || checkout.user?.name === checkoutUserFilter;
+      
+      return matchesSearch && matchesStatus && matchesUser;
+    });
+  }
+
+  function openCheckoutModal() {
+    checkoutForm = {
+      assetId: '',
+      userId: '',
+      expectedReturnDate: '',
+      notes: ''
+    };
+    showCheckoutModal = true;
+  }
+
+  function openReturnModal(checkout: any) {
+    selectedCheckout = checkout;
+    returnForm = {
+      condition: 'good',
+      notes: ''
+    };
+    showReturnModal = true;
+  }
+
+  async function handleCheckout() {
+    try {
+      const response = await fetch('/api/checkouts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(checkoutForm)
+      });
+
+      if (response.ok) {
+        showCheckoutModal = false;
+        await loadCheckoutData();
+        filterCheckouts();
+      } else {
+        const error = await response.json();
+        alert(`Error: ${error.error}`);
+      }
+    } catch (error) {
+      console.error('Error checking out item:', error);
+      alert('Failed to check out item');
+    }
+  }
+
+  async function handleReturn() {
+    if (!selectedCheckout) return;
+    try {
+      const response = await fetch(`/api/checkouts/${selectedCheckout.id}/return`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(returnForm)
+      });
+
+      if (response.ok) {
+        showReturnModal = false;
+        selectedCheckout = null;
+        await loadCheckoutData();
+        filterCheckouts();
+      } else {
+        const error = await response.json();
+        alert(`Error: ${error.error}`);
+      }
+    } catch (error) {
+      console.error('Error returning item:', error);
+      alert('Failed to return item');
+    }
+  }
+
+  function formatDate(dateString: string) {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleDateString();
+  }
 </script>
 
 <svelte:head>
@@ -91,6 +225,20 @@
         <p class="text-white/80 mt-2 text-lg">Comprehensive analytics and insights for your studio inventory</p>
       </div>
       <div class="text-right flex space-x-4">
+        <button
+          on:click={() => {
+            showCheckoutSection = !showCheckoutSection;
+            if (showCheckoutSection) {
+              loadCheckoutData();
+            }
+          }}
+          class="inline-flex items-center px-4 py-2 bg-white/20 hover:bg-white/30 text-white text-sm font-medium rounded-lg transition-colors duration-200"
+        >
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          {showCheckoutSection ? 'Hide Checkouts' : 'Manage Checkouts'}
+        </button>
         <div class="text-center">
           <NotificationBell />
         </div>
@@ -391,5 +539,278 @@
         </div>
       {/if}
     </Card>
+
+    <!-- Checkout Management Section -->
+    {#if showCheckoutSection}
+      <Card gradient="from-accent-info to-cyan-500" padding="p-6">
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center space-x-4">
+            <div class="p-3 bg-gradient-to-br from-accent-info to-cyan-500 rounded-lg">
+              <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <h3 class="text-2xl font-semibold text-white">Checkout Management ({filteredCheckouts.length} items)</h3>
+          </div>
+          <button
+            on:click={openCheckoutModal}
+            class="inline-flex items-center px-4 py-2 bg-white/20 hover:bg-white/30 text-white text-sm font-medium rounded-lg transition-colors duration-200"
+          >
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            New Checkout
+          </button>
+        </div>
+
+        <!-- Search and Filters -->
+        <div class="mb-6 space-y-4">
+          <div class="relative">
+            <input
+              type="text"
+              bind:value={checkoutSearchQuery}
+              on:input={filterCheckouts}
+              placeholder="Search by item name, user, or serial number..."
+              class="w-full pl-10 pr-4 py-3 border border-white/20 bg-white/10 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50 transition-all duration-200 text-base placeholder-white/60"
+            />
+            <svg class="absolute left-3 top-3.5 h-5 w-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+            <select
+              bind:value={checkoutStatusFilter}
+              on:change={filterCheckouts}
+              class="flex-1 px-4 py-3 border border-white/20 bg-white/10 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50 transition-all duration-200 text-base"
+            >
+              <option value="all">All Status</option>
+              <option value="active">Active</option>
+              <option value="returned">Returned</option>
+              <option value="overdue">Overdue</option>
+            </select>
+
+            <select
+              bind:value={checkoutUserFilter}
+              on:change={filterCheckouts}
+              class="flex-1 px-4 py-3 border border-white/20 bg-white/10 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50 transition-all duration-200 text-base"
+            >
+              <option value="all">All Users</option>
+              {#each users as user}
+                <option value={user.name}>{user.name}</option>
+              {/each}
+            </select>
+          </div>
+        </div>
+
+        <!-- Checkouts List -->
+        <div class="space-y-3">
+          {#each filteredCheckouts as checkout}
+            <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 hover:bg-white/20 transition-all duration-300">
+              <div class="flex items-center space-x-4">
+                <div class="w-12 h-12 bg-gradient-to-br from-white/20 to-white/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                  </svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <h4 class="text-white font-medium truncate">{checkout.asset?.itemName || 'Unknown Item'}</h4>
+                  <p class="text-white/70 text-sm truncate">{checkout.asset?.category?.name || 'Uncategorized'}</p>
+                  <div class="flex items-center space-x-4 mt-1 text-xs text-white/60">
+                    <span>User: {checkout.user?.name || 'Unknown'}</span>
+                    <span>Due: {checkout.expectedReturnDate ? formatDate(checkout.expectedReturnDate) : 'Not set'}</span>
+                    <span>Status: {checkout.status}</span>
+                    <span>Checked out: {formatDate(checkout.createdAt)}</span>
+                  </div>
+                </div>
+                <div class="flex-shrink-0 flex space-x-2">
+                  {#if checkout.status === 'active'}
+                    <button
+                      on:click={() => openReturnModal(checkout)}
+                      class="bg-white text-accent-warning px-4 py-2 rounded-lg hover:bg-white/90 transition-colors duration-200 text-sm font-medium"
+                    >
+                      Return
+                    </button>
+                  {/if}
+                  <button
+                    class="bg-white/20 text-white px-4 py-2 rounded-lg hover:bg-white/30 transition-colors duration-200 text-sm font-medium"
+                  >
+                    View
+                  </button>
+                </div>
+              </div>
+            </div>
+          {/each}
+        </div>
+
+        {#if filteredCheckouts.length === 0}
+          <div class="text-center py-12">
+            <div class="p-6 bg-gradient-to-br from-white/20 to-white/10 rounded-full mb-4 inline-block">
+              <svg class="h-12 w-12 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <p class="text-white/60 text-lg">No checkouts found</p>
+          </div>
+        {/if}
+      </Card>
+    {/if}
   {/if}
-</div> 
+</div>
+
+<!-- Checkout Modal -->
+{#if showCheckoutModal}
+  <div class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-900">Create New Checkout</h3>
+        <button
+          on:click={() => showCheckoutModal = false}
+          class="text-gray-400 hover:text-gray-600"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      
+      <form on:submit|preventDefault={handleCheckout} class="space-y-4">
+        <div>
+          <label for="assetId" class="block text-sm font-medium text-gray-700 mb-2">Asset</label>
+          <select
+            id="assetId"
+            bind:value={checkoutForm.assetId}
+            required
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="">Select an asset</option>
+            {#each assets.filter(a => a.status === 'Available') as asset}
+              <option value={asset.id}>{asset.itemName} - {asset.category?.name || 'Uncategorized'}</option>
+            {/each}
+          </select>
+        </div>
+        
+        <div>
+          <label for="userId" class="block text-sm font-medium text-gray-700 mb-2">User</label>
+          <select
+            id="userId"
+            bind:value={checkoutForm.userId}
+            required
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="">Select a user</option>
+            {#each users as user}
+              <option value={user.id}>{user.name}</option>
+            {/each}
+          </select>
+        </div>
+        
+        <div>
+          <label for="returnDate" class="block text-sm font-medium text-gray-700 mb-2">Expected Return Date</label>
+          <input
+            id="returnDate"
+            type="date"
+            bind:value={checkoutForm.expectedReturnDate}
+            required
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+        
+        <div>
+          <label for="notes" class="block text-sm font-medium text-gray-700 mb-2">Notes (Optional)</label>
+          <textarea
+            id="notes"
+            bind:value={checkoutForm.notes}
+            rows="3"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Any additional notes..."
+          ></textarea>
+        </div>
+        
+        <div class="flex space-x-3">
+          <button
+            type="button"
+            on:click={() => showCheckoutModal = false}
+            class="flex-1 px-4 py-2 border border-gray-300 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Create Checkout
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+{/if}
+
+<!-- Return Modal -->
+{#if showReturnModal && selectedCheckout}
+  <div class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-900">Return Equipment</h3>
+        <button
+          on:click={() => showReturnModal = false}
+          class="text-gray-400 hover:text-gray-600"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      
+      <div class="mb-4 p-4 bg-gray-50 rounded-lg">
+        <h4 class="font-medium text-gray-900">{selectedCheckout.asset?.itemName || 'Unknown Item'}</h4>
+        <p class="text-sm text-gray-600">{selectedCheckout.asset?.category?.name || 'Uncategorized'}</p>
+        <p class="text-sm text-gray-600">Checked out by: {selectedCheckout.user?.name || 'Unknown'}</p>
+      </div>
+      
+      <form on:submit|preventDefault={handleReturn} class="space-y-4">
+        <div>
+          <label for="condition" class="block text-sm font-medium text-gray-700 mb-2">Return Condition</label>
+          <select
+            id="condition"
+            bind:value={returnForm.condition}
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+          >
+            <option value="excellent">Excellent</option>
+            <option value="good">Good</option>
+            <option value="fair">Fair</option>
+            <option value="poor">Poor</option>
+          </select>
+        </div>
+        
+        <div>
+          <label for="returnNotes" class="block text-sm font-medium text-gray-700 mb-2">Notes (Optional)</label>
+          <textarea
+            id="returnNotes"
+            bind:value={returnForm.notes}
+            rows="3"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+            placeholder="Any issues or notes..."
+          ></textarea>
+        </div>
+        
+        <div class="flex space-x-3">
+          <button
+            type="button"
+            on:click={() => showReturnModal = false}
+            class="flex-1 px-4 py-2 border border-gray-300 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="flex-1 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
+          >
+            Return Item
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+{/if} 
