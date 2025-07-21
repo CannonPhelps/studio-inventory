@@ -200,7 +200,7 @@
 	<AdminSidebar {user} {currentPath} {sidebarOpen} />
 
 	<!-- Main content -->
-	<div class="min-h-screen w-full bg-primary lg:ml-64">
+	<div class="min-h-screen w-full bg-primary">
 		<!-- Page content -->
 		<main class="px-12 pt-12">
 			<slot />

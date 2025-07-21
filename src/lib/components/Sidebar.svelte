@@ -60,7 +60,7 @@
 {/if}
 
 <!-- Sidebar: always visible, fixed on the left -->
-<div class="h-screen fixed top-0 left-0 z-50 w-64 bg-sidebar shadow-custom-lg border-r border-sidebar flex flex-col transform transition-transform duration-300 ease-in-out {sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}">
+<div class="max-h-screen h-screen fixed top-0 left-0 z-50 w-64 bg-sidebar shadow-custom-lg border-r border-sidebar flex flex-col transform transition-transform duration-300 ease-in-out {sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}">
 	<!-- Header -->
 	<div class="border-sidebar border-b p-6">
 		<div class="flex items-center">

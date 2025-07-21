@@ -194,7 +194,7 @@
 		<!-- Main content -->
 		<div class="min-h-screen w-full bg-primary">
 			<!-- Page content -->
-			<main class="px-12 pt-12">
+			<main class="px-12 pt-12 lg:ml-64">
 				{@render children()}
 			</main>
 		</div>
