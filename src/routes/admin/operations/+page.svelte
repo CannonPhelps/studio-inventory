@@ -363,12 +363,12 @@
 
   <!-- Tabs -->
   <Card>
-    <div class="border-b border-gray-200">
+    <div class="border-b border-gray-200 dark:border-gray-700">
       <nav class="flex space-x-8">
         {#each tabs as tab}
           <button
             on:click={() => activeTab = tab.id}
-            class="py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 {activeTab === tab.id ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
+            class="py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 {activeTab === tab.id ? 'border-green-500 text-green-600 dark:text-green-400' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-600'}"
           >
             <div class="flex items-center space-x-2">
               <span class="text-lg">{tab.icon}</span>
@@ -386,8 +386,8 @@
           <div class="animate-spin h-8 w-8 border-b-2 border-green-600 rounded-full"></div>
         </div>
       {:else if error}
-        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p class="text-red-800">{error}</p>
+        <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+          <p class="text-red-800 dark:text-red-400">{error}</p>
         </div>
       {:else}
         <!-- Checkouts Tab -->
@@ -395,8 +395,8 @@
           <div class="space-y-6">
             <div class="flex justify-between items-center">
               <div>
-                <h2 class="text-xl font-semibold text-primary">Checkouts ({checkouts.length})</h2>
-                <p class="text-secondary">Manage equipment checkouts and assignments</p>
+                <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Checkouts ({checkouts.length})</h2>
+                <p class="text-gray-600 dark:text-gray-400">Manage equipment checkouts and assignments</p>
               </div>
               <button
                 on:click={openAddCheckoutModal}
@@ -411,25 +411,25 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {#each checkouts as checkout}
-                <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow">
                   <div class="flex items-center justify-between mb-3">
-                    <h3 class="font-semibold text-lg">{checkout.asset?.itemName || 'Unknown Asset'}</h3>
+                    <h3 class="font-semibold text-lg text-gray-900 dark:text-white">{checkout.asset?.itemName || 'Unknown Asset'}</h3>
                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {getStatusColor(checkout.status)}">
                       {checkout.status}
                     </span>
                   </div>
-                  <div class="space-y-2 text-sm text-gray-600">
+                  <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                     <div class="flex justify-between">
                       <span>User:</span>
-                      <span class="font-medium">{checkout.user?.name || checkout.userId}</span>
+                      <span class="font-medium text-gray-900 dark:text-white">{checkout.user?.name || checkout.userId}</span>
                     </div>
                     <div class="flex justify-between">
                       <span>Checkout Date:</span>
-                      <span class="font-medium">{formatDate(checkout.checkoutDate)}</span>
+                      <span class="font-medium text-gray-900 dark:text-white">{formatDate(checkout.checkoutDate)}</span>
                     </div>
                     <div class="flex justify-between">
                       <span>Expected Return:</span>
-                      <span class="font-medium">{formatDate(checkout.expectedReturnDate)}</span>
+                      <span class="font-medium text-gray-900 dark:text-white">{formatDate(checkout.expectedReturnDate)}</span>
                     </div>
                     {#if checkout.notes}
                       <p class="text-sm">{checkout.notes}</p>
@@ -445,8 +445,8 @@
           <div class="space-y-6">
             <div class="flex justify-between items-center">
               <div>
-                <h2 class="text-xl font-semibold text-primary">Returns ({returns.length})</h2>
-                <p class="text-secondary">Process equipment returns and condition assessment</p>
+                <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Returns ({returns.length})</h2>
+                <p class="text-gray-600 dark:text-gray-400">Process equipment returns and condition assessment</p>
               </div>
               <button
                 on:click={openAddReturnModal}
@@ -461,25 +461,25 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {#each returns as returnItem}
-                <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow">
                   <div class="flex items-center justify-between mb-3">
-                    <h3 class="font-semibold text-lg">{returnItem.asset?.itemName || 'Unknown Asset'}</h3>
+                    <h3 class="font-semibold text-lg text-gray-900 dark:text-white">{returnItem.asset?.itemName || 'Unknown Asset'}</h3>
                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {getStatusColor(returnItem.status)}">
                       {returnItem.status}
                     </span>
                   </div>
-                  <div class="space-y-2 text-sm text-gray-600">
+                  <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                     <div class="flex justify-between">
                       <span>Returned By:</span>
-                      <span class="font-medium">{returnItem.user?.name || returnItem.userId}</span>
+                      <span class="font-medium text-gray-900 dark:text-white">{returnItem.user?.name || returnItem.userId}</span>
                     </div>
                     <div class="flex justify-between">
                       <span>Return Date:</span>
-                      <span class="font-medium">{formatDate(returnItem.returnDate)}</span>
+                      <span class="font-medium text-gray-900 dark:text-white">{formatDate(returnItem.returnDate)}</span>
                     </div>
                     <div class="flex justify-between">
                       <span>Condition:</span>
-                      <span class="font-medium capitalize">{returnItem.condition}</span>
+                      <span class="font-medium capitalize text-gray-900 dark:text-white">{returnItem.condition}</span>
                     </div>
                     {#if returnItem.notes}
                       <p class="text-sm">{returnItem.notes}</p>
@@ -495,8 +495,8 @@
           <div class="space-y-6">
             <div class="flex justify-between items-center">
               <div>
-                <h2 class="text-xl font-semibold text-primary">Movements ({movements.length})</h2>
-                <p class="text-secondary">Track equipment location changes and transfers</p>
+                <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Movements ({movements.length})</h2>
+                <p class="text-gray-600 dark:text-gray-400">Track equipment location changes and transfers</p>
               </div>
               <button
                 on:click={openAddMovementModal}
@@ -511,23 +511,23 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {#each movements as movement}
-                <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow">
                   <div class="flex items-center justify-between mb-3">
-                    <h3 class="font-semibold text-lg">{movement.asset?.itemName || 'Unknown Asset'}</h3>
-                    <span class="text-sm text-gray-500">{formatDate(movement.movementDate)}</span>
+                    <h3 class="font-semibold text-lg text-gray-900 dark:text-white">{movement.asset?.itemName || 'Unknown Asset'}</h3>
+                    <span class="text-sm text-gray-500 dark:text-gray-400">{formatDate(movement.movementDate)}</span>
                   </div>
-                  <div class="space-y-2 text-sm text-gray-600">
+                  <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                     <div class="flex justify-between">
                       <span>From:</span>
-                      <span class="font-medium">{movement.fromLocation}</span>
+                      <span class="font-medium text-gray-900 dark:text-white">{movement.fromLocation}</span>
                     </div>
                     <div class="flex justify-between">
                       <span>To:</span>
-                      <span class="font-medium">{movement.toLocation}</span>
+                      <span class="font-medium text-gray-900 dark:text-white">{movement.toLocation}</span>
                     </div>
                     <div class="flex justify-between">
                       <span>Reason:</span>
-                      <span class="font-medium">{movement.reason}</span>
+                      <span class="font-medium text-gray-900 dark:text-white">{movement.reason}</span>
                     </div>
                     {#if movement.notes}
                       <p class="text-sm">{movement.notes}</p>
@@ -542,11 +542,11 @@
         {:else if activeTab === 'maintenance'}
           <div class="space-y-6">
             <!-- Header with Stats -->
-            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-6 border border-blue-100 dark:border-blue-800">
               <div class="flex justify-between items-center mb-4">
                 <div>
-                  <h2 class="text-2xl font-bold text-gray-900">Maintenance Management</h2>
-                  <p class="text-gray-600 mt-1">Track and manage equipment maintenance activities</p>
+                  <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Maintenance Management</h2>
+                  <p class="text-gray-600 dark:text-gray-300 mt-1">Track and manage equipment maintenance activities</p>
                 </div>
                 <button
                   on:click={openAddMaintenanceModal}
@@ -561,26 +561,26 @@
               
               <!-- Stats Cards -->
               <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div class="bg-white rounded-lg p-4 border border-blue-200">
+                <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-blue-200 dark:border-blue-700">
                   <div class="flex items-center">
-                    <div class="p-2 bg-blue-100 rounded-lg">
+                    <div class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
                       <span class="text-2xl">🔧</span>
                     </div>
                     <div class="ml-3">
-                      <p class="text-sm font-medium text-gray-600">Total Records</p>
-                      <p class="text-2xl font-bold text-gray-900">{maintenanceRecords.length}</p>
+                      <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Records</p>
+                      <p class="text-2xl font-bold text-gray-900 dark:text-white">{maintenanceRecords.length}</p>
                     </div>
                   </div>
                 </div>
                 
-                <div class="bg-white rounded-lg p-4 border border-green-200">
+                <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-green-200 dark:border-green-700">
                   <div class="flex items-center">
-                    <div class="p-2 bg-green-100 rounded-lg">
+                    <div class="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
                       <span class="text-2xl">✅</span>
                     </div>
                     <div class="ml-3">
-                      <p class="text-sm font-medium text-gray-600">This Month</p>
-                      <p class="text-2xl font-bold text-gray-900">
+                      <p class="text-sm font-medium text-gray-600 dark:text-gray-400">This Month</p>
+                      <p class="text-2xl font-bold text-gray-900 dark:text-white">
                         {maintenanceRecords.filter(r => {
                           const date = new Date(r.performedAt);
                           const now = new Date();
@@ -591,28 +591,28 @@
                   </div>
                 </div>
                 
-                <div class="bg-white rounded-lg p-4 border border-yellow-200">
+                <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-yellow-200 dark:border-yellow-700">
                   <div class="flex items-center">
-                    <div class="p-2 bg-yellow-100 rounded-lg">
+                    <div class="p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
                       <span class="text-2xl">💰</span>
                     </div>
                     <div class="ml-3">
-                      <p class="text-sm font-medium text-gray-600">Total Cost</p>
-                      <p class="text-2xl font-bold text-gray-900">
+                      <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Cost</p>
+                      <p class="text-2xl font-bold text-gray-900 dark:text-white">
                         ${maintenanceRecords.reduce((sum, r) => sum + (r.cost || 0), 0).toFixed(2)}
                       </p>
                     </div>
                   </div>
                 </div>
                 
-                <div class="bg-white rounded-lg p-4 border border-purple-200">
+                <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-purple-200 dark:border-purple-700">
                   <div class="flex items-center">
-                    <div class="p-2 bg-purple-100 rounded-lg">
+                    <div class="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
                       <span class="text-2xl">📊</span>
                     </div>
                     <div class="ml-3">
-                      <p class="text-sm font-medium text-gray-600">Avg Cost</p>
-                      <p class="text-2xl font-bold text-gray-900">
+                      <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Avg Cost</p>
+                      <p class="text-2xl font-bold text-gray-900 dark:text-white">
                         ${maintenanceRecords.length > 0 ? (maintenanceRecords.reduce((sum, r) => sum + (r.cost || 0), 0) / maintenanceRecords.length).toFixed(2) : '0.00'}
                       </p>
                     </div>
@@ -622,18 +622,18 @@
             </div>
 
             <!-- Maintenance Records -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-              <div class="p-6 border-b border-gray-200">
-                <h3 class="text-lg font-semibold text-gray-900">Recent Maintenance Records</h3>
-                <p class="text-gray-600 mt-1">Latest maintenance activities and their details</p>
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+              <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Recent Maintenance Records</h3>
+                <p class="text-gray-600 dark:text-gray-400 mt-1">Latest maintenance activities and their details</p>
               </div>
               
               <div class="p-6">
                 {#if maintenanceRecords.length === 0}
                   <div class="text-center py-12">
                     <div class="text-6xl mb-4">🔧</div>
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">No maintenance records</h3>
-                    <p class="text-gray-600 mb-6">Start tracking maintenance activities for your equipment</p>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No maintenance records</h3>
+                    <p class="text-gray-600 dark:text-gray-400 mb-6">Start tracking maintenance activities for your equipment</p>
                     <button
                       on:click={openAddMaintenanceModal}
                       class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors duration-200"
@@ -647,19 +647,19 @@
                 {:else}
                   <div class="space-y-4">
                     {#each maintenanceRecords as record}
-                      <div class="bg-gray-50 rounded-lg p-6 hover:bg-gray-100 transition-colors duration-200 border border-gray-200">
+                      <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200 border border-gray-200 dark:border-gray-600">
                         <div class="flex items-start justify-between mb-4">
                           <div class="flex items-center space-x-3">
-                            <div class="p-2 bg-blue-100 rounded-lg">
+                            <div class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
                               <span class="text-xl">🔧</span>
                             </div>
                             <div>
-                              <h4 class="text-lg font-semibold text-gray-900">{record.asset?.itemName || 'Unknown Asset'}</h4>
-                              <p class="text-sm text-gray-600">{record.asset?.category?.name || 'Uncategorized'}</p>
+                              <h4 class="text-lg font-semibold text-gray-900 dark:text-white">{record.asset?.itemName || 'Unknown Asset'}</h4>
+                              <p class="text-sm text-gray-600 dark:text-gray-400">{record.asset?.category?.name || 'Uncategorized'}</p>
                             </div>
                           </div>
                           <div class="text-right">
-                            <div class="text-sm text-gray-500">{formatDate(record.performedAt)}</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">{formatDate(record.performedAt)}</div>
                             {#if record.cost}
                               <div class="text-lg font-bold text-green-600">${record.cost}</div>
                             {/if}
@@ -682,31 +682,31 @@
                         </div>
                         
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                          <div class="bg-white rounded-lg p-3 border border-gray-200">
-                            <div class="text-sm text-gray-600">Performed By</div>
-                            <div class="font-medium text-gray-900">{record.performedBy || 'Not specified'}</div>
+                          <div class="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-600">
+                            <div class="text-sm text-gray-600 dark:text-gray-400">Performed By</div>
+                            <div class="font-medium text-gray-900 dark:text-white">{record.performedBy || 'Not specified'}</div>
                           </div>
                           
-                          <div class="bg-white rounded-lg p-3 border border-gray-200">
-                            <div class="text-sm text-gray-600">Asset ID</div>
-                            <div class="font-medium text-gray-900">#{record.assetId}</div>
+                          <div class="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-600">
+                            <div class="text-sm text-gray-600 dark:text-gray-400">Asset ID</div>
+                            <div class="font-medium text-gray-900 dark:text-white">#{record.assetId}</div>
                           </div>
                           
-                          <div class="bg-white rounded-lg p-3 border border-gray-200">
-                            <div class="text-sm text-gray-600">Record ID</div>
-                            <div class="font-medium text-gray-900">#{record.id}</div>
+                          <div class="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-600">
+                            <div class="text-sm text-gray-600 dark:text-gray-400">Record ID</div>
+                            <div class="font-medium text-gray-900 dark:text-white">#{record.id}</div>
                           </div>
                           
-                          <div class="bg-white rounded-lg p-3 border border-gray-200">
-                            <div class="text-sm text-gray-600">Scheduled Date</div>
-                            <div class="font-medium text-gray-900">{record.scheduledDate ? formatDate(record.scheduledDate) : 'Not scheduled'}</div>
+                          <div class="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-600">
+                            <div class="text-sm text-gray-600 dark:text-gray-400">Scheduled Date</div>
+                            <div class="font-medium text-gray-900 dark:text-white">{record.scheduledDate ? formatDate(record.scheduledDate) : 'Not scheduled'}</div>
                           </div>
                         </div>
                         
                         {#if record.notes}
-                          <div class="bg-white rounded-lg p-4 border border-gray-200 mb-4">
-                            <div class="text-sm font-medium text-gray-700 mb-2">Maintenance Notes</div>
-                            <p class="text-gray-600 leading-relaxed">{record.notes}</p>
+                          <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-600 mb-4">
+                            <div class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Maintenance Notes</div>
+                            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">{record.notes}</p>
                           </div>
                         {/if}
                         
@@ -748,12 +748,12 @@
 <!-- Add Checkout Modal -->
 {#if showAddCheckoutModal}
   <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-semibold text-gray-900">New Checkout</h3>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">New Checkout</h3>
         <button 
           on:click={() => showAddCheckoutModal = false}
-          class="text-gray-400 hover:text-gray-600 transition-colors duration-150"
+          class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-150"
         >
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -763,40 +763,40 @@
 
       <div class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Asset ID *</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Asset ID *</label>
           <input 
             type="text" 
             bind:value={newCheckout.assetId}
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
             placeholder="Enter asset ID"
           />
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">User ID *</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">User ID *</label>
           <input 
             type="text" 
             bind:value={newCheckout.userId}
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
             placeholder="Enter user ID"
           />
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Expected Return Date</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Expected Return Date</label>
           <input 
             type="date" 
             bind:value={newCheckout.expectedReturnDate}
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
           />
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notes</label>
           <textarea 
             bind:value={newCheckout.notes}
             rows="3"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
             placeholder="Additional notes"
           ></textarea>
         </div>
@@ -805,7 +805,7 @@
       <div class="flex justify-end gap-3 mt-6">
         <button 
           on:click={() => showAddCheckoutModal = false}
-          class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors duration-150"
+          class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md transition-colors duration-150"
         >
           Cancel
         </button>
@@ -823,16 +823,16 @@
 <!-- Update Maintenance Modal -->
 {#if showUpdateModal && selectedMaintenance}
   <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full">
-      <div class="p-6 border-b border-gray-200">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full">
+      <div class="p-6 border-b border-gray-200 dark:border-gray-700">
         <div class="flex items-center justify-between">
           <div>
-            <h3 class="text-lg font-semibold text-gray-900">Update Maintenance Progress</h3>
-            <p class="text-gray-600 mt-1">{selectedMaintenance.asset?.itemName}</p>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Update Maintenance Progress</h3>
+            <p class="text-gray-600 dark:text-gray-400 mt-1">{selectedMaintenance.asset?.itemName}</p>
           </div>
           <button 
             on:click={() => showUpdateModal = false}
-            class="text-gray-400 hover:text-gray-600 transition-colors duration-150 p-2 hover:bg-gray-100 rounded-lg"
+            class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-150 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
           >
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -843,10 +843,10 @@
 
       <div class="p-6 space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status</label>
           <select 
             bind:value={updateForm.status}
-            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
           >
             {#each maintenanceStatuses as status}
               <option value={status.value}>{status.label}</option>
@@ -855,31 +855,31 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Updated By</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Updated By</label>
           <input 
             type="text" 
             bind:value={updateForm.updatedBy}
-            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
             placeholder="Your name"
           />
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Progress Notes</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Progress Notes</label>
           <textarea 
             bind:value={updateForm.notes}
             rows="3"
-            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
             placeholder="Describe the progress made, issues encountered, or completion details..."
           ></textarea>
         </div>
       </div>
 
-      <div class="p-6 border-t border-gray-200">
+      <div class="p-6 border-t border-gray-200 dark:border-gray-700">
         <div class="flex justify-end gap-3">
           <button 
             on:click={() => showUpdateModal = false}
-            class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors duration-200"
+            class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200"
           >
             Cancel
           </button>
@@ -898,16 +898,16 @@
 <!-- Maintenance Log Modal -->
 {#if showMaintenanceLogModal && maintenanceLog}
   <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-      <div class="sticky top-0 bg-white border-b border-gray-200 p-6 rounded-t-xl">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-6 rounded-t-xl">
         <div class="flex items-center justify-between">
           <div>
-            <h3 class="text-xl font-semibold text-gray-900">Maintenance Log</h3>
-            <p class="text-gray-600 mt-1">{maintenanceLog.asset?.itemName} - Complete Maintenance History</p>
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Maintenance Log</h3>
+            <p class="text-gray-600 dark:text-gray-400 mt-1">{maintenanceLog.asset?.itemName} - Complete Maintenance History</p>
           </div>
           <button 
             on:click={() => showMaintenanceLogModal = false}
-            class="text-gray-400 hover:text-gray-600 transition-colors duration-150 p-2 hover:bg-gray-100 rounded-lg"
+            class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-150 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
           >
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -916,23 +916,23 @@
         </div>
         
         <!-- Asset Summary -->
-        <div class="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+        <div class="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
           <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
-              <div class="text-sm text-gray-600">Total Records</div>
-              <div class="text-lg font-bold text-gray-900">{maintenanceLog.totalRecords}</div>
+              <div class="text-sm text-gray-600 dark:text-gray-400">Total Records</div>
+              <div class="text-lg font-bold text-gray-900 dark:text-white">{maintenanceLog.totalRecords}</div>
             </div>
             <div>
-              <div class="text-sm text-gray-600">Total Cost</div>
+              <div class="text-sm text-gray-600 dark:text-gray-400">Total Cost</div>
               <div class="text-lg font-bold text-green-600">${maintenanceLog.totalCost.toFixed(2)}</div>
             </div>
             <div>
-              <div class="text-sm text-gray-600">Category</div>
-              <div class="text-lg font-bold text-gray-900">{maintenanceLog.asset?.category?.name || 'Uncategorized'}</div>
+              <div class="text-sm text-gray-600 dark:text-gray-400">Category</div>
+              <div class="text-lg font-bold text-gray-900 dark:text-white">{maintenanceLog.asset?.category?.name || 'Uncategorized'}</div>
             </div>
             <div>
-              <div class="text-sm text-gray-600">Current Status</div>
-              <div class="text-lg font-bold text-gray-900">{maintenanceLog.asset?.status}</div>
+              <div class="text-sm text-gray-600 dark:text-gray-400">Current Status</div>
+              <div class="text-lg font-bold text-gray-900 dark:text-white">{maintenanceLog.asset?.status}</div>
             </div>
           </div>
         </div>
@@ -942,13 +942,13 @@
         {#if maintenanceLog.maintenanceRecords.length === 0}
           <div class="text-center py-12">
             <div class="text-6xl mb-4">📋</div>
-            <h3 class="text-lg font-medium text-gray-900 mb-2">No maintenance records</h3>
-            <p class="text-gray-600">This asset has no maintenance history yet.</p>
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No maintenance records</h3>
+            <p class="text-gray-600 dark:text-gray-400">This asset has no maintenance history yet.</p>
           </div>
         {:else}
           <div class="space-y-6">
             {#each maintenanceLog.maintenanceRecords as record}
-              <div class="bg-gray-50 rounded-lg p-6 border border-gray-200">
+              <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 border border-gray-200 dark:border-gray-600">
                 <div class="flex items-start justify-between mb-4">
                   <div>
                     <div class="flex items-center space-x-3 mb-2">
@@ -956,7 +956,7 @@
                         {maintenanceStatuses.find(s => s.value === (record.status || 'SCHEDULED'))?.label || 'Scheduled'}
                       </span>
                       {#if record.maintenanceType}
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
                           {maintenanceTypes.find(t => t.value === record.maintenanceType)?.label || record.maintenanceType}
                         </span>
                       {/if}
@@ -966,7 +966,7 @@
                         </span>
                       {/if}
                     </div>
-                    <div class="text-sm text-gray-500">{formatDate(record.performedAt)}</div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400">{formatDate(record.performedAt)}</div>
                   </div>
                   {#if record.cost}
                     <div class="text-right">
@@ -976,26 +976,26 @@
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                  <div class="bg-white rounded-lg p-3 border border-gray-200">
-                    <div class="text-sm text-gray-600">Performed By</div>
-                    <div class="font-medium text-gray-900">{record.performedBy || 'Not specified'}</div>
+                  <div class="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-600">
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Performed By</div>
+                    <div class="font-medium text-gray-900 dark:text-white">{record.performedBy || 'Not specified'}</div>
                   </div>
                   
-                  <div class="bg-white rounded-lg p-3 border border-gray-200">
-                    <div class="text-sm text-gray-600">Record ID</div>
-                    <div class="font-medium text-gray-900">#{record.id}</div>
+                  <div class="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-600">
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Record ID</div>
+                    <div class="font-medium text-gray-900 dark:text-white">#{record.id}</div>
                   </div>
                   
-                  <div class="bg-white rounded-lg p-3 border border-gray-200">
-                    <div class="text-sm text-gray-600">Scheduled Date</div>
-                    <div class="font-medium text-gray-900">{record.scheduledDate ? formatDate(record.scheduledDate) : 'Not scheduled'}</div>
+                  <div class="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-600">
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Scheduled Date</div>
+                    <div class="font-medium text-gray-900 dark:text-white">{record.scheduledDate ? formatDate(record.scheduledDate) : 'Not scheduled'}</div>
                   </div>
                 </div>
                 
                 {#if record.notes}
-                  <div class="bg-white rounded-lg p-4 border border-gray-200">
-                    <div class="text-sm font-medium text-gray-700 mb-2">Maintenance Notes</div>
-                    <p class="text-gray-600 leading-relaxed">{record.notes}</p>
+                  <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                    <div class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Maintenance Notes</div>
+                    <p class="text-gray-600 dark:text-gray-400 leading-relaxed">{record.notes}</p>
                   </div>
                 {/if}
               </div>
@@ -1010,12 +1010,12 @@
 <!-- Add Return Modal -->
 {#if showAddReturnModal}
   <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-semibold text-gray-900">Process Return</h3>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Process Return</h3>
         <button 
           on:click={() => showAddReturnModal = false}
-          class="text-gray-400 hover:text-gray-600 transition-colors duration-150"
+          class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-150"
         >
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -1025,20 +1025,20 @@
 
       <div class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Checkout ID *</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Checkout ID *</label>
           <input 
             type="text" 
             bind:value={newReturn.checkoutId}
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
             placeholder="Enter checkout ID"
           />
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Condition</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Condition</label>
           <select 
             bind:value={newReturn.condition}
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
           >
             {#each returnConditions as condition}
               <option value={condition.toLowerCase()}>{condition}</option>
@@ -1047,11 +1047,11 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notes</label>
           <textarea 
             bind:value={newReturn.notes}
             rows="3"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
             placeholder="Return notes"
           ></textarea>
         </div>
@@ -1060,7 +1060,7 @@
       <div class="flex justify-end gap-3 mt-6">
         <button 
           on:click={() => showAddReturnModal = false}
-          class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors duration-150"
+          class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md transition-colors duration-150"
         >
           Cancel
         </button>
@@ -1078,12 +1078,12 @@
 <!-- Add Movement Modal -->
 {#if showAddMovementModal}
   <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-semibold text-gray-900">Record Movement</h3>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Record Movement</h3>
         <button 
           on:click={() => showAddMovementModal = false}
-          class="text-gray-400 hover:text-gray-600 transition-colors duration-150"
+          class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-150"
         >
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -1093,51 +1093,51 @@
 
       <div class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Asset ID *</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Asset ID *</label>
           <input 
             type="text" 
             bind:value={newMovement.assetId}
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
             placeholder="Enter asset ID"
           />
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">From Location</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">From Location</label>
           <input 
             type="text" 
             bind:value={newMovement.fromLocation}
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
             placeholder="Current location"
           />
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">To Location *</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">To Location *</label>
           <input 
             type="text" 
             bind:value={newMovement.toLocation}
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
             placeholder="New location"
           />
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Reason</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Reason</label>
           <input 
             type="text" 
             bind:value={newMovement.reason}
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
             placeholder="Reason for movement"
           />
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notes</label>
           <textarea 
             bind:value={newMovement.notes}
             rows="3"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
             placeholder="Additional notes"
           ></textarea>
         </div>
@@ -1146,7 +1146,7 @@
       <div class="flex justify-end gap-3 mt-6">
         <button 
           on:click={() => showAddMovementModal = false}
-          class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors duration-150"
+          class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md transition-colors duration-150"
         >
           Cancel
         </button>
@@ -1164,16 +1164,16 @@
 <!-- Add Maintenance Modal -->
 {#if showAddMaintenanceModal}
   <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-      <div class="sticky top-0 bg-white border-b border-gray-200 p-6 rounded-t-xl">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-6 rounded-t-xl">
         <div class="flex items-center justify-between">
           <div>
-            <h3 class="text-xl font-semibold text-gray-900">Record Maintenance Activity</h3>
-            <p class="text-gray-600 mt-1">Document maintenance work performed on equipment</p>
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Record Maintenance Activity</h3>
+            <p class="text-gray-600 dark:text-gray-400 mt-1">Document maintenance work performed on equipment</p>
           </div>
           <button 
             on:click={() => showAddMaintenanceModal = false}
-            class="text-gray-400 hover:text-gray-600 transition-colors duration-150 p-2 hover:bg-gray-100 rounded-lg"
+            class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-150 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
           >
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -1185,10 +1185,10 @@
       <div class="p-6 space-y-6">
         <!-- Asset Selection -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Select Asset *</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Select Asset *</label>
           <select 
             bind:value={newMaintenance.assetId}
-            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
           >
             <option value="">Choose an asset...</option>
             {#each assets as asset}
@@ -1200,16 +1200,16 @@
           {#if newMaintenance.assetId}
             {@const selectedAsset = assets.find(a => a.id == newMaintenance.assetId)}
             {#if selectedAsset}
-              <div class="mt-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <div class="mt-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
                 <div class="flex items-center space-x-3">
-                  <div class="p-2 bg-blue-100 rounded-lg">
+                  <div class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
                     <span class="text-lg">📦</span>
                   </div>
                   <div>
-                    <div class="font-medium text-gray-900">{selectedAsset.itemName}</div>
-                    <div class="text-sm text-gray-600">
+                    <div class="font-medium text-gray-900 dark:text-white">{selectedAsset.itemName}</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">
                       Category: {selectedAsset.category?.name || 'Uncategorized'} | 
-                      Status: <span class="font-medium">{selectedAsset.status}</span>
+                      Status: <span class="font-medium text-gray-900 dark:text-white">{selectedAsset.status}</span>
                     </div>
                   </div>
                 </div>
@@ -1220,7 +1220,7 @@
 
         <!-- Maintenance Type -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Maintenance Type</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Maintenance Type</label>
           <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
             {#each maintenanceTypes as type}
               <label class="relative cursor-pointer">
@@ -1230,9 +1230,9 @@
                   value={type.value}
                   class="sr-only"
                 />
-                <div class="p-4 border-2 rounded-lg text-center transition-all duration-200 {newMaintenance.maintenanceType === type.value ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'}">
+                <div class="p-4 border-2 rounded-lg text-center transition-all duration-200 {newMaintenance.maintenanceType === type.value ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'}">
                   <div class="text-2xl mb-2">{type.icon}</div>
-                  <div class="text-sm font-medium text-gray-900">{type.label}</div>
+                  <div class="text-sm font-medium text-gray-900 dark:text-white">{type.label}</div>
                 </div>
               </label>
             {/each}
@@ -1242,7 +1242,7 @@
         <!-- Priority and Scheduled Date -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Priority</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Priority</label>
             <div class="grid grid-cols-2 gap-2">
               {#each priorities as priority}
                 <label class="relative cursor-pointer">
@@ -1252,8 +1252,8 @@
                     value={priority.value}
                     class="sr-only"
                   />
-                  <div class="p-3 border-2 rounded-lg text-center transition-all duration-200 {newMaintenance.priority === priority.value ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'}">
-                    <div class="text-sm font-medium text-gray-900">{priority.label}</div>
+                  <div class="p-3 border-2 rounded-lg text-center transition-all duration-200 {newMaintenance.priority === priority.value ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'}">
+                    <div class="text-sm font-medium text-gray-900 dark:text-white">{priority.label}</div>
                   </div>
                 </label>
               {/each}
@@ -1261,11 +1261,11 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Scheduled Date</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Scheduled Date</label>
             <input 
               type="date" 
               bind:value={newMaintenance.scheduledDate}
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
         </div>
@@ -1273,25 +1273,25 @@
         <!-- Performed By and Cost -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Performed By</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Performed By</label>
             <input 
               type="text" 
               bind:value={newMaintenance.performedBy}
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
               placeholder="Technician or staff name"
             />
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Cost (USD)</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Cost (USD)</label>
             <div class="relative">
-              <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+              <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400">$</span>
               <input 
                 type="number" 
                 bind:value={newMaintenance.cost}
                 step="0.01"
                 min="0"
-                class="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full pl-8 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                 placeholder="0.00"
               />
             </div>
@@ -1300,22 +1300,22 @@
 
         <!-- Notes -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Maintenance Notes</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Maintenance Notes</label>
           <textarea 
             bind:value={newMaintenance.notes}
             rows="4"
-            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
             placeholder="Describe the maintenance work performed, issues found, parts replaced, etc..."
           ></textarea>
-          <p class="text-sm text-gray-500 mt-1">Be detailed to help with future maintenance planning</p>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Be detailed to help with future maintenance planning</p>
         </div>
       </div>
 
-      <div class="sticky bottom-0 bg-white border-t border-gray-200 p-6 rounded-b-xl">
+      <div class="sticky bottom-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-6 rounded-b-xl">
         <div class="flex justify-end gap-3">
           <button 
             on:click={() => showAddMaintenanceModal = false}
-            class="px-6 py-3 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors duration-200"
+            class="px-6 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200"
           >
             Cancel
           </button>

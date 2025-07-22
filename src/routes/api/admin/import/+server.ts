@@ -18,11 +18,27 @@ export const POST = async (event: RequestEvent) => {
 	try {
 		await requireAdmin(event);
 		
-		// For now, just return a placeholder response
-		return json({ 
-			message: 'Import functionality not yet implemented',
-			success: false 
+		// Forward to the main import endpoint
+		const formData = await event.request.formData();
+		const file = formData.get('file') as File;
+		const importType = formData.get('importType') as string;
+
+		if (!file || !importType) {
+			return json({ error: 'File and import type are required' }, { status: 400 });
+		}
+
+		// Create a new request to the main import endpoint
+		const importFormData = new FormData();
+		importFormData.append('file', file);
+		importFormData.append('importType', importType);
+
+		const response = await fetch(`${event.url.origin}/api/import`, {
+			method: 'POST',
+			body: importFormData
 		});
+
+		const result = await response.json();
+		return json(result, { status: response.status });
 	} catch (error) {
 		console.error('Error processing import:', error);
 		return json({ error: 'Failed to process import' }, { status: 500 });

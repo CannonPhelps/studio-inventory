@@ -1,0 +1,14 @@
+{
+  "timestamp": "2025-07-22T14:32:45.282Z",
+  "totalAssets": 360,
+  "description": "Backup created before duplicate asset removal",
+  "tables": [
+    "checkouts",
+    "maintenance_records",
+    "movements",
+    "financial_records",
+    "kit_assets",
+    "asset_serial_numbers",
+    "cable_segments"
+  ]
+}

@@ -1,0 +1,15 @@
+[
+  {
+    "id": 1,
+    "assetId": 452,
+    "performedAt": "2025-07-17T22:16:46.337Z",
+    "notes": "test - Status: IN_PROGRESS",
+    "performedBy": "Cannon Phelps",
+    "cost": null,
+    "status": "CANCELLED",
+    "maintenanceType": null,
+    "scheduledDate": null,
+    "completedDate": null,
+    "priority": "MEDIUM"
+  }
+]

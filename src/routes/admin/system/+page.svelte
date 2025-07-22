@@ -424,19 +424,30 @@
     try {
       const formData = new FormData();
       formData.append('file', newImport.file);
-      formData.append('type', newImport.type);
-      formData.append('description', newImport.description);
-      formData.append('options', JSON.stringify(newImport.options));
+      formData.append('importType', 'assets'); // Default to assets for now
 
-      const response = await fetch('/api/admin/import', {
+      const response = await fetch('/api/import', {
         method: 'POST',
         body: formData
       });
 
-      if (!response.ok) throw new Error('Failed to execute import');
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to execute import');
+      }
       
       showImportModal = false;
-      await loadAllData();
+      error = '';
+      // Add the import to history
+      importHistory.unshift({
+        type: newImport.type,
+        description: newImport.description || 'Data import',
+        status: 'completed',
+        recordsProcessed: result.imported || 0,
+        createdAt: new Date().toISOString(),
+        error: result.errors && result.errors.length > 0 ? result.errors.join(', ') : null
+      });
     } catch (e) {
       console.error('Error executing import:', e);
       error = e instanceof Error ? e.message : 'Failed to execute import';
@@ -928,15 +939,26 @@
                 <h2 class="text-xl font-semibold text-primary">Data Import ({importHistory.length})</h2>
                 <p class="text-secondary">Import data from external sources</p>
               </div>
-              <button
-                on:click={openImportModal}
-                class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors duration-200"
-              >
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                </svg>
-                Import Data
-              </button>
+              <div class="flex gap-2">
+                <a
+                  href="/admin/import"
+                  class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors duration-200"
+                >
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                  </svg>
+                  Full Import Page
+                </a>
+                <button
+                  on:click={openImportModal}
+                  class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors duration-200"
+                >
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                  </svg>
+                  Quick Import
+                </button>
+              </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

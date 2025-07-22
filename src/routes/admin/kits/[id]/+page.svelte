@@ -26,6 +26,7 @@
       category?: string;
       serialNumber?: string;
       status: string;
+      purchasePrice?: number;
     };
   };
 
@@ -160,6 +161,13 @@
     showAddAssetModal = false;
   }
 
+  // Calculate total kit value
+  $: totalValue = $assets.reduce((total, kitAsset) => {
+    const assetPrice = kitAsset.asset.purchasePrice || 0;
+    const quantity = kitAsset.quantity || 1;
+    return total + (assetPrice * quantity);
+  }, 0);
+
   function getStatusColor(status: string) {
     switch (status.toLowerCase()) {
       case 'available': return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
@@ -257,6 +265,13 @@
             <p class="text-sm font-medium text-secondary">Total Assets</p>
             <p class="text-primary">{$assets.length}</p>
           </div>
+          
+          <div>
+            <p class="text-sm font-medium text-secondary">Total Value</p>
+            <p class="text-primary font-semibold">
+              {totalValue > 0 ? `$${totalValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'N/A'}
+            </p>
+          </div>
         </div>
       </Card>
 
@@ -295,6 +310,7 @@
                   <th class="px-6 py-3 text-left text-xs font-medium tracking-wider text-secondary uppercase">Category</th>
                   <th class="px-6 py-3 text-left text-xs font-medium tracking-wider text-secondary uppercase">Status</th>
                   <th class="px-6 py-3 text-left text-xs font-medium tracking-wider text-secondary uppercase">Quantity</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium tracking-wider text-secondary uppercase">Value</th>
                   <th class="px-6 py-3 text-left text-xs font-medium tracking-wider text-secondary uppercase">Actions</th>
                 </tr>
               </thead>
@@ -319,6 +335,14 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                       <p class="text-sm text-primary">{kitAsset.quantity || 1}</p>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <p class="text-sm text-primary">
+                        {kitAsset.asset.purchasePrice ? 
+                          `$${(kitAsset.asset.purchasePrice * (kitAsset.quantity || 1)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 
+                          'N/A'
+                        }
+                      </p>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <button 

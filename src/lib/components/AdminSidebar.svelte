@@ -21,7 +21,7 @@
 		{ name: 'Overview', href: '/admin', icon: '📊', current: true },
 		{ name: 'Analytics', href: '/admin/dashboard', icon: '📈', current: false },
 		{ name: 'Inventory', href: '/admin/infrastructure', icon: '📦', current: false },
-		{ name: 'Checkout', href: '/admin/checkouts', icon: '📦', current: false },
+		{ name: 'Checkout', href: '/admin/checkouts', icon: '🛒', current: false },
 		{ name: 'Cable Management', href: '/admin/bulk-cables', icon: '🔌', current: false },
 		{ name: 'Equipment', href: '/admin/kits', icon: '🎒', current: false },
 		{ name: 'Damage Management', href: '/admin/damage-management', icon: '🔧', current: false },
