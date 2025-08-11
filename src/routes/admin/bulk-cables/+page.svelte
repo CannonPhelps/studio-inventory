@@ -33,12 +33,13 @@
 		notes: ''
 	};
 
-	let newCable = {
-		length: '',
-		customName: '',
-		endAId: '',
-		endBId: ''
-	};
+    let newCable = {
+        length: '',
+        quantity: 1,
+        customName: '',
+        endAId: '',
+        endBId: ''
+    };
 
 	// Cable Types data
 	let showAddCableTypeModal = false;
@@ -695,18 +696,26 @@
 	}
 
 	async function createCableFromBulk() {
-		if (!selectedBulkCable || !newCable.length || !newCable.endAId || !newCable.endBId) {
+        if (!selectedBulkCable || !newCable.length || !newCable.endAId || !newCable.endBId) {
 			alert('Please fill in all required fields');
 			return;
 		}
 
-		try {
-			const response = await fetch('/api/bulk-cables/create-cable', {
+        try {
+            const qty = parseInt((newCable.quantity as any) || 1);
+            const perUnitLength = parseFloat(newCable.length as any);
+            const totalRequested = perUnitLength * qty;
+            if (totalRequested > selectedBulkCable.remainingLength) {
+                alert(`Not enough remaining length. Available: ${selectedBulkCable.remainingLength.toFixed(1)}ft, Requested: ${totalRequested.toFixed(1)}ft (${qty} × ${perUnitLength.toFixed(1)}ft)`);
+                return;
+            }
+            const response = await fetch('/api/bulk-cables/create-cable', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					bulkCableId: selectedBulkCable.id,
-					length: parseFloat(newCable.length),
+                    length: parseFloat(newCable.length),
+                    quantity: parseInt(newCable.quantity as any) || 1,
 					customName: newCable.customName,
 					endAId: parseInt(newCable.endAId),
 					endBId: parseInt(newCable.endBId)
@@ -715,41 +724,44 @@
 
 			const result = await response.json();
 
-			if (response.ok) {
-				selectedBulkCable.remainingLength = result.remainingLength;
-				await loadBulkCables();
-				await loadCableAssets(); // Refresh cable assets list
-				showCreateCableModal = false;
-				selectedBulkCable = null;
-				newCable = {
-					length: '',
-					customName: '',
-					endAId: '',
-					endBId: ''
-				};
+            if (response.ok) {
+                selectedBulkCable.remainingLength = result.remainingLength;
+                await loadBulkCables();
+                await loadCableAssets(); // Refresh cable assets list
+                showCreateCableModal = false;
+                selectedBulkCable = null;
+                newCable = {
+                    length: '',
+                    quantity: 1,
+                    customName: '',
+                    endAId: '',
+                    endBId: ''
+                };
 
-				const costBreakdown = [];
-				if (result.cableCost) {
-					costBreakdown.push(`Cable: $${result.cableCost.toFixed(2)}`);
-				}
-				if (result.connectorCosts.endA.cost > 0) {
-					costBreakdown.push(
-						`${result.connectorCosts.endA.name}: $${result.connectorCosts.endA.cost.toFixed(2)}`
-					);
-				}
-				if (result.connectorCosts.endB.cost > 0) {
-					costBreakdown.push(
-						`${result.connectorCosts.endB.name}: $${result.connectorCosts.endB.cost.toFixed(2)}`
-					);
-				}
+                const costBreakdownPerUnit = [] as string[];
+                if (result.cableCostPerUnit) {
+                    costBreakdownPerUnit.push(`Cable: $${result.cableCostPerUnit.toFixed(2)}`);
+                }
+                if (result.connectorCostsPerUnit.endA.cost > 0) {
+                    costBreakdownPerUnit.push(
+                        `${result.connectorCostsPerUnit.endA.name}: $${result.connectorCostsPerUnit.endA.cost.toFixed(2)}`
+                    );
+                }
+                if (result.connectorCostsPerUnit.endB.cost > 0) {
+                    costBreakdownPerUnit.push(
+                        `${result.connectorCostsPerUnit.endB.name}: $${result.connectorCostsPerUnit.endB.cost.toFixed(2)}`
+                    );
+                }
 
-				const costMessage = result.totalCost
-					? `Total Cost: $${result.totalCost.toFixed(2)}\n${costBreakdown.join('\n')}`
-					: 'Cost: Not available';
+                const costMessage = result.totalCost
+                    ? `Total Cost (all ${result.quantity}): $${Number(result.totalCost).toFixed(2)}\nPer unit: ${costBreakdownPerUnit.join('\n')}`
+                    : 'Cost: Not available';
 
-				alert(
-					`Cable created successfully!\n\nAsset: ${result.asset.itemName}\n${costMessage}\nRemaining bulk length: ${result.remainingLength.toFixed(1)}ft`
-				);
+                const assetNamePreview = result.assets?.[0]?.itemName || 'Cable';
+
+                alert(
+                    `${result.quantity} cable(s) created successfully!\n\nExample Asset: ${assetNamePreview}\n${costMessage}\nRemaining bulk length: ${result.remainingLength.toFixed(1)}ft`
+                );
 			} else {
 				alert(result.error || 'Failed to create cable');
 			}
@@ -1740,14 +1752,16 @@
 				{#if selectedBulkCable.purchasePrice && selectedBulkCable.totalLength}
 					{@const costPerFoot =
 						parseFloat(selectedBulkCable.purchasePrice.toString()) / selectedBulkCable.totalLength}
-					{@const estimatedCableCost = newCable.length
-						? parseFloat(newCable.length) * costPerFoot
-						: 0}
+                    {@const estimatedCableCost = newCable.length
+                        ? parseFloat(newCable.length) * costPerFoot
+                        : 0}
+                    {@const qty = newCable.quantity ? parseInt(newCable.quantity as any) : 1}
 					{@const endA = cableEnds.find((end) => end.id === parseInt(newCable.endAId))}
 					{@const endB = cableEnds.find((end) => end.id === parseInt(newCable.endBId))}
 					{@const endACost = endA?.purchasePrice ? parseFloat(endA.purchasePrice.toString()) : 0}
 					{@const endBCost = endB?.purchasePrice ? parseFloat(endB.purchasePrice.toString()) : 0}
-					{@const totalEstimatedCost = estimatedCableCost + endACost + endBCost}
+                    {@const totalEstimatedCostPerUnit = estimatedCableCost + endACost + endBCost}
+                    {@const totalEstimatedCostAll = totalEstimatedCostPerUnit * qty}
 
 					<div
 						class="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-700 dark:bg-blue-900/20"
@@ -1756,8 +1770,8 @@
 							<strong>Cost Preview:</strong><br />
 							Bulk cable cost: ${selectedBulkCable.purchasePrice}<br />
 							Cost per foot: ${costPerFoot.toFixed(2)}<br />
-							{#if newCable.length}
-								Estimated cable cost: <strong>${estimatedCableCost.toFixed(2)}</strong><br />
+                            {#if newCable.length}
+                                Estimated cable cost (per unit): <strong>${estimatedCableCost.toFixed(2)}</strong><br />
 							{/if}
 							{#if endA}
 								Connector A ({endA.name}): ${endACost.toFixed(2)}
@@ -1767,13 +1781,26 @@
 								Connector B ({endB.name}): ${endBCost.toFixed(2)}
 								{endB.quantity > 0 ? '✅' : '❌ Out of stock'}<br />
 							{/if}
-							{#if newCable.length && (endA || endB)}
-								<strong>Total estimated cost: ${totalEstimatedCost.toFixed(2)}</strong>
+                            {#if newCable.length && (endA || endB)}
+                                <strong>Total estimated cost</strong>: ${totalEstimatedCostPerUnit.toFixed(2)} per unit
+                                {#if qty > 1}
+                                    • <strong>All {qty}:</strong> ${totalEstimatedCostAll.toFixed(2)}
+                                {/if}
 							{/if}
 						</p>
 					</div>
 				{/if}
 				<form on:submit|preventDefault={createCableFromBulk} class="space-y-4">
+                    <div>
+                        <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Quantity</label>
+                        <input
+                            type="number"
+                            min="1"
+                            bind:value={newCable.quantity}
+                            class="dark: w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
+                            placeholder="1"
+                        />
+                    </div>
 					<div>
 						<label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
 							>Length (ft)</label

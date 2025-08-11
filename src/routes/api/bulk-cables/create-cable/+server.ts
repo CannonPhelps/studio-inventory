@@ -8,13 +8,18 @@ export const POST: RequestHandler = async (event) => {
 		// Require authentication
 		await requireAuth(event);
 		
-		const { bulkCableId, length, customName, endAId, endBId } = await event.request.json();
+        const { bulkCableId, length, customName, endAId, endBId, quantity } = await event.request.json();
 
-		if (!bulkCableId || !length || !endAId || !endBId) {
+        if (!bulkCableId || !length || !endAId || !endBId) {
 			return json({ 
 				error: 'Bulk cable ID, length, and both ends are required' 
 			}, { status: 400 });
 		}
+
+        const requestedQuantity = parseInt(quantity ?? 1);
+        if (isNaN(requestedQuantity) || requestedQuantity < 1) {
+            return json({ error: 'Quantity must be at least 1' }, { status: 400 });
+        }
 
 		// Get the bulk cable and check if there's enough remaining length
 		const bulkCable = await prisma.bulkCable.findUnique({
@@ -26,10 +31,11 @@ export const POST: RequestHandler = async (event) => {
 			return json({ error: 'Bulk cable not found' }, { status: 404 });
 		}
 
-		const requestedLength = parseFloat(length);
-		if (bulkCable.remainingLength < requestedLength) {
+        const requestedLength = parseFloat(length);
+        const totalRequestedLength = requestedLength * requestedQuantity;
+        if (bulkCable.remainingLength < totalRequestedLength) {
 			return json({ 
-				error: `Not enough cable remaining. Available: ${bulkCable.remainingLength}ft, Requested: ${requestedLength}ft` 
+                error: `Not enough cable remaining. Available: ${bulkCable.remainingLength}ft, Requested: ${totalRequestedLength}ft` 
 			}, { status: 400 });
 		}
 
@@ -52,10 +58,10 @@ export const POST: RequestHandler = async (event) => {
 			return json({ error: 'One or both cable ends not found' }, { status: 404 });
 		}
 
-		// Check if we have enough connectors in inventory
-		if (endA.quantity < 1 || endB.quantity < 1) {
+        // Check if we have enough connectors in inventory
+        if (endA.quantity < requestedQuantity || endB.quantity < requestedQuantity) {
 			return json({ 
-				error: `Insufficient connector inventory. Need: ${endA.name} (${endA.quantity} available), ${endB.name} (${endB.quantity} available)` 
+                error: `Insufficient connector inventory. Required: ${requestedQuantity}x ${endA.name} and ${requestedQuantity}x ${endB.name}. Available: ${endA.name} (${endA.quantity}), ${endB.name} (${endB.quantity})` 
 			}, { status: 400 });
 		}
 
@@ -68,93 +74,106 @@ export const POST: RequestHandler = async (event) => {
 			totalCost += parseFloat(endB.purchasePrice.toString());
 		}
 
-		// Create the cable assembly, asset, and reduce bulk cable length in a transaction
-		const result = await prisma.$transaction(async (tx) => {
-			// Create the cable assembly
-			const cableAssembly = await tx.cableAssembly.create({
-				data: {
-					cableTypeId: bulkCable.cableTypeId,
-					endAId: parseInt(endAId),
-					endBId: parseInt(endBId),
-					length: parseFloat(length),
-					customName: customName || null
-				},
-				include: {
-					cableType: true,
-					endA: true,
-					endB: true
-				}
-			});
+        // Create the cable assemblies, assets, and reduce bulk cable length in a transaction
+        const result = await prisma.$transaction(async (tx) => {
+            const createdAssemblies: any[] = [];
+            const createdAssets: any[] = [];
 
-			// Find the Cable category or use the first category as fallback
-			const cableCategory = await tx.category.findFirst({
-				where: { name: { equals: 'Cable', mode: 'insensitive' } }
-			});
-			
-			// Create the asset record
-			const assetName = customName || `${bulkCable.cableType.name} ${requestedLength}ft`;
-			const asset = await tx.asset.create({
-				data: {
-					itemName: assetName,
-					quantity: 1,
-					categoryId: cableCategory?.id || 1, // Use Cable category if found, otherwise first category
-					cableTypeId: bulkCable.cableTypeId,
-					cableLength: requestedLength,
-					purchasePrice: totalCost,
-					purchaseDate: bulkCable.purchaseDate,
-					supplier: bulkCable.supplier,
-					location: bulkCable.location,
-					status: 'Available',
-					isCable: true,
-					notes: `Created from bulk cable #${bulkCable.id} with connectors: ${endA.name} + ${endB.name}`
-				},
-				include: {
-					category: true,
-					cableType: true
-				}
-			});
+            // Find the Cable category or use the first category as fallback
+            const cableCategory = await tx.category.findFirst({
+                where: { name: { equals: 'Cable', mode: 'insensitive' } }
+            });
 
-			// Reduce connector inventory
-			await tx.cableEnd.update({
-				where: { id: parseInt(endAId) },
-				data: { quantity: endA.quantity - 1 }
-			});
-			await tx.cableEnd.update({
-				where: { id: parseInt(endBId) },
-				data: { quantity: endB.quantity - 1 }
-			});
+            for (let index = 0; index < requestedQuantity; index += 1) {
+                const perItemCustomName = customName
+                    ? (requestedQuantity > 1 ? `${customName} (${index + 1}/${requestedQuantity})` : customName)
+                    : null;
 
-			// Link the assembly to the asset
-			await tx.cableAssembly.update({
-				where: { id: cableAssembly.id },
-				data: { assetId: asset.id }
-			});
+                // Create the cable assembly
+                const cableAssembly = await tx.cableAssembly.create({
+                    data: {
+                        cableTypeId: bulkCable.cableTypeId,
+                        endAId: parseInt(endAId),
+                        endBId: parseInt(endBId),
+                        length: requestedLength,
+                        customName: perItemCustomName
+                    },
+                    include: {
+                        cableType: true,
+                        endA: true,
+                        endB: true
+                    }
+                });
 
-			// Reduce the remaining length of the bulk cable
-			await tx.bulkCable.update({
-				where: { id: bulkCableId },
-				data: {
-					remainingLength: bulkCable.remainingLength - requestedLength
-				}
-			});
+                // Create the asset record
+                const assetName = perItemCustomName || `${bulkCable.cableType.name} ${requestedLength}ft${requestedQuantity > 1 ? ` (${index + 1}/${requestedQuantity})` : ''}`;
+                const asset = await tx.asset.create({
+                    data: {
+                        itemName: assetName,
+                        quantity: 1,
+                        categoryId: cableCategory?.id || 1,
+                        cableTypeId: bulkCable.cableTypeId,
+                        cableLength: requestedLength,
+                        purchasePrice: totalCost,
+                        purchaseDate: bulkCable.purchaseDate,
+                        supplier: bulkCable.supplier,
+                        location: bulkCable.location,
+                        status: 'Available',
+                        isCable: true,
+                        notes: `Created from bulk cable #${bulkCable.id} with connectors: ${endA.name} + ${endB.name}`
+                    },
+                    include: {
+                        category: true,
+                        cableType: true
+                    }
+                });
 
-			return { cableAssembly, asset };
-		});
+                // Link the assembly to the asset
+                await tx.cableAssembly.update({
+                    where: { id: cableAssembly.id },
+                    data: { assetId: asset.id }
+                });
+
+                createdAssemblies.push(cableAssembly);
+                createdAssets.push(asset);
+            }
+
+            // Reduce connector inventory in bulk
+            await tx.cableEnd.update({
+                where: { id: parseInt(endAId) },
+                data: { quantity: { decrement: requestedQuantity } }
+            });
+            await tx.cableEnd.update({
+                where: { id: parseInt(endBId) },
+                data: { quantity: { decrement: requestedQuantity } }
+            });
+
+            // Reduce the remaining length of the bulk cable
+            const updatedBulk = await tx.bulkCable.update({
+                where: { id: bulkCableId },
+                data: {
+                    remainingLength: { decrement: totalRequestedLength }
+                }
+            });
+
+            return { cableAssemblies: createdAssemblies, assets: createdAssets, updatedBulk };
+        });
 
 		const connectorCosts = {
 			endA: { name: endA.name, cost: endA.purchasePrice ? parseFloat(endA.purchasePrice.toString()) : 0 },
 			endB: { name: endB.name, cost: endB.purchasePrice ? parseFloat(endB.purchasePrice.toString()) : 0 }
 		};
 
-		return json({
-			success: true,
-			cableAssembly: result.cableAssembly,
-			asset: result.asset,
-			cableCost: calculatedCost,
-			connectorCosts,
-			totalCost,
-			remainingLength: bulkCable.remainingLength - requestedLength
-		});
+        return json({
+            success: true,
+            quantity: requestedQuantity,
+            cableAssemblies: result.cableAssemblies,
+            assets: result.assets,
+            cableCostPerUnit: calculatedCost,
+            connectorCostsPerUnit: connectorCosts,
+            totalCost: (calculatedCost || 0) * requestedQuantity + (connectorCosts.endA.cost + connectorCosts.endB.cost) * requestedQuantity,
+            remainingLength: result.updatedBulk.remainingLength
+        });
 
 	} catch (error) {
 		console.error('Error creating cable from bulk:', error);
