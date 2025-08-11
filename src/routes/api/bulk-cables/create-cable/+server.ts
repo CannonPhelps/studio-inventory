@@ -85,9 +85,7 @@ export const POST: RequestHandler = async (event) => {
             });
 
             for (let index = 0; index < requestedQuantity; index += 1) {
-                const perItemCustomName = customName
-                    ? (requestedQuantity > 1 ? `${customName} (${index + 1}/${requestedQuantity})` : customName)
-                    : null;
+                const perItemCustomName = customName || null;
 
                 // Create the cable assembly
                 const cableAssembly = await tx.cableAssembly.create({
@@ -106,7 +104,7 @@ export const POST: RequestHandler = async (event) => {
                 });
 
                 // Create the asset record
-                const assetName = perItemCustomName || `${bulkCable.cableType.name} ${requestedLength}ft${requestedQuantity > 1 ? ` (${index + 1}/${requestedQuantity})` : ''}`;
+                const assetName = perItemCustomName || `${bulkCable.cableType.name} ${requestedLength}ft`;
                 const asset = await tx.asset.create({
                     data: {
                         itemName: assetName,

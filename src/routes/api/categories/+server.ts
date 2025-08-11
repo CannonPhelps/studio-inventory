@@ -8,19 +8,20 @@ export const GET: RequestHandler = async (event) => {
 		// Require authentication
 		await requireAuth(event);
 
-		const categories = await prisma.category.findMany({
-			include: {
-				assets: true
-			}
-		});
+        const categories = await prisma.category.findMany({
+            include: {
+                _count: { select: { assets: true } }
+            }
+        });
 
-		// Add asset count to each category
-		const categoriesWithCount = categories.map((category) => ({
-			...category,
-			assetCount: category.assets.length
-		}));
+        // Add asset count to each category without loading full assets
+        const categoriesWithCount = categories.map((category) => ({
+            id: category.id,
+            name: category.name,
+            assetCount: category._count.assets
+        }));
 
-		return json(categoriesWithCount);
+        return json(categoriesWithCount);
 	} catch (error) {
 		console.error('Error fetching categories:', error);
 		return json(

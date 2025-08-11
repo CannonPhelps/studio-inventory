@@ -77,7 +77,7 @@
 	let showAddCableAssetModal = false;
 	let editingCableAsset: any = null;
 
-	let newCableAsset = {
+    let newCableAsset = {
 		itemName: '',
 		cableTypeId: '',
 		cableLength: '',
@@ -85,7 +85,8 @@
 		endBId: '',
 		customName: '',
 		location: '',
-		notes: ''
+        notes: '',
+        quantity: 1
 	};
 
 	const connectorTypes = [
@@ -503,66 +504,69 @@
 	// Cable Assets CRUD
 	async function addCableAsset() {
 		try {
-			// First create the cable assembly
-			const assemblyData = {
-				cableTypeId: parseInt(newCableAsset.cableTypeId),
-				endAId: parseInt(newCableAsset.endAId),
-				endBId: parseInt(newCableAsset.endBId),
-				length: parseFloat(newCableAsset.cableLength),
-				customName: newCableAsset.customName || null
-			};
+            const qty = parseInt((newCableAsset.quantity as any) || 1);
+            for (let i = 0; i < qty; i += 1) {
+                // First create the cable assembly
+                const perName = newCableAsset.customName || null;
+                const assemblyData = {
+                    cableTypeId: parseInt(newCableAsset.cableTypeId),
+                    endAId: parseInt(newCableAsset.endAId),
+                    endBId: parseInt(newCableAsset.endBId),
+                    length: parseFloat(newCableAsset.cableLength),
+                    customName: perName
+                };
 
-			const assemblyResponse = await fetch('/api/cable-assemblies', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(assemblyData)
-			});
+                const assemblyResponse = await fetch('/api/cable-assemblies', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(assemblyData)
+                });
 
-			if (assemblyResponse.ok) {
-				const assembly = await assemblyResponse.json();
+                if (!assemblyResponse.ok) continue;
+                const assembly = await assemblyResponse.json();
 
-				// Then create the asset
-				const assetData = {
-					itemName: newCableAsset.itemName,
-					categoryId: 1, // Default category for cables
-					cableTypeId: parseInt(newCableAsset.cableTypeId),
-					cableLength: parseFloat(newCableAsset.cableLength),
-					location: newCableAsset.location || null,
-					notes: newCableAsset.notes || null,
-					isCable: true,
-					status: 'Available'
-				};
+                // Then create the asset
+                const assetData = {
+                    itemName: newCableAsset.itemName,
+                    categoryId: 1, // Default category for cables
+                    cableTypeId: parseInt(newCableAsset.cableTypeId),
+                    cableLength: parseFloat(newCableAsset.cableLength),
+                    location: newCableAsset.location || null,
+                    notes: newCableAsset.notes || null,
+                    isCable: true,
+                    status: 'Available'
+                };
 
-				const assetResponse = await fetch('/api/assets', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify(assetData)
-				});
+                const assetResponse = await fetch('/api/assets', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(assetData)
+                });
 
-				if (assetResponse.ok) {
-					const asset = await assetResponse.json();
+                if (!assetResponse.ok) continue;
+                const asset = await assetResponse.json();
 
-					// Link the assembly to the asset
-					await fetch(`/api/cable-assemblies/${assembly.id}`, {
-						method: 'PUT',
-						headers: { 'Content-Type': 'application/json' },
-						body: JSON.stringify({ assetId: asset.id })
-					});
+                // Link the assembly to the asset
+                await fetch(`/api/cable-assemblies/${assembly.id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ assetId: asset.id })
+                });
+            }
 
-					await loadCableAssets();
-					showAddCableAssetModal = false;
-					newCableAsset = {
-						itemName: '',
-						cableTypeId: '',
-						cableLength: '',
-						endAId: '',
-						endBId: '',
-						customName: '',
-						location: '',
-						notes: ''
-					};
-				}
-			}
+            await loadCableAssets();
+            showAddCableAssetModal = false;
+            newCableAsset = {
+                itemName: '',
+                cableTypeId: '',
+                cableLength: '',
+                endAId: '',
+                endBId: '',
+                customName: '',
+                location: '',
+                notes: '',
+                quantity: 1
+            };
 		} catch (error) {
 			console.error('Error adding cable asset:', error);
 		}
@@ -760,7 +764,7 @@
                 const assetNamePreview = result.assets?.[0]?.itemName || 'Cable';
 
                 alert(
-                    `${result.quantity} cable(s) created successfully!\n\nExample Asset: ${assetNamePreview}\n${costMessage}\nRemaining bulk length: ${result.remainingLength.toFixed(1)}ft`
+                    `${result.quantity} cable(s) created successfully!\n\nAsset name: ${assetNamePreview}\n${costMessage}\nRemaining bulk length: ${result.remainingLength.toFixed(1)}ft`
                 );
 			} else {
 				alert(result.error || 'Failed to create cable');
@@ -2336,6 +2340,16 @@
 			<div class="mt-3">
 				<h3 class="text-primary mb-4 text-lg font-medium">Add Cable Asset</h3>
 				<form on:submit|preventDefault={addCableAsset} class="space-y-4">
+					<div>
+						<label class="mb-1 block text-sm font-medium text-gray-700">Quantity</label>
+						<input
+							type="number"
+							min="1"
+							bind:value={newCableAsset.quantity}
+							class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+							placeholder="1"
+						/>
+					</div>
 					<div>
 						<label class="mb-1 block text-sm font-medium text-gray-700">Name *</label>
 						<input
