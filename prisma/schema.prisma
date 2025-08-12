@@ -85,7 +85,6 @@ model Asset {
   quantity           Int                 @default(1)
   categoryId         Int
   modelBrand         String?
-  serialNumber       String?
   location           String?
   roomId             Int?
   status             String              @default("Available")
