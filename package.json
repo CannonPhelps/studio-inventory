@@ -16,7 +16,8 @@
 		"test": "npm run test:e2e",
 		"migrate:validate": "node scripts/validate-migration.js",
 		"migrate:safe": "npm run migrate:validate && npx prisma migrate dev",
-		"migrate:deploy": "npm run migrate:validate && npx prisma migrate deploy"
+		"migrate:deploy": "npm run migrate:validate && npx prisma migrate deploy",
+		"migrate:resolve": "npx prisma migrate resolve --applied 20250710072408_enhance_maintenance_tracking"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.5",
