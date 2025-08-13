@@ -23,10 +23,9 @@
 		{ name: 'Inventory', href: '/admin/infrastructure', icon: '📦', current: false },
 		{ name: 'Checkout', href: '/admin/checkouts', icon: '🛒', current: false },
 		{ name: 'Cable Management', href: '/admin/bulk-cables', icon: '🔌', current: false },
-		{ name: 'Equipment', href: '/admin/kits', icon: '🎒', current: false },
 		{ name: 'Damage Management', href: '/admin/damage-management', icon: '🔧', current: false },
 		{ name: 'Operations', href: '/admin/operations', icon: '📤', current: false },
-		{ name: 'Reports', href: '/admin/reports', icon: '📋', current: false },
+		{ name: 'Finances', href: '/admin/finances', icon: '💵', current: false },
 		{ name: 'System', href: '/admin/system', icon: '⚙️', current: false }
 	];
 
@@ -89,6 +88,7 @@
 					class="lg:hidden p-2 rounded-lg text-secondary hover:text-primary hover:bg-tertiary transition-all duration-200 focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-sidebar focus:outline-none"
 					onclick={toggleSidebar}
 					title="Close menu"
+					aria-label="Close menu"
 				>
 					<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -136,6 +136,7 @@
 						onclick={handleLogout}
 						class="text-secondary hover:text-primary hover:bg-tertiary rounded-lg p-2 transition-all duration-200 focus:ring-2 focus:ring-accent-error focus:ring-offset-2 focus:ring-offset-sidebar focus:outline-none"
 						title="Logout"
+						aria-label="Logout"
 					>
 						<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path

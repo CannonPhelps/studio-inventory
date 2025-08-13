@@ -80,36 +80,38 @@ model CableAssembly {
 }
 
 model Asset {
-  id                 Int                 @id @default(autoincrement())
-  itemName           String
-  quantity           Int                 @default(1)
-  categoryId         Int
-  modelBrand         String?
-  location           String?
-  roomId             Int?
-  status             String              @default("Available")
-  purchaseDate       DateTime?
-  purchasePrice      Decimal?            @db.Decimal(10, 2)
-  lastMaintenance    DateTime?
-  warrantyExpiration DateTime?
-  notes              String?
-  assigned           String?
-  assetNumber        String?
-  supplier           String?
-  cableLength        Float?
-  cableTypeId        Int?
-  isCable            Boolean             @default(false)
-  serialNumbers      AssetSerialNumber[]
-  cableType          CableType?          @relation(fields: [cableTypeId], references: [id])
-  category           Category            @relation(fields: [categoryId], references: [id])
-  room               Room?               @relation(fields: [roomId], references: [id])
-  cableAssembly      CableAssembly?
-  checkouts          Checkout[]
-  maintenanceRecords MaintenanceRecord[]
-  movements          Movement[]
-  financialRecords   FinancialRecord[]
-  kitAssets          KitAsset[]
-  cableSegments      CableSegment[] @relation("CableAsset")
+  id                        Int                 @id @default(autoincrement())
+  itemName                  String
+  quantity                  Int                 @default(1)
+  categoryId                Int
+  modelBrand                String?
+  location                  String?
+  roomId                    Int?
+  status                    String              @default("Available")
+  purchaseDate              DateTime?
+  purchasePrice             Decimal?            @db.Decimal(10, 2)
+  lastMaintenance           DateTime?
+  warrantyExpiration        DateTime?
+  notes                     String?
+  assigned                  String?
+  assetNumber               String?
+  supplier                  String?
+  cableLength               Float?
+  cableTypeId               Int?
+  isCable                   Boolean             @default(false)
+  serialNumbers             AssetSerialNumber[]
+  cableType                 CableType?          @relation(fields: [cableTypeId], references: [id])
+  category                  Category            @relation(fields: [categoryId], references: [id])
+  room                      Room?               @relation(fields: [roomId], references: [id])
+  cableAssembly             CableAssembly?
+  checkouts                 Checkout[]
+  maintenanceRecords        MaintenanceRecord[]
+  movements                 Movement[]
+  financialRecords          FinancialRecord[]
+  kitAssets                 KitAsset[]
+  cableSegments             CableSegment[]      @relation("CableAsset")
+  packListItems             PackListItem[]
+  substituteInPackListItems PackListItem[]      @relation("SubstituteAsset")
 
   @@map("assets")
 }
@@ -117,7 +119,7 @@ model Asset {
 model FinancialRecord {
   id          Int      @id @default(autoincrement())
   assetId     Int?
-  type        String   // purchase, maintenance, repair, disposal, etc.
+  type        String // purchase, maintenance, repair, disposal, etc.
   category    String?
   amount      Decimal  @db.Decimal(12, 2)
   date        DateTime @default(now())
@@ -154,31 +156,31 @@ model Checkout {
 }
 
 model MaintenanceRecord {
-  id          Int      @id @default(autoincrement())
-  assetId     Int
-  performedAt DateTime @default(now())
-  notes       String?
-  performedBy String?
-  cost        Decimal? @db.Decimal(10, 2)
-  status      String   @default("SCHEDULED") // SCHEDULED, IN_PROGRESS, COMPLETED, CANCELLED
+  id              Int                 @id @default(autoincrement())
+  assetId         Int
+  performedAt     DateTime            @default(now())
+  notes           String?
+  performedBy     String?
+  cost            Decimal?            @db.Decimal(10, 2)
+  status          String              @default("SCHEDULED") // SCHEDULED, IN_PROGRESS, COMPLETED, CANCELLED
   maintenanceType String? // REPAIR, PREVENTIVE, INSPECTION, CALIBRATION, UPGRADE, CLEANING
-  scheduledDate DateTime?
-  completedDate DateTime?
-  priority    String   @default("MEDIUM") // LOW, MEDIUM, HIGH, CRITICAL
-  asset       Asset    @relation(fields: [assetId], references: [id])
-  updates     MaintenanceUpdate[]
+  scheduledDate   DateTime?
+  completedDate   DateTime?
+  priority        String              @default("MEDIUM") // LOW, MEDIUM, HIGH, CRITICAL
+  asset           Asset               @relation(fields: [assetId], references: [id])
+  updates         MaintenanceUpdate[]
 
   @@map("maintenance_records")
 }
 
 model MaintenanceUpdate {
-  id                Int      @id @default(autoincrement())
-  maintenanceId     Int
-  status            String   // SCHEDULED, IN_PROGRESS, COMPLETED, CANCELLED
-  notes             String?
-  updatedBy         String?
-  updatedAt         DateTime @default(now())
-  maintenance       MaintenanceRecord @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
+  id            Int               @id @default(autoincrement())
+  maintenanceId Int
+  status        String // SCHEDULED, IN_PROGRESS, COMPLETED, CANCELLED
+  notes         String?
+  updatedBy     String?
+  updatedAt     DateTime          @default(now())
+  maintenance   MaintenanceRecord @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
 
   @@map("maintenance_updates")
 }
@@ -258,53 +260,51 @@ model Notification {
 }
 
 model Room {
-  id          Int      @id @default(autoincrement())
-  name        String   @unique
-  description String?
-  building    String?
-  floor       String?
-  capacity    Int?
-  type        String?
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  assets      Asset[]
+  id           Int            @id @default(autoincrement())
+  name         String         @unique
+  description  String?
+  building     String?
+  floor        String?
+  capacity     Int?
+  type         String?
+  isActive     Boolean        @default(true)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  assets       Asset[]
   fromSegments CableSegment[] @relation("SegmentFromRoom")
-  toSegments  CableSegment[] @relation("SegmentToRoom")
+  toSegments   CableSegment[] @relation("SegmentToRoom")
 
   @@map("rooms")
 }
 
 model AutomatedTask {
-  id         Int      @id @default(autoincrement())
+  id         Int                @id @default(autoincrement())
   name       String
-  type       String   // cron, interval, event
-  schedule   String?  // cron expression or interval in ms for interval tasks
-  event      String?  // event name for event-based tasks
+  type       String // cron, interval, event
+  schedule   String? // cron expression or interval in ms for interval tasks
+  event      String? // event name for event-based tasks
   payload    Json?
   lastRun    DateTime?
   nextRun    DateTime?
-  status     String   @default("active") // active, paused, failed
+  status     String             @default("active") // active, paused, failed
   lastResult String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
   logs       AutomatedTaskLog[]
 
   @@map("automated_tasks")
 }
 
 model AutomatedTaskLog {
-  id        Int      @id @default(autoincrement())
-  taskId    Int
-  executedAt DateTime @default(now())
-  success   Boolean
-  message   String?
-  task      AutomatedTask @relation(fields: [taskId], references: [id])
+  id         Int           @id @default(autoincrement())
+  taskId     Int
+  executedAt DateTime      @default(now())
+  success    Boolean
+  message    String?
+  task       AutomatedTask @relation(fields: [taskId], references: [id])
 
   @@map("automated_task_logs")
 }
-
-
 
 model Kit {
   id          Int        @id @default(autoincrement())
@@ -314,19 +314,20 @@ model Kit {
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   assets      KitAsset[]
+  packLists   PackList[]
 
   @@map("kits")
 }
 
 model KitAsset {
-  id         Int      @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   kitId      Int
   assetId    Int
   quantity   Int?
-  assignedAt DateTime @default(now())
+  assignedAt DateTime  @default(now())
   releasedAt DateTime?
-  kit        Kit      @relation(fields: [kitId], references: [id])
-  asset      Asset    @relation(fields: [assetId], references: [id])
+  kit        Kit       @relation(fields: [kitId], references: [id])
+  asset      Asset     @relation(fields: [assetId], references: [id])
 
   @@unique([kitId, assetId])
   @@map("kit_assets")
@@ -346,19 +347,60 @@ model CableRoute {
 }
 
 model CableSegment {
-  id          Int      @id @default(autoincrement())
-  routeId     Int
-  order       Int
-  fromRoomId  Int
-  toRoomId    Int
+  id           Int        @id @default(autoincrement())
+  routeId      Int
+  order        Int
+  fromRoomId   Int
+  toRoomId     Int
   cableAssetId Int?
-  length      Float?
-  notes       String?
-  route       CableRoute  @relation(fields: [routeId], references: [id])
-  fromRoom    Room        @relation("SegmentFromRoom", fields: [fromRoomId], references: [id])
-  toRoom      Room        @relation("SegmentToRoom", fields: [toRoomId], references: [id])
-  cable       Asset?      @relation("CableAsset", fields: [cableAssetId], references: [id])
+  length       Float?
+  notes        String?
+  route        CableRoute @relation(fields: [routeId], references: [id])
+  fromRoom     Room       @relation("SegmentFromRoom", fields: [fromRoomId], references: [id])
+  toRoom       Room       @relation("SegmentToRoom", fields: [toRoomId], references: [id])
+  cable        Asset?     @relation("CableAsset", fields: [cableAssetId], references: [id])
 
-  @@map("cable_segments")
   @@unique([routeId, order])
+  @@map("cable_segments")
+}
+
+// Pack Lists for PNL (separate from Kits)
+model PackList {
+  id            Int            @id @default(autoincrement())
+  name          String
+  description   String?
+  projectId     Int?
+  status        String         @default("draft") // draft, picking, packed, checked_out, returned, cancelled
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  fromKitId     Int?
+  fromKit       Kit?           @relation(fields: [fromKitId], references: [id])
+  items         PackListItem[]
+  referenceCode String?        @unique
+  destination   String?
+  dueAt         DateTime?
+  checkedOutAt  DateTime?
+  returnedAt    DateTime?
+  packedBy      String?
+  checkedBy     String?
+  notes         String?
+
+  @@map("pack_lists")
+}
+
+model PackListItem {
+  id                Int      @id @default(autoincrement())
+  packListId        Int
+  assetId           Int
+  quantityRequested Int
+  quantityPacked    Int      @default(0)
+  notes             String?
+  packList          PackList @relation(fields: [packListId], references: [id])
+  asset             Asset    @relation(fields: [assetId], references: [id])
+  substituteAssetId Int?
+  substituteAsset   Asset?   @relation("SubstituteAsset", fields: [substituteAssetId], references: [id])
+  serialNumbers     Json?
+
+  @@unique([packListId, assetId])
+  @@map("pack_list_items")
 }
