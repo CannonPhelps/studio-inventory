@@ -177,6 +177,8 @@
   let selectedAssetId = '';
   let requestedQty = 1;
   let availableAssets: Array<{ id: number; itemName: string }>= [];
+  let assetSearchText = '';
+  let assetDropdownOpen = false;
 
   async function loadAvailableAssets() {
     try {
@@ -187,6 +189,11 @@
       console.error('Error loading available assets:', e);
     }
   }
+
+  // Filter and sort assets alphabetically by itemName
+  $: filteredAssetOptions = (availableAssets || [])
+    .filter((a) => a.itemName.toLowerCase().includes((assetSearchText || '').toLowerCase()))
+    .sort((a, b) => a.itemName.localeCompare(b.itemName));
 
   async function loadSelectedPackList() {
     if (!selectedPackListId) return;
@@ -461,8 +468,8 @@
                 <h3 class="text-lg font-semibold text-primary">PNL Details</h3>
                 <p class="text-sm text-secondary">Requested: {totalRequested} • Packed: {totalPacked}</p>
               </div>
-              <div class="flex gap-2">
-                <button type="button" class="px-3 py-1.5 text-sm bg-accent text-white rounded-lg hover:bg-accent-secondary" on:click={() => showAddItemModal = true}>Add Item</button>
+                <div class="flex gap-2">
+                  <button type="button" class="px-3 py-1.5 text-sm bg-accent text-white rounded-lg hover:bg-accent-secondary" on:click={() => { showAddItemModal = true; assetSearchText = ''; assetDropdownOpen = true; }}>Add Item</button>
                 <button type="button" class="px-3 py-1.5 text-sm bg-tertiary rounded-lg hover:bg-tertiary/80" on:click={closePackList}>Close</button>
               </div>
             </div>
@@ -559,12 +566,35 @@
                 <div class="space-y-4">
                   <div>
                     <label for="pnl-asset" class="block text-sm font-medium text-primary mb-1">Select Asset *</label>
-                    <select id="pnl-asset" bind:value={selectedAssetId} class="w-full px-3 py-2 border border-border rounded-md bg-card text-primary focus:outline-none focus:ring-2 focus:ring-accent">
-                      <option value="">Choose an asset...</option>
-                      {#each availableAssets as a}
-                        <option value={a.id}>{a.itemName}</option>
-                      {/each}
-                    </select>
+                    <div class="relative">
+                      <input
+                        id="pnl-asset"
+                        type="text"
+                        class="w-full px-3 py-2 border border-border rounded-md bg-card text-primary focus:outline-none focus:ring-2 focus:ring-accent"
+                        placeholder="Search assets..."
+                        bind:value={assetSearchText}
+                        on:focus={() => assetDropdownOpen = true}
+                      />
+                      {#if assetDropdownOpen}
+                        <div class="absolute z-10 mt-1 w-full max-h-64 overflow-auto rounded-md border border-border bg-card shadow-lg">
+                          {#if filteredAssetOptions.length === 0}
+                            <div class="px-3 py-2 text-sm text-secondary">No matches</div>
+                          {:else}
+                            <ul class="divide-y divide-card">
+                              {#each filteredAssetOptions as a}
+                                <li>
+                                  <button
+                                    type="button"
+                                    class="w-full text-left px-3 py-2 hover:bg-tertiary text-sm text-primary"
+                                    on:click={() => { selectedAssetId = String(a.id); assetSearchText = a.itemName; assetDropdownOpen = false; }}
+                                  >{a.itemName}</button>
+                                </li>
+                              {/each}
+                            </ul>
+                          {/if}
+                        </div>
+                      {/if}
+                    </div>
                   </div>
                   <div>
                     <label for="pnl-qty" class="block text-sm font-medium text-primary mb-1">Requested Quantity</label>

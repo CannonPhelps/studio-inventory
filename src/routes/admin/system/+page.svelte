@@ -83,7 +83,7 @@
   let importHistory: any[] = [];
   let showImportModal = false;
   let newImport = {
-    type: 'csv',
+    type: 'assets',
     file: null as File | null,
     description: '',
     options: {
@@ -96,7 +96,8 @@
   const backupTypes = ['full', 'incremental', 'differential'];
   const communicationTypes = ['email', 'sms', 'notification'];
   const taskActions = ['backup', 'maintenance', 'cleanup', 'report', 'notification'];
-  const importTypes = ['csv', 'json', 'excel'];
+  // Supported import types for the /api/import endpoint
+  const importTypes = ['assets', 'cableTypes', 'bulkCables'];
 
   onMount(async () => {
     await loadAllData();
@@ -424,7 +425,7 @@
     try {
       const formData = new FormData();
       formData.append('file', newImport.file);
-      formData.append('importType', 'assets'); // Default to assets for now
+      formData.append('importType', newImport.type);
 
       const response = await fetch('/api/import', {
         method: 'POST',
@@ -1467,16 +1468,16 @@
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           >
             {#each importTypes as type}
-              <option value={type}>{type.toUpperCase()}</option>
+              <option value={type}>{type}</option>
             {/each}
           </select>
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">File</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">File (CSV)</label>
           <input 
             type="file" 
-            accept=".csv,.json,.xlsx,.xls"
+            accept=".csv"
             on:change={handleFileSelect}
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           />

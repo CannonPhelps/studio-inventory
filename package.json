@@ -17,7 +17,8 @@
 		"migrate:validate": "node scripts/validate-migration.js",
 		"migrate:safe": "npm run migrate:validate && npx prisma migrate dev",
 		"migrate:deploy": "npm run migrate:validate && npx prisma migrate deploy",
-		"migrate:resolve": "npx prisma migrate resolve --applied 20250710072408_enhance_maintenance_tracking"
+		"migrate:resolve": "npx prisma migrate resolve --applied 20250710072408_enhance_maintenance_tracking",
+		"migrate:baseline": "powershell -NoLogo -NoProfile -Command \"Get-ChildItem -Directory prisma/migrations | Sort-Object Name | ForEach-Object { npx prisma migrate resolve --applied $_.Name }\""
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.5",
