@@ -75,6 +75,17 @@ export class PackListService {
     });
   }
 
+  static async activeUsedAssetIds(): Promise<number[]> {
+    // Assets that are already part of any PNL in an active state should be excluded from add lists
+    // Active statuses: draft, picking, packed, checked_out
+    const rows = await prisma.packListItem.findMany({
+      where: { packList: { status: { in: ['draft', 'picking', 'packed', 'checked_out'] } } },
+      select: { assetId: true },
+      distinct: ['assetId']
+    });
+    return rows.map((r) => r.assetId);
+  }
+
   static async addItem(packListId: number, assetId: number, quantityRequested: number, notes?: string) {
     return await prisma.packListItem.upsert({
       where: { packListId_assetId: { packListId, assetId } },

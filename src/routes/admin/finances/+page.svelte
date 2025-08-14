@@ -184,7 +184,12 @@
     try {
       const response = await fetch('/api/assets');
       if (!response.ok) throw new Error('Failed to load assets');
-      availableAssets = await response.json();
+      const all = await response.json();
+      // Fetch assetIds already used in active PNLs and filter them out
+      const usedRes = await fetch('/api/pack-lists/active-used-asset-ids');
+      const usedIds: number[] = usedRes.ok ? await usedRes.json() : [];
+      const usedSet = new Set(usedIds);
+      availableAssets = (all || []).filter((a: any) => !usedSet.has(a.id));
     } catch (e) {
       console.error('Error loading available assets:', e);
     }

@@ -14,4 +14,10 @@ export const POST: RequestHandler = async (event) => {
   return new Response(JSON.stringify(packList), { status: 201, headers: { 'Content-Type': 'application/json' } });
 };
 
+// Helper endpoint: return unique assetIds that are already used by any active PNL
+export const PATCH: RequestHandler = async () => {
+  const ids = await PackListService.activeUsedAssetIds();
+  return new Response(JSON.stringify(ids), { headers: { 'Content-Type': 'application/json' } });
+};
+
 
