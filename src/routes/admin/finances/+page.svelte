@@ -94,6 +94,7 @@
   const packLists = writable<PackList[]>([]);
   const loadingPL = writable(true);
   const errorPL = writable('');
+  let exportingPnls = false;
 
   let showCreateModal = false;
   let newName = '';
@@ -115,6 +116,115 @@
 
   function openCreate() { showCreateModal = true; }
   function cancelCreate() { newName = ''; newDescription = ''; fromKitId = ''; showCreateModal = false; }
+
+  async function exportAllPnlsPdf() {
+    try {
+      exportingPnls = true;
+      const list: PackList[] = ($packLists || []).slice().sort((a, b) => a.name.localeCompare(b.name));
+
+      // Dynamic import to avoid SSR issues
+      const { jsPDF } = await import('jspdf');
+      const autoTable = (await import('jspdf-autotable')).default as any;
+
+      const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+      const marginLeft = 40;
+      let y = 40;
+      const fmtMoney = (n: number) => `$${Number(n || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(16);
+      doc.text('Pack Lists (PNLs)', marginLeft, y);
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      y += 16;
+      doc.text(`Generated: ${new Date().toLocaleString()}`, marginLeft, y);
+
+      // For each PNL, print a section with header and its line items
+      let sectionY = y + 24;
+      for (const p of list) {
+        // Ensure we respect page space
+        if (sectionY > doc.internal.pageSize.getHeight() - 120) {
+          doc.addPage();
+          sectionY = 40;
+        }
+
+        // Header for this PNL
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(12);
+        doc.text(p.name || 'Untitled', marginLeft, sectionY);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        const metaLine = [
+          `Ref: ${(p as any).referenceCode || '-'}`,
+          `Status: ${p.status || '-'}`,
+          `Destination: ${(p as any).destination || '-'}`,
+          `Due: ${(p as any).dueAt ? new Date((p as any).dueAt).toLocaleDateString() : '-'}`,
+          `Created: ${new Date(p.createdAt).toLocaleDateString()}`
+        ].join('  •  ');
+        doc.text(metaLine, marginLeft, sectionY + 14);
+
+        // Fetch items
+        let items: any[] = [];
+        try {
+          const r = await fetch(`/api/pack-lists/${p.id}/items`);
+          if (r.ok) items = await r.json();
+        } catch {}
+
+        // Build item rows: Asset, Qty, Unit, Line Total
+        const bodyRows: Array<[string, string, string, string]> = [];
+        let pnlTotal = 0;
+        items
+          .slice()
+          .sort((a, b) => (a.asset?.itemName || '').localeCompare(b.asset?.itemName || ''))
+          .forEach((it) => {
+            const qty = Number(it.quantityRequested || 0);
+            const unit = Number(it.asset?.purchasePrice ?? 0);
+            const line = qty * unit;
+            pnlTotal += line;
+            bodyRows.push([
+              it.asset?.itemName || 'Unknown',
+              String(qty),
+              fmtMoney(unit),
+              fmtMoney(line)
+            ]);
+          });
+
+        // Render table
+        autoTable(doc, {
+          startY: sectionY + 26,
+          head: [[ 'Asset', 'Qty', 'Unit', 'Line Total' ]],
+          body: bodyRows.length ? bodyRows : [[ '—', '0', fmtMoney(0), fmtMoney(0) ]],
+          styles: { fontSize: 10, cellPadding: 6 },
+          headStyles: { fillColor: [37, 99, 235] },
+          alternateRowStyles: { fillColor: [245, 247, 250] },
+          columnStyles: {
+            0: { cellWidth: 240 }, // Asset
+            1: { cellWidth: 50, halign: 'right' },
+            2: { cellWidth: 90, halign: 'right' },
+            3: { cellWidth: 100, halign: 'right' }
+          },
+          margin: { left: marginLeft, right: marginLeft }
+        });
+
+        const table = (doc as any).lastAutoTable;
+        const afterTableY = table ? table.finalY + 8 : sectionY + 40;
+
+        // PNL Total
+        doc.setFont('helvetica', 'bold');
+        doc.text(`PNL Total: ${fmtMoney(pnlTotal)}`, marginLeft, afterTableY);
+
+        // Advance sectionY
+        sectionY = afterTableY + 24;
+      }
+
+      const filename = `PNLs-${new Date().toISOString().slice(0,10)}.pdf`;
+      doc.save(filename);
+    } catch (err) {
+      console.error('Export PNLs PDF failed:', err);
+      alert('Failed to export PDF.');
+    } finally {
+      exportingPnls = false;
+    }
+  }
 
   async function submitCreate() {
     if (!newName.trim()) { errorPL.set('Name is required'); return; }
@@ -418,9 +528,12 @@
   {:else}
     <!-- PNLs Content -->
     <div class="space-y-6">
-      <div class="flex items-center justify-between">
+      <div class="flex items-center justify-between gap-3">
         <h3 class="text-lg font-semibold text-primary">PNLs</h3>
-        <button class="px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent-secondary" on:click={openCreate}>New PNL</button>
+        <div class="flex gap-2">
+          <button class="px-4 py-2 bg-tertiary rounded-lg hover:bg-tertiary/80" on:click={exportAllPnlsPdf} disabled={exportingPnls}>{exportingPnls ? 'Exporting…' : 'Export All PNLs (PDF)'}</button>
+          <button class="px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent-secondary" on:click={openCreate}>New PNL</button>
+        </div>
       </div>
       {#if $loadingPL}
         <div class="flex items-center justify-center py-12">
