@@ -95,6 +95,7 @@
   const loadingPL = writable(true);
   const errorPL = writable('');
   let exportingPnls = false;
+  let exportingHighValue = false;
 
   let showCreateModal = false;
   let newName = '';
@@ -128,7 +129,13 @@
 
       const doc = new jsPDF({ unit: 'pt', format: 'a4' });
       const marginLeft = 40;
-      let y = 40;
+      const marginRight = 40;
+      const topMargin = 40;
+      const bottomMargin = 40;
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const maxTextWidth = pageWidth - marginLeft - marginRight;
+      let y = topMargin;
       const fmtMoney = (n: number) => `$${Number(n || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(16);
@@ -141,10 +148,10 @@
       // For each PNL, print a section with header and its line items
       let sectionY = y + 24;
       for (const p of list) {
-        // Ensure we respect page space
-        if (sectionY > doc.internal.pageSize.getHeight() - 120) {
+        // Ensure we respect page space before section header
+        if (sectionY > pageHeight - 120) {
           doc.addPage();
-          sectionY = 40;
+          sectionY = topMargin;
         }
 
         // Header for this PNL
@@ -160,7 +167,8 @@
           `Due: ${(p as any).dueAt ? new Date((p as any).dueAt).toLocaleDateString() : '-'}`,
           `Created: ${new Date(p.createdAt).toLocaleDateString()}`
         ].join('  •  ');
-        doc.text(metaLine, marginLeft, sectionY + 14);
+        const metaWrapped = doc.splitTextToSize(metaLine, maxTextWidth);
+        doc.text(metaWrapped, marginLeft, sectionY + 14);
 
         // Fetch items
         let items: any[] = [];
@@ -190,7 +198,7 @@
 
         // Render table
         autoTable(doc, {
-          startY: sectionY + 26,
+          startY: sectionY + 26 + (Array.isArray(metaWrapped) ? (metaWrapped.length - 1) * 12 : 0),
           head: [[ 'Asset', 'Qty', 'Unit', 'Line Total' ]],
           body: bodyRows.length ? bodyRows : [[ '—', '0', fmtMoney(0), fmtMoney(0) ]],
           styles: { fontSize: 10, cellPadding: 6 },
@@ -206,9 +214,13 @@
         });
 
         const table = (doc as any).lastAutoTable;
-        const afterTableY = table ? table.finalY + 8 : sectionY + 40;
+        let afterTableY = table ? table.finalY + 8 : sectionY + 40;
 
         // PNL Total
+        if (afterTableY > pageHeight - bottomMargin - 16) {
+          doc.addPage();
+          afterTableY = topMargin;
+        }
         doc.setFont('helvetica', 'bold');
         doc.text(`PNL Total: ${fmtMoney(pnlTotal)}`, marginLeft, afterTableY);
 
@@ -223,6 +235,78 @@
       alert('Failed to export PDF.');
     } finally {
       exportingPnls = false;
+    }
+  }
+
+  // One-time export: all assets with unit price > 2400
+  async function exportHighValueAssetsPdf() {
+    try {
+      exportingHighValue = true;
+      const res = await fetch('/api/assets');
+      if (!res.ok) throw new Error('Failed to fetch assets');
+      const assets: any[] = await res.json();
+      const filtered = (assets || [])
+        .filter((a) => Number(a.purchasePrice ?? 0) > 2400)
+        .sort((a, b) => (a.itemName || '').localeCompare(b.itemName || ''));
+
+      const { jsPDF } = await import('jspdf');
+      const autoTable = (await import('jspdf-autotable')).default as any;
+      const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const topMargin = 40;
+      const bottomMargin = 40;
+      const fmtMoney = (n: number) => `$${Number(n || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      const marginLeft = 40;
+      let y = topMargin;
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(16);
+      doc.text('Assets over $2,400', marginLeft, y);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      y += 16;
+      doc.text(`Generated: ${new Date().toLocaleString()}`, marginLeft, y);
+
+      const body = filtered.map((a) => [
+        a.itemName || '-',
+        a.modelBrand || '-',
+        a.category?.name || '-',
+        a.quantity?.toString?.() || '1',
+        fmtMoney(Number(a.purchasePrice ?? 0)),
+        (a.location || '-')
+      ]);
+
+      const total = filtered.reduce((acc, a) => acc + Number(a.purchasePrice ?? 0) * Number(a.quantity ?? 1), 0);
+
+      autoTable(doc, {
+        startY: y + 14,
+        head: [[ 'Item', 'Brand', 'Category', 'Qty', 'Unit Price', 'Location' ]],
+        body: body,
+        styles: { fontSize: 10, cellPadding: 6, overflow: 'linebreak' },
+        headStyles: { fillColor: [37, 99, 235] },
+        alternateRowStyles: { fillColor: [245, 247, 250] },
+        columnStyles: {
+          3: { halign: 'right' },
+          4: { halign: 'right' }
+        },
+        margin: { left: marginLeft, right: marginLeft }
+      });
+
+      const tableHV = (doc as any).lastAutoTable;
+      let afterY = tableHV ? tableHV.finalY + 10 : y + 40;
+      if (afterY > pageHeight - bottomMargin - 16) {
+        doc.addPage();
+        afterY = topMargin;
+      }
+      doc.setFont('helvetica', 'bold');
+      doc.text(`Total (Qty x Unit): ${fmtMoney(total)}`, marginLeft, afterY);
+
+      doc.save(`Assets-over-2400-${new Date().toISOString().slice(0,10)}.pdf`);
+    } catch (e) {
+      console.error('Export high value assets failed:', e);
+      alert('Failed to export high value assets');
+    } finally {
+      exportingHighValue = false;
     }
   }
 
@@ -531,6 +615,7 @@
       <div class="flex items-center justify-between gap-3">
         <h3 class="text-lg font-semibold text-primary">PNLs</h3>
         <div class="flex gap-2">
+          <button class="px-4 py-2 bg-tertiary rounded-lg hover:bg-tertiary/80" on:click={exportHighValueAssetsPdf} disabled={exportingHighValue}>{exportingHighValue ? 'Exporting…' : 'Export > $2,400 (PDF)'}</button>
           <button class="px-4 py-2 bg-tertiary rounded-lg hover:bg-tertiary/80" on:click={exportAllPnlsPdf} disabled={exportingPnls}>{exportingPnls ? 'Exporting…' : 'Export All PNLs (PDF)'}</button>
           <button class="px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent-secondary" on:click={openCreate}>New PNL</button>
         </div>
